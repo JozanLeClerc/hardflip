@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Thu, 14 Dec 2023 15:41:22 +0100
+ * Thu, 14 Dec 2023 16:55:35 +0100
  * Joe
  *
  * init functions
