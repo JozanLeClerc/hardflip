@@ -54,8 +54,6 @@ import (
 func main() {
 	var data_dir string
 
-	if data_dir = c_get_data_dir() + "/josh"; len(data_dir) == 0 {
-		c_die("couldn't find josh home directory", nil)
-	}
+	data_dir = c_get_data_dir()
 	fmt.Println("data dir: ", data_dir)
 }

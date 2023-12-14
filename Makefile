@@ -11,7 +11,7 @@
 # ========================
 #
 # josh: Makefile
-# Thu, 14 Dec 2023 15:00:12 +0100
+# Thu, 14 Dec 2023 15:33:28 +0100
 # Joe
 #
 # GNU Makefile
@@ -24,3 +24,6 @@ run:
 
 all:
 	@go build
+
+clean:
+	@go clean

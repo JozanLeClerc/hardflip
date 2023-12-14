@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Thu, 14 Dec 2023 14:02:17 +0100
+ * Thu, 14 Dec 2023 15:37:10 +0100
  * Joe
  *
  * init functions
@@ -57,30 +57,24 @@ import (
 // $HOME/.local/share. It returns the full data directory path.
 func c_get_data_dir() string {
 	var ptr *string
-	home := os.Getenv("HOME")
-	xdg_home := os.Getenv("XDG_DATA_HOME")
-
-	if len(home) == 0 {
+	var home string
+	if home = os.Getenv("HOME"); len(home) == 0 {
 		c_die("env variable HOME not defined", nil)
 	}
+	xdg_home := os.Getenv("XDG_DATA_HOME")
+
 	if len(xdg_home) > 0 {
 		ptr = &xdg_home
-		if _, err := os.Stat(*ptr); os.IsNotExist(err) {
-			if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
-				c_die("could not create path " + *ptr, err)
-			}
-			fmt.Println("created folder path " + *ptr)
-		}
 	} else {
 		ptr = &home
-		*ptr = *ptr + ".local/share"
-		if _, err := os.Stat(*ptr); os.IsNotExist(err) {
-		    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
-		        c_die("could not create path " + *ptr, err)
-		    }
-		    fmt.Println("created folder path " + *ptr)
-		}
-		return home
+		*ptr += "/.local/share"
+	}
+	*ptr += "/josh"
+	if _, err := os.Stat(*ptr); os.IsNotExist(err) {
+	    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
+	        c_die("could not create path " + *ptr, err)
+	    }
+	    fmt.Println("created folder path " + *ptr)
 	}
 	return *ptr
 }
