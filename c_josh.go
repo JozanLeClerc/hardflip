@@ -50,6 +50,16 @@ package main
 import (
 )
 
+// 0: ssh
+// 1: rdp
+type host struct {
+	ID   int64
+	Type int8   `yaml:"type"`
+	Host string `yaml:"host"`
+	Port uint16 `yaml:"port"`
+	User string `yaml:"user"`
+}
+
 func main() {
 	var data_dir string
 

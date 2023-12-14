@@ -49,8 +49,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"io/ioutil"
+	"os"
+	"path/filepath"
+	"gopkg.in/yaml.v3"
 )
 
 // This function will go get the data folder and try to create it if it does
@@ -80,6 +82,22 @@ func c_get_data_dir() string {
 	return *ptr
 }
 
+func c_read_yaml_file(file string) {
+	var host host
+	yaml_file, err := ioutil.ReadFile(file)
+
+	if err != nil {
+		c_die("error reading file " + file, err)
+	}
+	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
+		c_die("error reading yaml file " + file, err)
+	}
+	fmt.Println(host)
+	os.Exit(0)
+}
+
+// This function recurses into the specified root directory in order to load
+// every yaml file into memory.
 func c_recurse_data_dir(dir string, root string) {
 	files, err := ioutil.ReadDir(root + dir)
 	if err != nil {
@@ -88,8 +106,9 @@ func c_recurse_data_dir(dir string, root string) {
 	for _, file := range files {
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + file.Name() + "/", root)
-		} else {
-			fmt.Println(dir + file.Name())
+		} else if filepath.Ext(file.Name()) == ".yml" {
+			fmt.Println(root + dir + file.Name())
+			c_read_yaml_file(root + dir + file.Name())
 		}
 	}
 }

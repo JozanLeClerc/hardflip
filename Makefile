@@ -18,11 +18,12 @@
 
 .DEFAULT_GOAL	:= run
 SHELL			:= /bin/sh
+SRC				:= *.go
 
-run:
-	@go run *.go
+run: ${SRC}
+	@go run ${SRC}
 
-all:
+josh: ${SRC}
 	@go build
 
 clean:
