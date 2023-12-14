@@ -99,5 +99,4 @@ func main() {
 		c_die("couldn't find josh home directory", nil)
 	}
 	fmt.Println("data dir: ", data_dir)
-
 }
