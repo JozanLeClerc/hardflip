@@ -39,60 +39,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_josh.go
- * Thu, 14 Dec 2023 10:28:37 +0100
+ * Thu, 14 Dec 2023 12:59:13 +0100
  * Joe
  *
  * The main.
  */
 
-package main
+package josh
 
 import (
 	"fmt"
-	"os"
 )
 
-// c_die displays an error string to the stderr fd and exits the program
-// with the return code 1.
-// It takes an optional err argument of the error type as a complement of
-// information.
-func c_die(str string, err error) {
-	fmt.Fprintf(os.Stderr, "error: %s", str)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, ": %v\n", err)
-	}
-	fmt.Fprintf(os.Stderr, "\n")
-	os.Exit(1)
-}
-
-func c_get_data_dir() string {
-	home := os.Getenv("HOME")
-	xdg_home := os.Getenv("XDG_DATA_HOME")
-
-	if len(home) == 0 {
-		c_die("env variable HOME not defined", nil)
-	}
-	if len(xdg_home) > 0 {
-		if _, err := os.Stat(xdg_home); os.IsNotExist(err) {
-			if err := os.MkdirAll(xdg_home, os.ModePerm); err != nil {
-				c_die("could not create path " + xdg_home, err)
-			}
-			fmt.Println("created folder path " + xdg_home)
-		}
-		return xdg_home
-	} else {
-		home := home + "/qwe/asd"
-		if _, err := os.Stat(home); os.IsNotExist(err) {
-			if err := os.MkdirAll(home, os.ModePerm); err != nil {
-				c_die("could not create path " + home, err)
-			}
-			fmt.Println("created folder path " + home)
-		}
-		return home
-	}
-}
-
-func main() {
+func josh() {
 	var data_dir string
 
 	if data_dir = c_get_data_dir() + "/josh"; len(data_dir) == 0 {
