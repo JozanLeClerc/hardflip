@@ -45,7 +45,7 @@
  * core funcs
  */
 
-package josh
+package main
 
 import (
 	"fmt"
@@ -63,34 +63,4 @@ func c_die(str string, err error) {
 	}
 	fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)
-}
-
-// This function will go get the data folder and try to create it if it does
-// not exist. The first path being checked is $XDG_DATA_HOME then
-// $HOME/.local/share. It returns the full data directory path.
-func c_get_data_dir() string {
-	home := os.Getenv("HOME")
-	xdg_home := os.Getenv("XDG_DATA_HOME")
-
-	if len(home) == 0 {
-		c_die("env variable HOME not defined", nil)
-	}
-	if len(xdg_home) > 0 {
-		if _, err := os.Stat(xdg_home); os.IsNotExist(err) {
-			if err := os.MkdirAll(xdg_home, os.ModePerm); err != nil {
-				c_die("could not create path " + xdg_home, err)
-			}
-			fmt.Println("created folder path " + xdg_home)
-		}
-		return xdg_home
-	} else {
-		home := home + ".local/share"
-		if _, err := os.Stat(home); os.IsNotExist(err) {
-			if err := os.MkdirAll(home, os.ModePerm); err != nil {
-				c_die("could not create path " + home, err)
-			}
-			fmt.Println("created folder path " + home)
-		}
-		return home
-	}
 }
