@@ -80,8 +80,20 @@ func c_get_data_dir() string {
 	return *ptr
 }
 
-func c_show_files(dir string) {
-	if _, err := ioutil.ReadDir(dir); err != nil {
+func c_recurse_data_dir(dir string, root string) {
+	files, err := ioutil.ReadDir(root + dir)
+	if err != nil {
 		c_die("could not read data directory", err)
 	}
+	for _, file := range files {
+		if file.IsDir() == true {
+			c_recurse_data_dir(dir + file.Name() + "/", root)
+		} else {
+			fmt.Println(dir + file.Name())
+		}
+	}
+}
+
+func c_load_data_dir(dir string) {
+	c_recurse_data_dir("", dir + "/")
 }

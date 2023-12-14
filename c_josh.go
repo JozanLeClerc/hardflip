@@ -54,5 +54,5 @@ func main() {
 	var data_dir string
 
 	data_dir = c_get_data_dir()
-	c_show_files(data_dir)
+	c_load_data_dir(data_dir)
 }
