@@ -48,12 +48,11 @@
 package main
 
 import (
-	"fmt"
 )
 
 func main() {
 	var data_dir string
 
 	data_dir = c_get_data_dir()
-	fmt.Println("data dir: ", data_dir)
+	c_show_files(data_dir)
 }

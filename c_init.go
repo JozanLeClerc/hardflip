@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Thu, 14 Dec 2023 15:37:10 +0100
+ * Thu, 14 Dec 2023 15:41:22 +0100
  * Joe
  *
  * init functions
@@ -50,6 +50,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"io/ioutil"
 )
 
 // This function will go get the data folder and try to create it if it does
@@ -77,4 +78,10 @@ func c_get_data_dir() string {
 	    fmt.Println("created folder path " + *ptr)
 	}
 	return *ptr
+}
+
+func c_show_files(dir string) {
+	if _, err := ioutil.ReadDir(dir); err != nil {
+		c_die("could not read data directory", err)
+	}
 }
