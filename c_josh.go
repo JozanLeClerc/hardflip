@@ -58,6 +58,9 @@ type host struct {
 	Host string `yaml:"host"`
 	Port uint16 `yaml:"port"`
 	User string `yaml:"user"`
+	Pass string `yaml:"pass"`
+	Jump string `yaml:"jump"`
+	Priv string `yaml:"priv"`
 }
 
 func main() {

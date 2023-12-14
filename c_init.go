@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Thu, 14 Dec 2023 16:55:35 +0100
+ * Thu, 14 Dec 2023 19:21:22 +0100
  * Joe
  *
  * init functions
@@ -92,8 +92,13 @@ func c_read_yaml_file(file string) {
 	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
 		c_die("error reading yaml file " + file, err)
 	}
+	if len(host.User) == 0 {
+		host.User = "root"
+	}
+	if host.Port == 0 {
+		host.Port = 22
+	}
 	fmt.Println(host)
-	os.Exit(0)
 }
 
 // This function recurses into the specified root directory in order to load
