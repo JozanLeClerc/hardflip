@@ -81,4 +81,3 @@ func c_get_data_dir() string {
 		return home
 	}
 }
-
