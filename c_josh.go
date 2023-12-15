@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_josh.go
- * Fri, 15 Dec 2023 12:45:58 +0100
+ * Fri, 15 Dec 2023 17:53:42 +0100
  * Joe
  *
  * the main
@@ -61,7 +61,7 @@ func display_servers(lhost *HostList) {
 		curr = curr.next
 	}
 	fmt.Println()
-	curr = lhost.sel(2)
+	curr = lhost.sel(3)
 	if curr == nil {
 		c_die("host id not found", nil)
 	}
