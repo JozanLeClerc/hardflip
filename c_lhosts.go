@@ -38,18 +38,62 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * josh: src/c_josh.go
- * Thu, 14 Dec 2023 16:55:28 +0100
+ * josh: src/c_lhosts.go
+ * Fri, 15 Dec 2023 10:01:11 +0100
  * Joe
  *
- * the main
+ * the hosts linked list
  */
 
 package main
 
-func main() {
-	var data_dir string
+// 0: ssh
+// 1: rdp
+type HostNode struct {
+	ID   uint64
+	Type int8   `yaml:"type"`
+	Host string `yaml:"host"`
+	Port uint16 `yaml:"port"`
+	User string `yaml:"user"`
+	Pass string `yaml:"pass"`
+	Jump string `yaml:"jump"`
+	Priv string `yaml:"priv"`
+	next *HostNode
+}
 
-	data_dir = c_get_data_dir()
-	c_load_data_dir(data_dir)
+type HostList struct {
+	head *HostNode
+}
+
+// adds a host node to the list
+func (lhost *HostList) add_back(node *HostNode) {
+	new_node := node
+
+	if lhost.head == nil {
+		lhost.head = new_node
+		return
+	}
+	curr := lhost.head
+	for curr.next != nil {
+		curr = curr.next
+	}
+	curr.next = new_node
+}
+
+// removes a host node from the list
+func (lhost *HostList) remove(id uint64) {
+	if lhost.head == nil {
+		return
+	}
+	if lhost.head.ID == id {
+		lhost.head = lhost.head.next
+		return
+	}
+	curr := lhost.head
+	for curr.next != nil && curr.next.ID != id {
+		curr = curr.next
+	}
+	if curr.next != nil {
+		curr.next = curr.next.next
+	}
 }

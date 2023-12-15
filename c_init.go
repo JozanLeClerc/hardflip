@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Thu, 14 Dec 2023 19:21:22 +0100
+ * Fri, 15 Dec 2023 11:43:39 +0100
  * Joe
  *
  * init functions
@@ -52,12 +52,12 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"gopkg.in/yaml.v3"
 )
 
-// This function will go get the data folder and try to create it if it does
-// not exist. The first path being checked is $XDG_DATA_HOME then
-// $HOME/.local/share. It returns the full data directory path.
+// this function will go get the data folder and try to create it if it does
+// not exist
+// the first path being checked is $XDG_DATA_HOME then $HOME/.local/share
+// it returns the full data directory path
 func c_get_data_dir() string {
 	var ptr *string
 	var home string
@@ -82,27 +82,8 @@ func c_get_data_dir() string {
 	return *ptr
 }
 
-func c_read_yaml_file(file string) {
-	var host host
-	yaml_file, err := ioutil.ReadFile(file)
-
-	if err != nil {
-		c_die("error reading file " + file, err)
-	}
-	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
-		c_die("error reading yaml file " + file, err)
-	}
-	if len(host.User) == 0 {
-		host.User = "root"
-	}
-	if host.Port == 0 {
-		host.Port = 22
-	}
-	fmt.Println(host)
-}
-
-// This function recurses into the specified root directory in order to load
-// every yaml file into memory.
+// this function recurses into the specified root directory in order to load
+// every yaml file into memory
 func c_recurse_data_dir(dir string, root string) {
 	files, err := ioutil.ReadDir(root + dir)
 	if err != nil {

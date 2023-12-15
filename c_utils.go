@@ -53,9 +53,9 @@ import (
 )
 
 // c_die displays an error string to the stderr fd and exits the program
-// with the return code 1.
-// It takes an optional err argument of the error type as a complement of
-// information.
+// with the return code 1
+// it takes an optional err argument of the error type as a complement of
+// information
 func c_die(str string, err error) {
 	fmt.Fprintf(os.Stderr, "error: %s", str)
 	if err != nil {

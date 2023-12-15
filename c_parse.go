@@ -38,18 +38,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * josh: src/c_josh.go
- * Thu, 14 Dec 2023 16:55:28 +0100
+ * josh: src/c_parse.go
+ * Fri, 15 Dec 2023 10:02:29 +0100
  * Joe
  *
- * the main
+ * parsing of the global data
  */
 
 package main
 
-func main() {
-	var data_dir string
+import (
+	"fmt"
+	"io/ioutil"
+	"gopkg.in/yaml.v3"
+)
 
-	data_dir = c_get_data_dir()
-	c_load_data_dir(data_dir)
+func c_read_yaml_file(file string) *HostNode {
+	var host HostNode
+	yaml_file, err := ioutil.ReadFile(file)
+
+	if err != nil {
+		c_die("error reading file " + file, err)
+	}
+	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
+		c_die("error reading yaml file " + file, err)
+	}
+	if len(host.User) == 0 {
+		host.User = "root"
+	}
+	if host.Port == 0 {
+		host.Port = 22
+	}
+	fmt.Println(host)
+	return &host
 }
