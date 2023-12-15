@@ -47,7 +47,12 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"strconv"
+)
 
 func display_servers(lhost *HostList) {
 	curr := lhost.head
@@ -55,6 +60,14 @@ func display_servers(lhost *HostList) {
 		fmt.Println(curr.ID, curr.Folder + curr.Name)
 		curr = curr.next
 	}
+	fmt.Println()
+	curr = lhost.head
+	fmt.Println        ("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
+	cmd := exec.Command("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }
 
 func main() {
