@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_lhosts.go
- * Fri, 15 Dec 2023 12:22:05 +0100
+ * Fri, 15 Dec 2023 17:26:58 +0100
  * Joe
  *
  * the hosts linked list
@@ -50,17 +50,18 @@ package main
 // 0: ssh
 // 1: rdp
 type HostNode struct {
-	ID   uint64
-	Type int8   `yaml:"type"`
-	Name string `yaml:"name"`
-	Host string `yaml:"host"`
-	Port uint16 `yaml:"port"`
-	User string `yaml:"user"`
-	Pass string `yaml:"pass"`
-	Jump string `yaml:"jump"`
-	Priv string `yaml:"priv"`
-	Note string `yaml:"note"`
-	Path string
+	ID       uint64
+	Type     int8   `yaml:"type"`
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	Port     uint16 `yaml:"port"`
+	User     string `yaml:"user"`
+	Pass     string `yaml:"pass"`
+	Jump     string `yaml:"jump"`
+	Priv     string `yaml:"priv"`
+	Note     string `yaml:"note"`
+	Filename string
+	Folder   string
 	next *HostNode
 }
 

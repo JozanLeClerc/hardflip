@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_init.go
- * Fri, 15 Dec 2023 11:43:39 +0100
+ * Fri, 15 Dec 2023 17:27:13 +0100
  * Joe
  *
  * init functions
@@ -97,7 +97,8 @@ func c_recurse_data_dir(dir string, root string, lhost *HostList) {
 			if len(host.Name) == 0 {
 				return
 			}
-			host.Path = dir + file.Name()
+			host.Filename = file.Name()
+			host.Folder = dir
 			lhost.add_back(host)
 		}
 	}

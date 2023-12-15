@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_josh.go
- * Thu, 14 Dec 2023 16:55:28 +0100
+ * Fri, 15 Dec 2023 12:45:58 +0100
  * Joe
  *
  * the main
@@ -49,14 +49,18 @@ package main
 
 import "fmt"
 
+func display_servers(lhost *HostList) {
+	curr := lhost.head
+	for curr != nil {
+		fmt.Println(curr.ID, curr.Folder + curr.Name)
+		curr = curr.next
+	}
+}
+
 func main() {
 	var data_dir string
 
 	data_dir = c_get_data_dir()
 	lhost := c_load_data_dir(data_dir)
-	curr := lhost.head
-	for curr != nil {
-		fmt.Println(*curr)
-		curr = curr.next
-	}
+	display_servers(lhost)
 }
