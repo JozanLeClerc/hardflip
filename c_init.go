@@ -93,8 +93,8 @@ func c_recurse_data_dir(dir string, root string, lhost *HostList) {
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + file.Name() + "/", root, lhost)
 		} else if filepath.Ext(file.Name()) == ".yml" {
-			fmt.Println(dir + file.Name())
 			host := c_read_yaml_file(root + dir + file.Name())
+			host.Path = dir + file.Name()[0:len(file.Name()) - 4]
 			lhost.add_back(host)
 		}
 	}

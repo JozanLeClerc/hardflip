@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_lhosts.go
- * Fri, 15 Dec 2023 11:43:34 +0100
+ * Fri, 15 Dec 2023 12:22:05 +0100
  * Joe
  *
  * the hosts linked list
@@ -58,6 +58,7 @@ type HostNode struct {
 	Pass string `yaml:"pass"`
 	Jump string `yaml:"jump"`
 	Priv string `yaml:"priv"`
+	Path string
 	next *HostNode
 }
 
@@ -77,6 +78,7 @@ func (lhost *HostList) add_back(node *HostNode) {
 	for curr.next != nil {
 		curr = curr.next
 	}
+	new_node.ID = curr.ID + 1
 	curr.next = new_node
 }
 
