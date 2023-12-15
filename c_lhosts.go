@@ -52,12 +52,14 @@ package main
 type HostNode struct {
 	ID   uint64
 	Type int8   `yaml:"type"`
+	Name string `yaml:"name"`
 	Host string `yaml:"host"`
 	Port uint16 `yaml:"port"`
 	User string `yaml:"user"`
 	Pass string `yaml:"pass"`
 	Jump string `yaml:"jump"`
 	Priv string `yaml:"priv"`
+	Note string `yaml:"note"`
 	Path string
 	next *HostNode
 }
@@ -83,7 +85,7 @@ func (lhost *HostList) add_back(node *HostNode) {
 }
 
 // removes a host node from the list
-func (lhost *HostList) remove(id uint64) {
+func (lhost *HostList) del(id uint64) {
 	if lhost.head == nil {
 		return
 	}
