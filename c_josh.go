@@ -61,7 +61,10 @@ func display_servers(lhost *HostList) {
 		curr = curr.next
 	}
 	fmt.Println()
-	curr = lhost.head
+	curr = lhost.sel(2)
+	if curr == nil {
+		c_die("host id not found", nil)
+	}
 	fmt.Println        ("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
 	cmd := exec.Command("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
 	cmd.Stdin = os.Stdin
