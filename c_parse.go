@@ -48,7 +48,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"gopkg.in/yaml.v3"
 )
@@ -69,6 +68,5 @@ func c_read_yaml_file(file string) *HostNode {
 	if host.Port == 0 {
 		host.Port = 22
 	}
-	fmt.Println(host)
 	return &host
 }

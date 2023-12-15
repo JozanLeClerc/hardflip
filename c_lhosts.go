@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * josh: src/c_lhosts.go
- * Fri, 15 Dec 2023 10:01:11 +0100
+ * Fri, 15 Dec 2023 11:43:34 +0100
  * Joe
  *
  * the hosts linked list

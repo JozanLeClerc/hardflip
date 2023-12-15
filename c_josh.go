@@ -47,9 +47,16 @@
 
 package main
 
+import "fmt"
+
 func main() {
 	var data_dir string
 
 	data_dir = c_get_data_dir()
-	c_load_data_dir(data_dir)
+	lhost := c_load_data_dir(data_dir)
+	curr := lhost.head
+	for curr != nil {
+		fmt.Println(*curr)
+		curr = curr.next
+	}
 }

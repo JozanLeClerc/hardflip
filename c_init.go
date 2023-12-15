@@ -84,21 +84,24 @@ func c_get_data_dir() string {
 
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
-func c_recurse_data_dir(dir string, root string) {
+func c_recurse_data_dir(dir string, root string, lhost *HostList) {
 	files, err := ioutil.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}
 	for _, file := range files {
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + file.Name() + "/", root)
+			c_recurse_data_dir(dir + file.Name() + "/", root, lhost)
 		} else if filepath.Ext(file.Name()) == ".yml" {
-			fmt.Println(root + dir + file.Name())
-			c_read_yaml_file(root + dir + file.Name())
+			fmt.Println(dir + file.Name())
+			host := c_read_yaml_file(root + dir + file.Name())
+			lhost.add_back(host)
 		}
 	}
 }
 
-func c_load_data_dir(dir string) {
-	c_recurse_data_dir("", dir + "/")
+func c_load_data_dir(dir string) *HostList {
+	lhost := HostList{}
+	c_recurse_data_dir("", dir + "/", &lhost)
+	return &lhost
 }
