@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Fri, 15 Dec 2023 17:53:42 +0100
+ * Mon, 18 Dec 2023 16:56:07 +0100
  * Joe
  *
  * the main
@@ -48,9 +48,10 @@
 package main
 
 func main() {
-	var data_dir string
+	// var data_dir string
 
-	data_dir = c_get_data_dir()
-	lhost := c_load_data_dir(data_dir)
-	display_servers(lhost)
+	// data_dir = c_get_data_dir()
+	// lhost := c_load_data_dir(data_dir)
+	// display_servers(lhost)
+	i_ui()
 }

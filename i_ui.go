@@ -38,97 +38,61 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_exec.go
- * Mon, 18 Dec 2023 15:07:52 +0100
+ * hardflip: src/c_hardflip.go
+ * Mon, 18 Dec 2023 16:50:31 +0100
  * Joe
  *
- * exec the command at some point
+ * interfacing with the user
  */
 
 package main
 
 import (
-	"fmt"
 	"os"
-	"os/exec"
-	"strconv"
+	"github.com/gdamore/tcell/v2"
 )
 
-func c_exec_cmd(cmd_fmt []string) {
-	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
-
-	fmt.Println(cmd_fmt)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
-
-func c_format_ssh_jump(host *HostNode) string {
-		jump_fmt := "-oProxyCommand=ssh"
-		if len(host.JumpPriv) > 0 {
-			jump_fmt += " -i " + host.JumpPriv
+func i_draw_text(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
+	row := y1
+	col := x1
+	for _, r := range []rune(text) {
+		s.SetContent(col, row, r, nil, style)
+		col++
+		if col >= x2 {
+			row++
+			col = x1
 		}
-		if host.JumpPort != 0 {
-			jump_fmt += " -p " + strconv.Itoa(int(host.JumpPort))
+		if row > y2 {
+			break
 		}
-		if len(host.JumpUser) == 0 {
-			jump_fmt += " root"
-		} else {
-			jump_fmt += " " + host.JumpUser
+	}
+}
+
+func i_ui() {
+	screen, err := tcell.NewScreen()
+	if err != nil {
+		c_die("view", err)
+	}
+	if err := screen.Init(); err != nil {
+		c_die("view", err)
+	}
+	def_style := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
+	screen.SetStyle(def_style)
+	quit := func() {
+		screen.Fini()
+		os.Exit(0)
+	}
+	for {
+		i_draw_text(screen, 0, 0, 30, 0, def_style, "hey fuck you")
+		screen.Show()
+		ev := screen.PollEvent()
+		switch ev := ev.(type) {
+		case *tcell.EventResize:
+			screen.Sync()
+		case *tcell.EventKey:
+			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
+				quit()
+			}
 		}
-		jump_fmt += "@" + host.Jump + " -W %h:%p"
-		return jump_fmt
-}
-
-func c_format_ssh(host *HostNode) []string {
-	cmd_fmt := []string{"ssh"}
-	user := host.User
-
-	if len(host.Priv) > 0 {
-		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}
-	if len(host.Jump) > 0 {
-		cmd_fmt = append(cmd_fmt, c_format_ssh_jump(host))
-	}
-	if host.Port != 0 {
-		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
-	}
-	if len(host.User) == 0 {
-		user = "root"
-	}
-	cmd_fmt = append(cmd_fmt, user + "@" + host.Host)
-	return cmd_fmt
-}
-
-func c_format_rdp() {
-}
-
-func c_format_cmd(id uint64, lhost *HostList) {
-	host := lhost.head
-	// var cmd_fmt []string
-
-	host = lhost.sel(id)
-	if host == nil {
-		c_die("host id not found", nil)
-	}
-	if host.Type == 0 {
-		// cmd_fmt = format_ssh(host)
-	}
-	// exec_cmd(cmd_fmt)
-}
-
-func c_display_servers(lhost *HostList) {
-	host := lhost.head
-
-	if lhost.head == nil {
-		fmt.Println("no hosts")
-		return
-	}
-	for host != nil {
-		fmt.Println(host.ID, host.Folder + host.Name)
-		host = host.next
-	}
-	fmt.Println()
-	c_format_cmd(4, lhost)
 }
