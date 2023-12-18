@@ -103,6 +103,7 @@ func (lhost *HostList) del(id uint64) {
 	}
 }
 
+// return the list node with the according id
 func (lhost *HostList) sel(id uint64) *HostNode {
 	curr := lhost.head
     for curr.next != nil && curr.ID != id {

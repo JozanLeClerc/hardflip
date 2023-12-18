@@ -54,8 +54,31 @@ import (
 	"strconv"
 )
 
+func exec_cmd(cmd_fmt []string) {
+	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+}
+
+func format_cmd(id uint64, lhost *HostList) {
+	curr := lhost.head
+	var cmd_fmt []string
+
+	curr = lhost.sel(id)
+	if curr == nil {
+		c_die("host id not found", nil)
+	}
+	cmd_fmt = []string{"ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host}
+	fmt.Println(cmd_fmt)
+	exec_cmd(cmd_fmt)
+}
+
 func display_servers(lhost *HostList) {
 	curr := lhost.head
+
 	if lhost.head == nil {
 		fmt.Println("no hosts")
 		return
@@ -65,14 +88,5 @@ func display_servers(lhost *HostList) {
 		curr = curr.next
 	}
 	fmt.Println()
-	curr = lhost.sel(3)
-	if curr == nil {
-		c_die("host id not found", nil)
-	}
-	fmt.Println        ("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
-	cmd := exec.Command("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
+	format_cmd(3, lhost)
 }
