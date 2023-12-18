@@ -71,6 +71,9 @@ func format_ssh(host *HostNode) []string {
 	if len(host.Priv) > 0 {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}
+	if len(host.Jump) > 0 {
+		cmd_fmt = append(cmd_fmt, "-J", host.Jump)
+	}
 	if host.Port != 0 {
 		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
 	}
