@@ -62,11 +62,11 @@ func c_read_yaml_file(file string) *HostNode {
 	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
 		c_die("error reading yaml file " + file, err)
 	}
-	if len(host.User) == 0 {
-		host.User = "root"
+	if len(host.Name) == 0 {
+		return nil
 	}
-	if host.Port == 0 {
-		host.Port = 22
+	if len(host.Host) == 0 {
+		return nil
 	}
 	return &host
 }

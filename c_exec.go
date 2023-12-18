@@ -57,36 +57,58 @@ import (
 func exec_cmd(cmd_fmt []string) {
 	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
 
+	fmt.Println(cmd_fmt)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 }
 
+func format_ssh(host *HostNode) []string {
+	cmd_fmt := []string{"ssh"}
+	user := host.User
+
+	if len(host.Priv) > 0 {
+		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
+	}
+	if host.Port != 0 {
+		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
+	}
+	if len(host.User) == 0 {
+		user = "root"
+	}
+	cmd_fmt = append(cmd_fmt, user + "@" + host.Host)
+	return cmd_fmt
+}
+
+func format_rdp() {
+}
+
 func format_cmd(id uint64, lhost *HostList) {
-	curr := lhost.head
+	host := lhost.head
 	var cmd_fmt []string
 
-	curr = lhost.sel(id)
-	if curr == nil {
+	host = lhost.sel(id)
+	if host == nil {
 		c_die("host id not found", nil)
 	}
-	cmd_fmt = []string{"ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host}
-	fmt.Println(cmd_fmt)
+	if host.Type == 0 {
+		cmd_fmt = format_ssh(host)
+	}
 	exec_cmd(cmd_fmt)
 }
 
 func display_servers(lhost *HostList) {
-	curr := lhost.head
+	host := lhost.head
 
 	if lhost.head == nil {
 		fmt.Println("no hosts")
 		return
 	}
-	for curr != nil {
-		fmt.Println(curr.ID, curr.Folder + curr.Name)
-		curr = curr.next
+	for host != nil {
+		fmt.Println(host.ID, host.Folder + host.Name)
+		host = host.next
 	}
 	fmt.Println()
-	format_cmd(3, lhost)
+	format_cmd(0, lhost)
 }
