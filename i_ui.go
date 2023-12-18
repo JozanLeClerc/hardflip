@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Mon, 18 Dec 2023 17:59:45 +0100
+ * Mon, 18 Dec 2023 19:01:59 +0100
  * Joe
  *
  * interfacing with the user
@@ -49,6 +49,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
 )
@@ -71,9 +72,7 @@ func i_draw_text(s tcell.Screen,
 	}
 }
 
-func i_draw_box(s tcell.Screen,
-		x1, y1, x2, y2 int,
-		title string, content string) {
+func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
 	style := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 
 	if y2 < y1 {
@@ -101,27 +100,118 @@ func i_draw_box(s tcell.Screen,
 	}
 
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y2 - 1, style, title)
-	i_draw_text(s, x1 + 1, y1 + 1, x2 - 1, y2 - 1, style, content)
 }
 
 func i_bottom_text(s tcell.Screen, term_w, term_h int, style tcell.Style) {
 	i_draw_text(s, 0, term_h - 1, term_w - 1, term_h, style, "(q) Quit")
 }
 
-func i_hosts_panel(s tcell.Screen, term_w, term_h int, lhost *HostList) {
+func i_hosts_panel(s tcell.Screen,
+		term_w, term_h int,
+		def_style tcell.Style, lhost *HostList,
+		sel uint64, sel_max uint64) {
 	i_draw_box(s, 0, 0,
 		term_w / 3, term_h - 2,
-		" hosts ", "")
+		" hosts ")
+	host := lhost.head
+	for host != nil {
+		style := def_style
+		if sel == host.ID {
+			style = tcell.StyleDefault.
+				Background(tcell.ColorWhite).
+				Foreground(tcell.ColorBlack)
+		}
+		spaces := ""
+		i := 0
+		for i < (term_w / 3) - len(host.Folder + host.Name) - 3 {
+			spaces += " "
+			i++
+		}
+		i_draw_text(s,
+		1, int(host.ID) + 1, term_w / 3 - 1, int(host.ID) + 1,
+		style, " " + host.Folder + host.Name + spaces)
+		host = host.next
+	}
+	i_draw_text(s,
+		1, term_h - 2, (term_w / 3) - 1, term_h - 1,
+		def_style, " " + strconv.Itoa(int(sel_max)) + " hosts ")
 }
 
-func i_info_panel(s tcell.Screen, term_w, term_h int) {
+func i_info_panel(s tcell.Screen,
+		term_w, term_h int,
+		def_style tcell.Style, lhost *HostList, sel uint64) {
+	title_style := tcell.StyleDefault.
+			Background(tcell.ColorReset).
+			Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	host := lhost.sel(sel)
+	curr_line := 2
+	var host_type string
+	var pass string
+	var port int
+
 	i_draw_box(s, (term_w / 3) + 1, 0,
 		term_w - 1, term_h - 2,
-		" infos ", "")
+		" infos ")
+	if host.Type == 0 {
+		host_type = "SSH"
+	} else if host.Type == 1 {
+		host_type = "RDP"
+	} else if host.Type > 1 {
+		host_type = "Unknown"
+	}
+	if len(host.Pass) > 0 {
+		pass = "***"
+	}
+
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Name: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, host.Name)
+	curr_line += 1
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Type: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, host_type)
+	curr_line += 2
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Host: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, host.Host)
+	curr_line += 1
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Port: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, strconv.Itoa(port))
+	curr_line += 2
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "User: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, host.User)
+	curr_line += 1
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Pass: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, pass)
+	curr_line += 1
 }
 
 func i_ui(lhost *HostList) {
 	screen, err := tcell.NewScreen()
+	var sel uint64 = 0
+	sel_max := lhost.count()
+
 	if err != nil {
 		c_die("view", err)
 	}
@@ -134,22 +224,42 @@ func i_ui(lhost *HostList) {
 	screen.SetStyle(def_style)
 	quit := func() {
 		screen.Fini()
-		os.Exit(0)
 	}
 	for {
 		term_w, term_h, _ := term.GetSize(0)
 		screen.Clear()
 		i_bottom_text(screen, term_w, term_h, def_style)
-		i_hosts_panel(screen, term_w, term_h, lhost)
-		i_info_panel(screen, term_w, term_h)
+		i_hosts_panel(screen, term_w, term_h, def_style, lhost, sel, sel_max)
+		i_info_panel(screen, term_w, term_h, def_style, lhost, sel)
 		screen.Show()
-		ev := screen.PollEvent()
-		switch ev := ev.(type) {
+		event := screen.PollEvent()
+		switch event := event.(type) {
 		case *tcell.EventResize:
 			screen.Sync()
 		case *tcell.EventKey:
-			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC || ev.Rune() == 'q' || ev.Rune() == 'Q' {
+			if event.Key() == tcell.KeyEscape ||
+				event.Key() == tcell.KeyCtrlC ||
+				event.Rune() == 'q' ||
+				event.Rune() == 'Q' {
 				quit()
+				os.Exit(0)
+			}
+			if event.Rune() == 'j' ||
+				event.Key() == tcell.KeyDown {
+				if sel < sel_max - 1 {
+					sel += 1
+				}
+			}
+			if event.Rune() == 'k' ||
+				event.Key() == tcell.KeyUp {
+				if sel > 0 {
+					sel -= 1
+				}
+			}
+			if event.Key() == tcell.KeyEnter {
+				quit()
+				c_exec(sel, lhost)
+				os.Exit(0)
 			}
 		}
 	}

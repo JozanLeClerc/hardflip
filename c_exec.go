@@ -101,7 +101,8 @@ func c_format_ssh(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_rdp() {
+func c_format_rdp(host *HostNode) []string {
+	return []string{""}
 }
 
 func c_format_cmd(id uint64, lhost *HostList) {
@@ -114,21 +115,18 @@ func c_format_cmd(id uint64, lhost *HostList) {
 	}
 	if host.Type == 0 {
 		cmd_fmt = c_format_ssh(host)
+	} else if host.Type == 1 { 
+		cmd_fmt = c_format_rdp(host)
+	} else if host.Type > 1 {
+		c_die("type not found", nil)
 	}
 	c_exec_cmd(cmd_fmt)
 }
 
-func c_display_servers(lhost *HostList) {
-	host := lhost.head
-
+func c_exec(id uint64, lhost *HostList) {
 	if lhost.head == nil {
 		fmt.Println("no hosts")
 		return
 	}
-	for host != nil {
-		fmt.Println(host.ID, host.Folder + host.Name)
-		host = host.next
-	}
-	fmt.Println()
-	c_format_cmd(4, lhost)
+	c_format_cmd(id, lhost)
 }

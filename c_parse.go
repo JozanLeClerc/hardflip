@@ -68,5 +68,19 @@ func c_read_yaml_file(file string) *HostNode {
 	if len(host.Host) == 0 {
 		return nil
 	}
+	if host.Type == 0 {
+		if host.Port == 0 {
+			host.Port = 22
+		}
+		if len(host.User) == 0 {
+			host.User = "root"
+		}
+	} else if host.Type == 1 {
+		if host.Port == 0 {
+			host.Port = 3389
+		}
+	} else if host.Type > 1 {
+		host_type = "Unknown"
+	}
 	return &host
 }

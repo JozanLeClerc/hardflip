@@ -52,6 +52,5 @@ func main() {
 
 	data_dir = c_get_data_dir()
 	lhost := c_load_data_dir(data_dir)
-	// c_display_servers(lhost)
 	i_ui(lhost)
 }

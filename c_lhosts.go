@@ -110,6 +110,7 @@ func (lhost *HostList) del(id uint64) {
 // return the list node with the according id
 func (lhost *HostList) sel(id uint64) *HostNode {
 	curr := lhost.head
+
     for curr.next != nil && curr.ID != id {
         curr = curr.next
     }
@@ -117,4 +118,15 @@ func (lhost *HostList) sel(id uint64) *HostNode {
 		return nil
 	}
 	return curr
+}
+
+func (lhost *HostList) count() uint64 {
+	curr := lhost.head
+	var count uint64 = 0
+
+	for curr != nil {
+		curr = curr.next
+		count++
+	}
+	return count
 }
