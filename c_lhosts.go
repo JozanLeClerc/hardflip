@@ -38,7 +38,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * josh: src/c_lhosts.go
+ * hardflip: src/c_lhosts.go
  * Fri, 15 Dec 2023 17:26:58 +0100
  * Joe
  *

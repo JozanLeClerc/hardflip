@@ -10,20 +10,20 @@
 # ==     =====   ====   ==
 # ========================
 #
-# josh: Makefile
+# hardflip: Makefile
 # Thu, 14 Dec 2023 15:33:28 +0100
 # Joe
 #
 # GNU Makefile
 
-.DEFAULT_GOAL	:= run
+.DEFAULT_GOAL	:= hf
 SHELL			:= /bin/sh
 SRC				:= *.go
 
 run: ${SRC}
 	@go run ${SRC}
 
-josh: ${SRC}
+hf: ${SRC}
 	@go build
 
 clean:

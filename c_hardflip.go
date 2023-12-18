@@ -38,7 +38,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * josh: src/c_josh.go
+ * hardflip: src/c_hardflip.go
  * Fri, 15 Dec 2023 17:53:42 +0100
  * Joe
  *
@@ -46,32 +46,6 @@
  */
 
 package main
-
-import (
-	"fmt"
-	"os"
-	"os/exec"
-	"strconv"
-)
-
-func display_servers(lhost *HostList) {
-	curr := lhost.head
-	for curr != nil {
-		fmt.Println(curr.ID, curr.Folder + curr.Name)
-		curr = curr.next
-	}
-	fmt.Println()
-	curr = lhost.sel(3)
-	if curr == nil {
-		c_die("host id not found", nil)
-	}
-	fmt.Println        ("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
-	cmd := exec.Command("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
 
 func main() {
 	var data_dir string

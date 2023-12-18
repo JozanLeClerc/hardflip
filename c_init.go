@@ -38,7 +38,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * josh: src/c_init.go
+ * hardflip: src/c_init.go
  * Fri, 15 Dec 2023 17:27:13 +0100
  * Joe
  *
@@ -72,7 +72,7 @@ func c_get_data_dir() string {
 		ptr = &home
 		*ptr += "/.local/share"
 	}
-	*ptr += "/josh"
+	*ptr += "/hardflip"
 	if _, err := os.Stat(*ptr); os.IsNotExist(err) {
 	    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
 	        c_die("could not create path " + *ptr, err)

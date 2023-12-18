@@ -38,11 +38,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_utils.go
- * Thu, 14 Dec 2023 12:59:16 +0100
+ * hardflip: src/c_exec.go
+ * Mon, 18 Dec 2023 11:32:40 +0100
  * Joe
  *
- * core funcs
+ * exec the command at some point
  */
 
 package main
@@ -50,17 +50,25 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"strconv"
 )
 
-// c_die displays an error string to the stderr fd and exits the program
-// with the return code 1
-// it takes an optional err argument of the error type as a complement of
-// information
-func c_die(str string, err error) {
-	fmt.Fprintf(os.Stderr, "error: %s", str)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, ": %v\n", err)
+func display_servers(lhost *HostList) {
+	curr := lhost.head
+	for curr != nil {
+		fmt.Println(curr.ID, curr.Folder + curr.Name)
+		curr = curr.next
 	}
-	fmt.Fprintf(os.Stderr, "\n")
-	os.Exit(1)
+	fmt.Println()
+	curr = lhost.sel(3)
+	if curr == nil {
+		c_die("host id not found", nil)
+	}
+	fmt.Println        ("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
+	cmd := exec.Command("ssh", "-i", curr.Priv, "-p", strconv.Itoa(int(curr.Port)), curr.User + "@" + curr.Host)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }
