@@ -56,6 +56,10 @@ import (
 
 func display_servers(lhost *HostList) {
 	curr := lhost.head
+	if lhost.head == nil {
+		fmt.Println("no hosts")
+		return
+	}
 	for curr != nil {
 		fmt.Println(curr.ID, curr.Folder + curr.Name)
 		curr = curr.next
