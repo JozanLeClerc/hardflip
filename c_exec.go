@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Mon, 18 Dec 2023 11:32:40 +0100
+ * Mon, 18 Dec 2023 13:20:08 +0100
  * Joe
  *
  * exec the command at some point
@@ -64,6 +64,23 @@ func exec_cmd(cmd_fmt []string) {
 	cmd.Run()
 }
 
+func format_ssh_jump(host *HostNode) string {
+		jump_fmt := "-oProxyCommand=ssh"
+		if len(host.JumpPriv) > 0 {
+			jump_fmt += " -i " + host.JumpPriv
+		}
+		if host.JumpPort != 0 {
+			jump_fmt += " -p " + strconv.Itoa(int(host.JumpPort))
+		}
+		if len(host.JumpUser) == 0 {
+			jump_fmt += " root"
+		} else {
+			jump_fmt += " " + host.JumpUser
+		}
+		jump_fmt += "@" + host.Jump + " -W %h:%p"
+		return jump_fmt
+}
+
 func format_ssh(host *HostNode) []string {
 	cmd_fmt := []string{"ssh"}
 	user := host.User
@@ -72,7 +89,7 @@ func format_ssh(host *HostNode) []string {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}
 	if len(host.Jump) > 0 {
-		cmd_fmt = append(cmd_fmt, "-J", host.Jump)
+		cmd_fmt = append(cmd_fmt, format_ssh_jump(host))
 	}
 	if host.Port != 0 {
 		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
@@ -113,5 +130,5 @@ func display_servers(lhost *HostList) {
 		host = host.next
 	}
 	fmt.Println()
-	format_cmd(0, lhost)
+	format_cmd(2, lhost)
 }

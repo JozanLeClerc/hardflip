@@ -57,8 +57,12 @@ type HostNode struct {
 	Port     uint16 `yaml:"port"`
 	User     string `yaml:"user"`
 	Pass     string `yaml:"pass"`
-	Jump     string `yaml:"jump"`
 	Priv     string `yaml:"priv"`
+	Jump     string `yaml:"jump"`
+	JumpPort uint16 `yaml:"jump_port"`
+	JumpUser string `yaml:"jump_user"`
+	JumpPass string `yaml:"jump_pass"`
+	JumpPriv string `yaml:"jump_priv"`
 	Note     string `yaml:"note"`
 	Filename string
 	Folder   string
