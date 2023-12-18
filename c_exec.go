@@ -106,16 +106,16 @@ func c_format_rdp() {
 
 func c_format_cmd(id uint64, lhost *HostList) {
 	host := lhost.head
-	// var cmd_fmt []string
+	var cmd_fmt []string
 
 	host = lhost.sel(id)
 	if host == nil {
 		c_die("host id not found", nil)
 	}
 	if host.Type == 0 {
-		// cmd_fmt = format_ssh(host)
+		cmd_fmt = c_format_ssh(host)
 	}
-	// exec_cmd(cmd_fmt)
+	c_exec_cmd(cmd_fmt)
 }
 
 func c_display_servers(lhost *HostList) {
