@@ -84,14 +84,17 @@ func c_read_yaml_file(file string) *HostNode {
 			}
 		}
 	} else if host.Type == 1 {
+		if len(host.User) == 0 {
+			host.User = "Administrator"
+		}
 		if host.Port == 0 {
 			host.Port = 3389
 		}
 		if host.Width == 0 {
-			host.Width = 800
+			host.Width = 1600
 		}
 		if host.Height == 0 {
-			host.Height = 600
+			host.Height = 1200
 		}
 	} else if host.Type > 1 {
 		return nil

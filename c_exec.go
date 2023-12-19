@@ -83,7 +83,6 @@ func c_format_ssh_jump(host *HostNode) string {
 
 func c_format_ssh(host *HostNode) []string {
 	cmd_fmt := []string{"ssh"}
-	user := host.User
 
 	if len(host.Priv) > 0 {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
@@ -94,15 +93,26 @@ func c_format_ssh(host *HostNode) []string {
 	if host.Port != 0 {
 		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
 	}
-	if len(host.User) == 0 {
-		user = "root"
-	}
-	cmd_fmt = append(cmd_fmt, user + "@" + host.Host)
+	cmd_fmt = append(cmd_fmt, host.User + "@" + host.Host)
 	return cmd_fmt
 }
 
 func c_format_rdp(host *HostNode) []string {
-	return []string{""}
+	cmd_fmt := []string{"xfreerdp"}
+
+	cmd_fmt = append(cmd_fmt,
+		"/v:" + host.Host,
+		"/u:" + host.User)
+	if len(host.Domain) > 0 {
+		cmd_fmt = append(cmd_fmt, "/d:" + host.Domain)
+	}
+	if len(host.Pass) > 0 {
+		cmd_fmt = append(cmd_fmt, "/p:" + host.Pass)
+	}
+	cmd_fmt = append(cmd_fmt,
+		"/size:" + strconv.Itoa(int(host.Width)) +
+		"x" + strconv.Itoa(int(host.Height)))
+	return cmd_fmt
 }
 
 func c_format_cmd(id uint64, lhost *HostList) {
