@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Tue, 19 Dec 2023 15:04:04 +0100
+ * Tue, 19 Dec 2023 15:46:57 +0100
  * Joe
  *
  * interfacing with the user
@@ -108,18 +108,26 @@ func i_bottom_text(s tcell.Screen, t [2]int) {
 		Foreground(tcell.ColorGrey)
 	keys_hint := "(q)uit - (a)dd/(i)nsert host - (e)dit - (s)earch - (?) help"
 	spaces := ""
-	i := 0
-	for i < (t[W]) - len(keys_hint) {
+	
+	for i := 0; i < (t[W]) - len(keys_hint); i++ {
 		spaces += " "
-		i++
 	}
 	i_draw_text(s, 0, t[H] - 1, t[W], t[H] - 1, style, spaces + keys_hint)
 }
 
 func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
-	i_draw_box(s, t[W] / 10, (t[H] / 2) - (t[H] / 10), t[W] - (t[W] / 10) - 1, (t[H] / 2) + (t[H] / 10), "")
-	// for
-	// s.SetContent(t[W] / 3, , tcell.RuneLRCorner, nil, style)
+	left, right :=
+		(t[W] / 2) - 20,
+		(t[W] / 2) + 20
+	top, bot :=
+		(t[H] / 2) - 3,
+		(t[H] / 2) + 3
+	i_draw_box(s, left, top, right, bot, "")
+	if left < t[W] / 3 {
+		for y := top + 1; y < bot; y++ {
+			s.SetContent(t[W] / 3, y, ' ', nil, def_style)
+		}
+	}
 }
 
 func i_hosts_panel(s tcell.Screen, t [2]int,
@@ -137,8 +145,8 @@ func i_hosts_panel(s tcell.Screen, t [2]int,
 				Foreground(tcell.ColorBlack)
 		}
 		spaces := ""
-		i := 0
-		for i < (t[W] / 3) - len(host.Folder + host.Name) - 2 {
+
+		for i := 0; i < (t[W] / 3) - len(host.Folder + host.Name) - 2; i++ {
 			spaces += " "
 			i++
 		}
