@@ -168,7 +168,7 @@ func i_hosts_panel(s tcell.Screen, t [2]int,
 	}
 	i_draw_text(s,
 		1, t[H] - 2, (t[W] / 3) - 1, t[H] - 1,
-		def_style, " " + strconv.Itoa(int(sel_max)) + " hosts ")
+		def_style, " " + strconv.Itoa(int(sel + 1)) + "/" + strconv.Itoa(int(sel_max)) + " hosts ")
 }
 
 func i_info_panel(s tcell.Screen, t [2]int,
