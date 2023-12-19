@@ -102,14 +102,24 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y2 - 1, style, title)
 }
 
-func i_bottom_text(s tcell.Screen, t [2]int, style tcell.Style) {
-	i_draw_text(s,
-		0, t[H] - 1, t[W], t[H] - 1,
-		style, "(q) Quit | (a/i) add host | (e) edit | (/) search | (?) help")
+func i_bottom_text(s tcell.Screen, t [2]int) {
+	style := tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorGrey)
+	keys_hint := "(q) Quit | (a/i) add host | (e) edit | (/) search | (?) help"
+	spaces := ""
+	i := 0
+	for i < (t[W]) - len(keys_hint) {
+		spaces += " "
+		i++
+	}
+	i_draw_text(s, 0, t[H] - 1, t[W], t[H] - 1, style, spaces + keys_hint)
 }
 
 func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
 	i_draw_box(s, t[W] / 10, (t[H] / 2) - (t[H] / 10), t[W] - (t[W] / 10) - 1, (t[H] / 2) + (t[H] / 10), "")
+	// for
+	// s.SetContent(t[W] / 3, , tcell.RuneLRCorner, nil, style)
 }
 
 func i_hosts_panel(s tcell.Screen, t [2]int,
@@ -339,7 +349,7 @@ func i_ui(lhost *HostList) {
 	for {
 		term_size[W], term_size[H], _ = term.GetSize(0)
 		screen.Clear()
-		i_bottom_text(screen, term_size, def_style)
+		i_bottom_text(screen, term_size)
 		i_hosts_panel(screen, term_size, def_style, lhost, sel, sel_max)
 		i_info_panel(screen, term_size, def_style, lhost, sel)
 		if lhost.head == nil {
