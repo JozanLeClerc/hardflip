@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Tue Dec 19 18:49:04 2023
+ * Tue Dec 19 18:51:35 2023
  * Joe
  *
  * interfacing with the user
@@ -169,7 +169,9 @@ func i_host_panel(s tcell.Screen, t [2]int,
 	}
 	i_draw_text(s,
 		1, t[H] - 2, (t[W] / 3) - 1, t[H] - 1,
-		def_style, " " + strconv.Itoa(int(sel + 1)) + "/" + strconv.Itoa(int(sel_max)) + " hosts ")
+		def_style,
+		" " + strconv.Itoa(int(sel + 1)) + "/" +
+		strconv.Itoa(int(sel_max)) + " hosts ")
 }
 
 func i_info_panel(s tcell.Screen, t [2]int,
@@ -225,7 +227,7 @@ func i_info_panel(s tcell.Screen, t [2]int,
 	i_draw_text(s,
 		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, strconv.Itoa(int(host.Port)))
-	curr_line += 2
+	curr_line += 1
 	// RDP shit
 	if host.Type == 1 {
 		if len(host.Domain) > 0 {
@@ -233,11 +235,12 @@ func i_info_panel(s tcell.Screen, t [2]int,
 				(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 				title_style, "Domain: ")
 			i_draw_text(s,
-				(t[W] / 3) + 13, curr_line, t[W] - 2, curr_line,
+				(t[W] / 3) + 12, curr_line, t[W] - 2, curr_line,
 				def_style, host.Domain)
 			curr_line += 1
 		}
 	}
+	curr_line += 1
 	// user infos
 	i_draw_text(s,
 		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
@@ -295,7 +298,7 @@ func i_info_panel(s tcell.Screen, t [2]int,
 		if len(host.JumpPass) > 0 {
 			i_draw_text(s,
 				(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
-				title_style, "User: ")
+				title_style, "Pass: ")
 			i_draw_text(s,
 				(t[W] / 3) + 11, curr_line, t[W] - 2, curr_line,
 				def_style, "***")
@@ -317,10 +320,27 @@ func i_info_panel(s tcell.Screen, t [2]int,
 		qual := [3]string{"Low", "Medium", "High"}
 		i_draw_text(s,
 			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Screen size: ")
+		i_draw_text(s,
+			(t[W] / 3) + 17, curr_line, t[W] - 2, curr_line,
+			def_style,
+			strconv.Itoa(int(host.Width)) + "x" +
+			strconv.Itoa(int(host.Height)))
+		curr_line += 1
+		i_draw_text(s,
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Dynamic window: ")
+		i_draw_text(s,
+			(t[W] / 3) + 20, curr_line, t[W] - 2, curr_line,
+			def_style, strconv.FormatBool(host.Dynamic))
+		curr_line += 1
+		i_draw_text(s,
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 			title_style, "Quality: ")
 		i_draw_text(s,
 			(t[W] / 3) + 13, curr_line, t[W] - 2, curr_line,
 			def_style, qual[host.Quality])
+		curr_line += 1
 		curr_line += 1
 	}
 	// note
