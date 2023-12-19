@@ -154,9 +154,8 @@ func i_info_panel(s tcell.Screen,
 	host := lhost.sel(sel)
 	curr_line := 2
 	var host_type string
-	var pass string
 
-	i_draw_box(s, (term_w / 3) + 1, 0,
+	i_draw_box(s, (term_w / 3), 0,
 		term_w - 1, term_h - 2,
 		" infos ")
 	if host.Type == 0 {
@@ -164,10 +163,8 @@ func i_info_panel(s tcell.Screen,
 	} else if host.Type == 1 {
 		host_type = "RDP"
 	}
-	if len(host.Pass) > 0 {
-		pass = "***"
-	}
 
+	// name, type
 	i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
 		title_style, "Name: ")
@@ -182,6 +179,7 @@ func i_info_panel(s tcell.Screen,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
 		def_style, host_type)
 	curr_line += 2
+	// host, port
 	i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
 		title_style, "Host: ")
@@ -196,6 +194,7 @@ func i_info_panel(s tcell.Screen,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
 		def_style, strconv.Itoa(int(host.Port)))
 	curr_line += 2
+	// user infos
 	i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
 		title_style, "User: ")
@@ -203,13 +202,15 @@ func i_info_panel(s tcell.Screen,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
 		def_style, host.User)
 	curr_line += 1
-	i_draw_text(s,
+	if len(host.Pass) > 0 {  
+		i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
 		title_style, "Pass: ")
-	i_draw_text(s,
+		i_draw_text(s,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
-		def_style, pass)
-	curr_line += 1
+		def_style, "***")
+		curr_line += 1
+	}
 	if host.Type == 0 && len(host.Priv) > 0 {
 		i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
@@ -220,6 +221,7 @@ func i_info_panel(s tcell.Screen,
 		curr_line += 1
 	}
 	curr_line += 1
+	// jump
 	if host.Type == 0 && len(host.Jump) > 0 {
 		i_draw_text(s,
 			(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
@@ -247,6 +249,7 @@ func i_info_panel(s tcell.Screen,
 			def_style, host.JumpUser)
 		curr_line += 2
 	}
+	// note
 	i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
 		title_style, "Note: ")
