@@ -106,13 +106,12 @@ func i_bottom_text(s tcell.Screen, t [2]int) {
 	style := tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorGrey)
-	keys_hint := "(q)uit - (a)dd/(i)nsert host - (e)dit - (s)earch - (?) help"
 	spaces := ""
 	
-	for i := 0; i < (t[W]) - len(keys_hint); i++ {
+	for i := 0; i < (t[W]) - len(KEYS_HINTS); i++ {
 		spaces += " "
 	}
-	i_draw_text(s, 0, t[H] - 1, t[W], t[H] - 1, style, spaces + keys_hint)
+	i_draw_text(s, 0, t[H] - 1, t[W], t[H] - 1, style, spaces + KEYS_HINTS)
 }
 
 func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {

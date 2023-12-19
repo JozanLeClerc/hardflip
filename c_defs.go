@@ -50,4 +50,11 @@ package main
 const (
     W = 0
     H = 1
+	KEYS_HINTS = `
+(q)uit -
+[x](a)dd/(i)nsert host -
+[x](e)dit -
+[x](d)elete -
+[x](s)earch -
+[x](?) help`
 )
