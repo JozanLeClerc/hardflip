@@ -106,7 +106,7 @@ func i_bottom_text(s tcell.Screen, t [2]int) {
 	style := tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorGrey)
-	keys_hint := "(q) Quit | (a/i) add host | (e) edit | (/) search | (?) help"
+	keys_hint := "(q)uit - (a)dd/(i)nsert host - (e)dit - (s)earch - (?) help"
 	spaces := ""
 	i := 0
 	for i < (t[W]) - len(keys_hint) {
