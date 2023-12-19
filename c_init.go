@@ -49,7 +49,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -85,7 +84,7 @@ func c_get_data_dir() string {
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir string, root string, lhost *HostList) {
-	files, err := ioutil.ReadDir(root + dir)
+	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}

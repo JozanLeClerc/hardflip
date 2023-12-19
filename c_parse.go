@@ -48,13 +48,13 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"gopkg.in/yaml.v3"
 )
 
 func c_read_yaml_file(file string) *HostNode {
 	var host HostNode
-	yaml_file, err := ioutil.ReadFile(file)
+	yaml_file, err := os.ReadFile(file)
 
 	if err != nil {
 		c_die("error reading file " + file, err)
@@ -75,12 +75,20 @@ func c_read_yaml_file(file string) *HostNode {
 		if len(host.User) == 0 {
 			host.User = "root"
 		}
+		if len(host.Jump) > 0 {
+			if host.JumpPort == 0 {
+				host.JumpPort = 22
+			}
+			if len(host.JumpUser) == 0 {
+				host.JumpUser = "root"
+			}
+		}
 	} else if host.Type == 1 {
 		if host.Port == 0 {
 			host.Port = 3389
 		}
 	} else if host.Type > 1 {
-		host_type = "Unknown"
+		return nil
 	}
 	return &host
 }

@@ -123,20 +123,28 @@ func i_hosts_panel(s tcell.Screen,
 		}
 		spaces := ""
 		i := 0
-		for i < (term_w / 3) - len(host.Folder + host.Name) - 3 {
+		for i < (term_w / 3) - len(host.Folder + host.Name) - 2 {
 			spaces += " "
 			i++
 		}
+		if host.Type == 0 {
+			i_draw_text(s,
+				1, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+				style, "   " + host.Folder + host.Name + spaces)
+		} else if host.Type == 1 {
+			i_draw_text(s,
+				1, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+				style, "   " + host.Folder + host.Name + spaces)
+		}
 		i_draw_text(s,
-		1, int(host.ID) + 1, term_w / 3 - 1, int(host.ID) + 1,
-		style, " " + host.Folder + host.Name + spaces)
+			4, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+			style, host.Folder + host.Name + spaces)
 		host = host.next
 	}
 	i_draw_text(s,
 		1, term_h - 2, (term_w / 3) - 1, term_h - 1,
 		def_style, " " + strconv.Itoa(int(sel_max)) + " hosts ")
 }
-
 func i_info_panel(s tcell.Screen,
 		term_w, term_h int,
 		def_style tcell.Style, lhost *HostList, sel uint64) {
@@ -147,7 +155,6 @@ func i_info_panel(s tcell.Screen,
 	curr_line := 2
 	var host_type string
 	var pass string
-	var port int
 
 	i_draw_box(s, (term_w / 3) + 1, 0,
 		term_w - 1, term_h - 2,
@@ -156,8 +163,6 @@ func i_info_panel(s tcell.Screen,
 		host_type = "SSH"
 	} else if host.Type == 1 {
 		host_type = "RDP"
-	} else if host.Type > 1 {
-		host_type = "Unknown"
 	}
 	if len(host.Pass) > 0 {
 		pass = "***"
@@ -189,7 +194,7 @@ func i_info_panel(s tcell.Screen,
 		title_style, "Port: ")
 	i_draw_text(s,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
-		def_style, strconv.Itoa(port))
+		def_style, strconv.Itoa(int(host.Port)))
 	curr_line += 2
 	i_draw_text(s,
 		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
@@ -205,6 +210,85 @@ func i_info_panel(s tcell.Screen,
 		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
 		def_style, pass)
 	curr_line += 1
+	if host.Type == 0 && len(host.Priv) > 0 {
+		i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Privkey: ")
+		i_draw_text(s,
+		(term_w / 3) + 13, curr_line, term_w - 2, curr_line,
+		def_style, host.Priv)
+		curr_line += 1
+	}
+	curr_line += 1
+	if host.Type == 0 && len(host.Jump) > 0 {
+		i_draw_text(s,
+			(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+			title_style, "Jump settings: ")
+		curr_line += 1
+		i_draw_text(s,
+			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
+			title_style, "Jump host: ")
+		i_draw_text(s,
+			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			def_style, host.Jump)
+		curr_line += 1
+		i_draw_text(s,
+			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
+			title_style, "Jump port: ")
+		i_draw_text(s,
+			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			def_style, strconv.Itoa(int(host.JumpPort)))
+		curr_line += 1
+		i_draw_text(s,
+			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
+			title_style, "Jump user: ")
+		i_draw_text(s,
+			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			def_style, host.JumpUser)
+		curr_line += 2
+	}
+	i_draw_text(s,
+		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		title_style, "Note: ")
+	i_draw_text(s,
+		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		def_style, host.Note)
+	curr_line += 1
+}
+
+func i_events(s tcell.Screen,
+		sel *uint64, sel_max *uint64,
+		lhost *HostList, quit func()) {
+	event := s.PollEvent()
+	switch event := event.(type) {
+	case *tcell.EventResize:
+		s.Sync()
+	case *tcell.EventKey:
+		if event.Key() == tcell.KeyEscape ||
+		event.Key() == tcell.KeyCtrlC ||
+		event.Rune() == 'q' ||
+		event.Rune() == 'Q' {
+			quit()
+			os.Exit(0)
+		}
+		if event.Rune() == 'j' ||
+		event.Key() == tcell.KeyDown {
+			if *sel < *sel_max - 1 {
+				*sel += 1
+			}
+		}
+		if event.Rune() == 'k' ||
+		event.Key() == tcell.KeyUp {
+			if *sel > 0 {
+				*sel -= 1
+			}
+		}
+		if event.Key() == tcell.KeyEnter {
+			quit()
+			c_exec(*sel, lhost)
+			os.Exit(0)
+		}
+	}
 }
 
 func i_ui(lhost *HostList) {
@@ -232,35 +316,6 @@ func i_ui(lhost *HostList) {
 		i_hosts_panel(screen, term_w, term_h, def_style, lhost, sel, sel_max)
 		i_info_panel(screen, term_w, term_h, def_style, lhost, sel)
 		screen.Show()
-		event := screen.PollEvent()
-		switch event := event.(type) {
-		case *tcell.EventResize:
-			screen.Sync()
-		case *tcell.EventKey:
-			if event.Key() == tcell.KeyEscape ||
-				event.Key() == tcell.KeyCtrlC ||
-				event.Rune() == 'q' ||
-				event.Rune() == 'Q' {
-				quit()
-				os.Exit(0)
-			}
-			if event.Rune() == 'j' ||
-				event.Key() == tcell.KeyDown {
-				if sel < sel_max - 1 {
-					sel += 1
-				}
-			}
-			if event.Rune() == 'k' ||
-				event.Key() == tcell.KeyUp {
-				if sel > 0 {
-					sel -= 1
-				}
-			}
-			if event.Key() == tcell.KeyEnter {
-				quit()
-				c_exec(sel, lhost)
-				os.Exit(0)
-			}
-		}
+		i_events(screen, &sel, &sel_max, lhost, quit)
 	}
 }

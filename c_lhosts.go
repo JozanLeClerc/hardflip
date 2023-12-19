@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Fri, 15 Dec 2023 17:26:58 +0100
+ * Tue, 19 Dec 2023 11:32:56 +0100
  * Joe
  *
  * the hosts linked list
@@ -63,10 +63,14 @@ type HostNode struct {
 	JumpUser string `yaml:"jump_user"`
 	JumpPass string `yaml:"jump_pass"`
 	JumpPriv string `yaml:"jump_priv"`
+	Quality  string `yaml:"quality"`
+	Domain   string `yaml:"domain"`
+	Width    uint16 `yaml:"width"`
+	Height   uint16 `yaml:"height"`
 	Note     string `yaml:"note"`
 	Filename string
 	Folder   string
-	next *HostNode
+	next     *HostNode
 }
 
 type HostList struct {

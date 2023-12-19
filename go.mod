@@ -1,6 +1,6 @@
 module hf
 
-go 1.18
+go 1.21.5
 
 require (
 	github.com/gdamore/tcell/v2 v2.7.0
