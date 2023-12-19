@@ -116,18 +116,20 @@ func i_bottom_text(s tcell.Screen, t [2]int) {
 }
 
 func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
+	text := "Hosts list empty. Add hosts by pressing (a)"
 	left, right :=
-		(t[W] / 2) - 20,
-		(t[W] / 2) + 20
+		(t[W] / 2) - (len(text) / 2) - 5,
+		(t[W] / 2) + (len(text) / 2) + 5
 	top, bot :=
 		(t[H] / 2) - 3,
 		(t[H] / 2) + 3
 	i_draw_box(s, left, top, right, bot, "")
 	if left < t[W] / 3 {
 		for y := top + 1; y < bot; y++ {
-			s.SetContent(t[W] / 3, y, ' ', nil, def_style)
+		    s.SetContent(t[W] / 3, y, ' ', nil, def_style)
 		}
 	}
+	i_draw_text(s, (t[W] / 2) - (len(text) / 2), t[H] / 2, right, t[H] / 2, def_style, text)
 }
 
 func i_hosts_panel(s tcell.Screen, t [2]int,
@@ -135,7 +137,7 @@ func i_hosts_panel(s tcell.Screen, t [2]int,
 		sel uint64, sel_max uint64) {
 	i_draw_box(s, 0, 0,
 		t[W] / 3, t[H] - 2,
-		" hosts ")
+		" Hosts ")
 	host := lhost.head
 	for host != nil {
 		style := def_style
@@ -180,7 +182,7 @@ func i_info_panel(s tcell.Screen, t [2]int,
 
 	i_draw_box(s, (t[W] / 3), 0,
 		t[W] - 1, t[H] - 2,
-		" infos ")
+		" Infos ")
 	s.SetContent(t[W] / 3, 0, tcell.RuneTTee, nil, def_style)
 	s.SetContent(t[W] / 3, t[H] - 2, tcell.RuneBTee, nil, def_style)
 	if lhost.head == nil {
