@@ -63,10 +63,11 @@ type HostNode struct {
 	JumpUser string `yaml:"jump_user"`
 	JumpPass string `yaml:"jump_pass"`
 	JumpPriv string `yaml:"jump_priv"`
-	Quality  string `yaml:"quality"`
+	Quality  uint8 `yaml:"quality"`
 	Domain   string `yaml:"domain"`
 	Width    uint16 `yaml:"width"`
 	Height   uint16 `yaml:"height"`
+	Dynamic  bool   `yaml:"dynamic"`
 	Note     string `yaml:"note"`
 	Filename string
 	Folder   string

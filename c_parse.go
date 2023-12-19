@@ -90,5 +90,8 @@ func c_read_yaml_file(file string) *HostNode {
 	} else if host.Type > 1 {
 		return nil
 	}
+	if host.Quality > 2 {
+		host.Quality = 2
+	}
 	return &host
 }

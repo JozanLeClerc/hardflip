@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Tue Dec 19 16:28:37 2023
+ * Tue Dec 19 18:49:04 2023
  * Joe
  *
  * interfacing with the user
@@ -128,10 +128,12 @@ func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
 		    s.SetContent(t[W] / 3, y, ' ', nil, def_style)
 		}
 	}
-	i_draw_text(s, (t[W] / 2) - (len(text) / 2), t[H] / 2, right, t[H] / 2, def_style, text)
+	i_draw_text(s,
+		(t[W] / 2) - (len(text) / 2), t[H] / 2, right, t[H] / 2,
+		def_style, text)
 }
 
-func i_hosts_panel(s tcell.Screen, t [2]int,
+func i_host_panel(s tcell.Screen, t [2]int,
 		def_style tcell.Style, lhost *HostList,
 		sel uint64, sel_max uint64) {
 	i_draw_box(s, 0, 0,
@@ -224,6 +226,18 @@ func i_info_panel(s tcell.Screen, t [2]int,
 		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, strconv.Itoa(int(host.Port)))
 	curr_line += 2
+	// RDP shit
+	if host.Type == 1 {
+		if len(host.Domain) > 0 {
+			i_draw_text(s,
+				(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+				title_style, "Domain: ")
+			i_draw_text(s,
+				(t[W] / 3) + 13, curr_line, t[W] - 2, curr_line,
+				def_style, host.Domain)
+			curr_line += 1
+		}
+	}
 	// user infos
 	i_draw_text(s,
 		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
@@ -254,38 +268,59 @@ func i_info_panel(s tcell.Screen, t [2]int,
 	// jump
 	if host.Type == 0 && len(host.Jump) > 0 {
 		i_draw_text(s,
-			(t[W] / 3) + 3, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 			title_style, "Jump settings: ")
 		curr_line += 1
 		i_draw_text(s,
-			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
 			title_style, "Host: ")
 		i_draw_text(s,
-			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 11, curr_line, t[W] - 2, curr_line,
 			def_style, host.Jump)
 		curr_line += 1
 		i_draw_text(s,
-			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
 			title_style, "Port: ")
 		i_draw_text(s,
-			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 11, curr_line, t[W] - 2, curr_line,
 			def_style, strconv.Itoa(int(host.JumpPort)))
 		curr_line += 1
 		i_draw_text(s,
-			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
 			title_style, "User: ")
 		i_draw_text(s,
-			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+			(t[W] / 3) + 11, curr_line, t[W] - 2, curr_line,
 			def_style, host.JumpUser)
 		curr_line += 1
 		if len(host.JumpPass) > 0 {
 			i_draw_text(s,
-				(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+				(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
 				title_style, "User: ")
 			i_draw_text(s,
-				(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+				(t[W] / 3) + 11, curr_line, t[W] - 2, curr_line,
 				def_style, "***")
+			curr_line += 1
 		}
+		if host.Type == 0 && len(host.JumpPriv) > 0 {
+			i_draw_text(s,
+				(t[W] / 3) + 5, curr_line, t[W] - 2, curr_line,
+				title_style, "Privkey: ")
+			i_draw_text(s,
+				(t[W] / 3) + 14, curr_line, t[W] - 2, curr_line,
+				def_style, host.JumpPriv)
+			curr_line += 1
+		}
+		curr_line += 1
+	}
+	// RDP shit
+	if host.Type == 1 {
+		qual := [3]string{"Low", "Medium", "High"}
+		i_draw_text(s,
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Quality: ")
+		i_draw_text(s,
+			(t[W] / 3) + 13, curr_line, t[W] - 2, curr_line,
+			def_style, qual[host.Quality])
 		curr_line += 1
 	}
 	// note
@@ -303,7 +338,8 @@ func i_info_panel(s tcell.Screen, t [2]int,
 func i_events(s tcell.Screen,
 		sel *uint64, sel_max *uint64,
 		term_size *[2]int,
-		lhost *HostList, quit func()) {
+		lhost **HostList,
+		quit func()) {
 	event := s.PollEvent()
 	switch event := event.(type) {
 	case *tcell.EventResize:
@@ -311,8 +347,7 @@ func i_events(s tcell.Screen,
 	case *tcell.EventKey:
 		if event.Key() == tcell.KeyEscape ||
 		event.Key() == tcell.KeyCtrlC ||
-		event.Rune() == 'q' ||
-		event.Rune() == 'Q' {
+		event.Rune() == 'q' {
 			quit()
 			os.Exit(0)
 		}
@@ -330,8 +365,16 @@ func i_events(s tcell.Screen,
 		}
 		if event.Key() == tcell.KeyEnter {
 			quit()
-			c_exec(*sel, lhost)
+			c_exec(*sel, *lhost)
 			os.Exit(0)
+		}
+		if event.Key() == tcell.KeyCtrlR {
+			*lhost = c_load_data_dir(c_get_data_dir())
+			l := *lhost
+			*sel_max = l.count()
+			if *sel >= *sel_max {
+				*sel = *sel_max - 1
+			}
 		}
 	}
 }
@@ -359,12 +402,12 @@ func i_ui(lhost *HostList) {
 		term_size[W], term_size[H], _ = term.GetSize(0)
 		screen.Clear()
 		i_bottom_text(screen, term_size)
-		i_hosts_panel(screen, term_size, def_style, lhost, sel, sel_max)
+		i_host_panel(screen, term_size, def_style, lhost, sel, sel_max)
 		i_info_panel(screen, term_size, def_style, lhost, sel)
 		if lhost.head == nil {
 			i_draw_zhosts_box(screen, term_size, def_style)
 		}
 		screen.Show()
-		i_events(screen, &sel, &sel_max, &term_size, lhost, quit)
+		i_events(screen, &sel, &sel_max, &term_size, &lhost, quit)
 	}
 }
