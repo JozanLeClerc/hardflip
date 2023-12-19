@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Tue, 19 Dec 2023 15:46:57 +0100
+ * Tue Dec 19 16:28:37 2023
  * Joe
  *
  * interfacing with the user
