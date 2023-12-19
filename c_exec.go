@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Mon, 18 Dec 2023 15:07:52 +0100
+ * Tue Dec 19 19:39:54 2023
  * Joe
  *
  * exec the command at some point
@@ -108,6 +108,21 @@ func c_format_rdp(host *HostNode) []string {
 	}
 	if len(host.Pass) > 0 {
 		cmd_fmt = append(cmd_fmt, "/p:" + host.Pass)
+	}
+	if host.Dynamic == true {
+		cmd_fmt = append(cmd_fmt, "/dynamic-resolution")
+	}
+	if host.Quality == 0 {
+		cmd_fmt = append(cmd_fmt,
+			"-aero", "-menu-anims", "-window-drag", "-wallpaper",
+			"-decorations", "-fonts", "-themes",
+			"/bpp:8", "/compression-level:2")
+	} else if host.Quality == 1 {
+	} else {
+		cmd_fmt = append(cmd_fmt,
+			"+aero", "+menu-anims", "+window-drag",
+			"+decorations", "+fonts", "+themes", "/gfx:RFX", "/rfx", "/gdi:hw",
+			"/bpp:32")
 	}
 	cmd_fmt = append(cmd_fmt,
 		"/size:" + strconv.Itoa(int(host.Width)) +
