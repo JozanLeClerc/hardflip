@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Mon, 18 Dec 2023 19:01:59 +0100
+ * Tue, 19 Dec 2023 15:04:04 +0100
  * Joe
  *
  * interfacing with the user
@@ -73,7 +73,9 @@ func i_draw_text(s tcell.Screen,
 }
 
 func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
-	style := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
+	style := tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorReset)
 
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -90,7 +92,6 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
 		s.SetContent(x1, row, tcell.RuneVLine, nil, style)
 		s.SetContent(x2, row, tcell.RuneVLine, nil, style)
 	}
-
 	// Only draw corners if necessary
 	if y1 != y2 && x1 != x2 {
 		s.SetContent(x1, y1, tcell.RuneULCorner, nil, style)
@@ -98,20 +99,24 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
 		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, style)
 		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
 	}
-
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y2 - 1, style, title)
 }
 
-func i_bottom_text(s tcell.Screen, term_w, term_h int, style tcell.Style) {
-	i_draw_text(s, 0, term_h - 1, term_w - 1, term_h, style, "(q) Quit")
+func i_bottom_text(s tcell.Screen, t [2]int, style tcell.Style) {
+	i_draw_text(s,
+		0, t[H] - 1, t[W], t[H] - 1,
+		style, "(q) Quit | (a/i) add host | (e) edit | (/) search | (?) help")
 }
 
-func i_hosts_panel(s tcell.Screen,
-		term_w, term_h int,
+func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
+	i_draw_box(s, t[W] / 10, (t[H] / 2) - (t[H] / 10), t[W] - (t[W] / 10) - 1, (t[H] / 2) + (t[H] / 10), "")
+}
+
+func i_hosts_panel(s tcell.Screen, t [2]int,
 		def_style tcell.Style, lhost *HostList,
 		sel uint64, sel_max uint64) {
 	i_draw_box(s, 0, 0,
-		term_w / 3, term_h - 2,
+		t[W] / 3, t[H] - 2,
 		" hosts ")
 	host := lhost.head
 	for host != nil {
@@ -123,41 +128,47 @@ func i_hosts_panel(s tcell.Screen,
 		}
 		spaces := ""
 		i := 0
-		for i < (term_w / 3) - len(host.Folder + host.Name) - 2 {
+		for i < (t[W] / 3) - len(host.Folder + host.Name) - 2 {
 			spaces += " "
 			i++
 		}
 		if host.Type == 0 {
 			i_draw_text(s,
-				1, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+				1, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
 				style, "   " + host.Folder + host.Name + spaces)
 		} else if host.Type == 1 {
 			i_draw_text(s,
-				1, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+				1, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
 				style, "   " + host.Folder + host.Name + spaces)
 		}
 		i_draw_text(s,
-			4, int(host.ID) + 1, term_w / 3, int(host.ID) + 1,
+			4, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
 			style, host.Folder + host.Name + spaces)
 		host = host.next
 	}
 	i_draw_text(s,
-		1, term_h - 2, (term_w / 3) - 1, term_h - 1,
+		1, t[H] - 2, (t[W] / 3) - 1, t[H] - 1,
 		def_style, " " + strconv.Itoa(int(sel_max)) + " hosts ")
 }
-func i_info_panel(s tcell.Screen,
-		term_w, term_h int,
+
+func i_info_panel(s tcell.Screen, t [2]int,
 		def_style tcell.Style, lhost *HostList, sel uint64) {
 	title_style := tcell.StyleDefault.
 			Background(tcell.ColorReset).
 			Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	host := lhost.sel(sel)
+	var host *HostNode
 	curr_line := 2
 	var host_type string
 
-	i_draw_box(s, (term_w / 3), 0,
-		term_w - 1, term_h - 2,
+	i_draw_box(s, (t[W] / 3), 0,
+		t[W] - 1, t[H] - 2,
 		" infos ")
+	s.SetContent(t[W] / 3, 0, tcell.RuneTTee, nil, def_style)
+	s.SetContent(t[W] / 3, t[H] - 2, tcell.RuneBTee, nil, def_style)
+	if lhost.head == nil {
+		return
+	}
+	host = lhost.sel(sel)
 	if host.Type == 0 {
 		host_type = "SSH"
 	} else if host.Type == 1 {
@@ -166,101 +177,113 @@ func i_info_panel(s tcell.Screen,
 
 	// name, type
 	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 		title_style, "Name: ")
 	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, host.Name)
 	curr_line += 1
 	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 		title_style, "Type: ")
 	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, host_type)
 	curr_line += 2
 	// host, port
 	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 		title_style, "Host: ")
 	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, host.Host)
 	curr_line += 1
 	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 		title_style, "Port: ")
 	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, strconv.Itoa(int(host.Port)))
 	curr_line += 2
 	// user infos
 	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
 		title_style, "User: ")
 	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
+		(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 		def_style, host.User)
 	curr_line += 1
-	if len(host.Pass) > 0 {  
+	if len(host.Pass) > 0 {
 		i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
-		title_style, "Pass: ")
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Pass: ")
 		i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
-		def_style, "***")
+			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+			def_style, "***")
 		curr_line += 1
 	}
 	if host.Type == 0 && len(host.Priv) > 0 {
 		i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
-		title_style, "Privkey: ")
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Privkey: ")
 		i_draw_text(s,
-		(term_w / 3) + 13, curr_line, term_w - 2, curr_line,
-		def_style, host.Priv)
+			(t[W] / 3) + 13, curr_line, t[W] - 2, curr_line,
+			def_style, host.Priv)
 		curr_line += 1
 	}
 	curr_line += 1
 	// jump
 	if host.Type == 0 && len(host.Jump) > 0 {
 		i_draw_text(s,
-			(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
+			(t[W] / 3) + 3, curr_line, t[W] - 2, curr_line,
 			title_style, "Jump settings: ")
 		curr_line += 1
 		i_draw_text(s,
-			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
-			title_style, "Jump host: ")
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Host: ")
 		i_draw_text(s,
-			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 			def_style, host.Jump)
 		curr_line += 1
 		i_draw_text(s,
-			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
-			title_style, "Jump port: ")
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Port: ")
 		i_draw_text(s,
-			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 			def_style, strconv.Itoa(int(host.JumpPort)))
 		curr_line += 1
 		i_draw_text(s,
-			(term_w / 3) + 6, curr_line, term_w - 2, curr_line,
-			title_style, "Jump user: ")
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "User: ")
 		i_draw_text(s,
-			(term_w / 3) + 17, curr_line, term_w - 2, curr_line,
+			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
 			def_style, host.JumpUser)
-		curr_line += 2
+		curr_line += 1
+		if len(host.JumpPass) > 0 {
+			i_draw_text(s,
+				(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+				title_style, "User: ")
+			i_draw_text(s,
+				(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+				def_style, "***")
+		}
+		curr_line += 1
 	}
 	// note
-	i_draw_text(s,
-		(term_w / 3) + 4, curr_line, term_w - 2, curr_line,
-		title_style, "Note: ")
-	i_draw_text(s,
-		(term_w / 3) + 10, curr_line, term_w - 2, curr_line,
-		def_style, host.Note)
-	curr_line += 1
+	if len(host.Note) > 0 {
+		i_draw_text(s,
+			(t[W] / 3) + 4, curr_line, t[W] - 2, curr_line,
+			title_style, "Note: ")
+		i_draw_text(s,
+			(t[W] / 3) + 10, curr_line, t[W] - 2, curr_line,
+			def_style, host.Note)
+		curr_line += 1
+	}
 }
 
 func i_events(s tcell.Screen,
 		sel *uint64, sel_max *uint64,
+		term_size *[2]int,
 		lhost *HostList, quit func()) {
 	event := s.PollEvent()
 	switch event := event.(type) {
@@ -296,6 +319,7 @@ func i_events(s tcell.Screen,
 
 func i_ui(lhost *HostList) {
 	screen, err := tcell.NewScreen()
+	var term_size [2]int
 	var sel uint64 = 0
 	sel_max := lhost.count()
 
@@ -313,12 +337,15 @@ func i_ui(lhost *HostList) {
 		screen.Fini()
 	}
 	for {
-		term_w, term_h, _ := term.GetSize(0)
+		term_size[W], term_size[H], _ = term.GetSize(0)
 		screen.Clear()
-		i_bottom_text(screen, term_w, term_h, def_style)
-		i_hosts_panel(screen, term_w, term_h, def_style, lhost, sel, sel_max)
-		i_info_panel(screen, term_w, term_h, def_style, lhost, sel)
+		i_bottom_text(screen, term_size, def_style)
+		i_hosts_panel(screen, term_size, def_style, lhost, sel, sel_max)
+		i_info_panel(screen, term_size, def_style, lhost, sel)
+		if lhost.head == nil {
+			i_draw_zhosts_box(screen, term_size, def_style)
+		}
 		screen.Show()
-		i_events(screen, &sel, &sel_max, lhost, quit)
+		i_events(screen, &sel, &sel_max, &term_size, lhost, quit)
 	}
 }
