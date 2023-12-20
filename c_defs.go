@@ -59,4 +59,6 @@ const (
 (c-r) reload -
 [x](?) help`
 	DATA_DIR_NAME = "hardflip"
+	NORMAL_MODE = 0
+	DELETE_MODE = 1
 )

@@ -57,12 +57,11 @@ import (
 type HardUI struct {
 	s           tcell.Screen
 	list_start  int
-	delete_mode bool
+	mode        uint8
 	delete_id   uint64
 	sel         uint64
 	sel_max     uint64
 	def_style   tcell.Style
-	bot_style   tcell.Style
 	dim         [2]int
 }
 
@@ -142,6 +141,23 @@ func i_draw_zhosts_box(ui HardUI) {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 2) - (len(text) / 2), ui.dim[H] / 2, right, ui.dim[H] / 2,
 		ui.def_style, text)
+}
+
+func i_draw_delete_box(ui HardUI, host *HostNode) {
+	// file_path := data.data_dir + "/" + host.Folder + host.Filename
+	text := "Do you really want to delete host " +
+	host.Folder + host.Filename + "?"
+	left, right :=
+	(ui.dim[W] / 2) - (len(text) / 2) - 5,
+	(ui.dim[W] / 2) + (len(text) / 2) + 5
+	top, bot :=
+	(ui.dim[H] / 2) - 3,
+	(ui.dim[H] / 2) + 3
+	i_draw_box(ui.s, left, top, right, bot, "")
+	// if err := os.Remove(file_path); err != nil {
+	// c_die("can't remove " + file_path, err)
+	// }
+	// i_reload_data(data, sel, sel_max)
 }
 
 func i_host_panel(ui HardUI, lhost *HostList) {
@@ -377,9 +393,6 @@ func i_ui(data *HardData) {
 	ui.def_style = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.bot_style = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorGrey)
 	ui.s.SetStyle(ui.def_style)
 	for {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
@@ -390,22 +403,9 @@ func i_ui(data *HardData) {
 		if data.lhost.head == nil {
 			i_draw_zhosts_box(*ui)
 		}
-		if ui.delete_mode == true {
+		if ui.mode == DELETE_MODE {
 			host := data.lhost.sel(ui.sel)
-			// file_path := data.data_dir + "/" + host.Folder + host.Filename
-			text := "Do you really want to delete host " +
-			host.Folder + host.Filename + "?"
-			left, right :=
-				(ui.dim[W] / 2) - (len(text) / 2) - 5,
-				(ui.dim[W] / 2) + (len(text) / 2) + 5
-			top, bot :=
-				(ui.dim[H] / 2) - 3,
-				(ui.dim[H] / 2) + 3
-			i_draw_box(ui.s, left, top, right, bot, text)
-			// if err := os.Remove(file_path); err != nil {
-			// c_die("can't remove " + file_path, err)
-			// }
-			// i_reload_data(data, sel, sel_max)
+			i_draw_delete_box(*ui, host)
 		}
 		ui.s.Show()
 		i_events(data)

@@ -96,7 +96,7 @@ func i_events(data *HardData) {
 			   ui.sel = ui.sel_max - 1
 		}
 		if event.Rune() == 'D' {
-			ui.delete_mode = true
+			ui.mode = DELETE_MODE
 			ui.delete_id = ui.sel
 		}
 		if event.Key() == tcell.KeyEnter {
