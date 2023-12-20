@@ -54,13 +54,16 @@ type Data struct {
 	// dirs  *DirList
 	opts  Opts
 	s     tcell.Screen
+	data_dir string
 }
 
 func main() {
+	data_dir := c_get_data_dir()
 	data := Data{
-		c_load_data_dir(c_get_data_dir()),
+		c_load_data_dir(data_dir),
 		Opts{true, true},
 		nil,
+		data_dir,
 		}
 	i_ui(&data)
 }

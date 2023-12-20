@@ -94,23 +94,23 @@ func (lhost *HostList) add_back(node *HostNode) {
 	curr.next = new_node
 }
 
-// removes a host node from the list
-func (lhost *HostList) del(id uint64) {
-	if lhost.head == nil {
-		return
-	}
-	if lhost.head.ID == id {
-		lhost.head = lhost.head.next
-		return
-	}
-	curr := lhost.head
-	for curr.next != nil && curr.next.ID != id {
-		curr = curr.next
-	}
-	if curr.next != nil {
-		curr.next = curr.next.next
-	}
-}
+// not used - removes a host node from the list
+// func (lhost *HostList) del(id uint64) {
+//     if lhost.head == nil {
+//         return
+//     }
+//     if lhost.head.ID == id {
+//         lhost.head = lhost.head.next
+//         return
+//     }
+//     curr := lhost.head
+//     for curr.next != nil && curr.next.ID != id {
+//         curr = curr.next
+//     }
+//     if curr.next != nil {
+//         curr.next = curr.next.next
+//     }
+// }
 
 // return the list node with the according id
 func (lhost *HostList) sel(id uint64) *HostNode {
@@ -127,11 +127,10 @@ func (lhost *HostList) sel(id uint64) *HostNode {
 
 func (lhost *HostList) count() uint64 {
 	curr := lhost.head
-	var count uint64 = 0
+	var count uint64
 
-	for curr != nil {
+	for count = 0; curr != nil; count++ {
 		curr = curr.next
-		count++
 	}
 	return count
 }

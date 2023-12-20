@@ -370,9 +370,6 @@ func i_ui(data *Data) {
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
 	data.s.SetStyle(def_style)
-	quit := func() {
-		data.s.Fini()
-	}
 	for {
 		term_size[W], term_size[H], _ = term.GetSize(0)
 		data.s.Clear()
@@ -383,6 +380,6 @@ func i_ui(data *Data) {
 			i_draw_zhosts_box(data.s, term_size, def_style)
 		}
 		data.s.Show()
-		i_events(data, &sel, &sel_max, &term_size, quit)
+		i_events(data, &sel, &sel_max, &term_size)
 	}
 }

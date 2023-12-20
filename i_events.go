@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Dec 20 11:05:16 2023
+ * Wed Dec 20 12:19:56 2023
  * Joe
  *
  * the hosts linked list
@@ -47,16 +47,33 @@
 
 package main
 
-import(
+import (
 	"os"
 	"github.com/gdamore/tcell/v2"
 )
 
+func i_delete_selected(data *Data, sel *uint64) {
+	host := data.lhost.sel(*sel)
+	file_path := data.data_dir + "/" + host.Folder + host.Filename
+	err := os.Remove(file_path)
+	if err != nil {
+	}
+	// TODO: err, confirm
+}
+
+func i_reload_data(data *Data, sel, sel_max *uint64) {
+	data.lhost = c_load_data_dir(data.data_dir)
+	l := data.lhost
+	*sel_max = l.count()
+	if *sel >= *sel_max {
+		*sel = *sel_max - 1
+	}
+}
+
 // screen events such as keypresses
 func i_events(data *Data,
-		sel *uint64, sel_max *uint64,
-		term_size *[2]int,
-		quit func()) {
+		sel, sel_max *uint64,
+		term_size *[2]int) {
 	var err error
 	event := data.s.PollEvent()
 	switch event := event.(type) {
@@ -64,25 +81,29 @@ func i_events(data *Data,
 		data.s.Sync()
 	case *tcell.EventKey:
 		if event.Key() == tcell.KeyEscape ||
-		event.Key() == tcell.KeyCtrlC ||
-		event.Rune() == 'q' {
-			quit()
+		   event.Key() == tcell.KeyCtrlC ||
+		   event.Rune() == 'q' {
+			data.s.Fini()
 			os.Exit(0)
 		}
 		if event.Rune() == 'j' ||
-		event.Key() == tcell.KeyDown {
+		   event.Key() == tcell.KeyDown {
 			if *sel < *sel_max - 1 {
 				*sel += 1
 			}
 		}
 		if event.Rune() == 'k' ||
-		event.Key() == tcell.KeyUp {
+		   event.Key() == tcell.KeyUp {
 			if *sel > 0 {
 				*sel -= 1
 			}
 		}
+		if event.Rune() == 'D' {
+			i_delete_selected(data, sel)
+			i_reload_data(data, sel, sel_max)
+		}
 		if event.Key() == tcell.KeyEnter {
-			quit()
+			data.s.Fini()
 			c_exec(*sel, data.lhost)
 			if data.opts.loop == false {
 				os.Exit(0)
@@ -99,12 +120,7 @@ func i_events(data *Data,
 			data.s.SetStyle(def_style)
 		}
 		if event.Key() == tcell.KeyCtrlR {
-			data.lhost = c_load_data_dir(c_get_data_dir())
-			l := data.lhost
-			*sel_max = l.count()
-			if *sel >= *sel_max {
-				*sel = *sel_max - 1
-			}
+			i_reload_data(data, sel, sel_max)
 		}
 	}
 }
