@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_utils.go
- * Thu, 14 Dec 2023 12:59:16 +0100
+ * Wed Dec 20 10:50:12 2023
  * Joe
  *
  * core funcs
@@ -51,6 +51,33 @@ import (
 	"fmt"
 	"os"
 )
+
+// this function will go get the data folder and try to create it if it does
+// not exist
+// the first path being checked is $XDG_DATA_HOME then $HOME/.local/share
+// it returns the full data directory path
+func c_get_data_dir() string {
+	var ptr *string
+	var home string
+	if home = os.Getenv("HOME"); len(home) == 0 {
+		c_die("env variable HOME not defined", nil)
+	}
+	xdg_home := os.Getenv("XDG_DATA_HOME")
+
+	if len(xdg_home) > 0 {
+		ptr = &xdg_home
+	} else {
+		ptr = &home
+		*ptr += "/.local/share"
+	}
+	*ptr += "/hardflip"
+	if _, err := os.Stat(*ptr); os.IsNotExist(err) {
+	    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
+	        c_die("could not create path " + *ptr, err)
+	    }
+	}
+	return *ptr
+}
 
 // c_die displays an error string to the stderr fd and exits the program
 // with the return code 1

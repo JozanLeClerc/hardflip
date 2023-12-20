@@ -48,7 +48,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
@@ -57,7 +56,6 @@ import (
 func c_exec_cmd(cmd_fmt []string) {
 	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
 
-	fmt.Println(cmd_fmt)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -150,7 +148,6 @@ func c_format_cmd(id uint64, lhost *HostList) {
 
 func c_exec(id uint64, lhost *HostList) {
 	if lhost.head == nil {
-		fmt.Println("no hosts")
 		return
 	}
 	c_format_cmd(id, lhost)

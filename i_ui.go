@@ -38,8 +38,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_hardflip.go
- * Tue Dec 19 18:51:35 2023
+ * hardflip: src/i_ui.go
+ * Wed Dec 20 11:05:07 2023
  * Joe
  *
  * interfacing with the user
@@ -48,7 +48,6 @@
 package main
 
 import (
-	"os"
 	"strconv"
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
@@ -355,79 +354,36 @@ func i_info_panel(s tcell.Screen, t [2]int,
 	}
 }
 
-func i_events(s tcell.Screen,
-		sel *uint64, sel_max *uint64,
-		term_size *[2]int,
-		lhost **HostList,
-		quit func()) {
-	event := s.PollEvent()
-	switch event := event.(type) {
-	case *tcell.EventResize:
-		s.Sync()
-	case *tcell.EventKey:
-		if event.Key() == tcell.KeyEscape ||
-		event.Key() == tcell.KeyCtrlC ||
-		event.Rune() == 'q' {
-			quit()
-			os.Exit(0)
-		}
-		if event.Rune() == 'j' ||
-		event.Key() == tcell.KeyDown {
-			if *sel < *sel_max - 1 {
-				*sel += 1
-			}
-		}
-		if event.Rune() == 'k' ||
-		event.Key() == tcell.KeyUp {
-			if *sel > 0 {
-				*sel -= 1
-			}
-		}
-		if event.Key() == tcell.KeyEnter {
-			quit()
-			c_exec(*sel, *lhost)
-			os.Exit(0)
-		}
-		if event.Key() == tcell.KeyCtrlR {
-			*lhost = c_load_data_dir(c_get_data_dir())
-			l := *lhost
-			*sel_max = l.count()
-			if *sel >= *sel_max {
-				*sel = *sel_max - 1
-			}
-		}
-	}
-}
-
-func i_ui(lhost *HostList) {
-	screen, err := tcell.NewScreen()
+func i_ui(data *Data) {
+	var err error
+	data.s, err = tcell.NewScreen()
 	var term_size [2]int
 	var sel uint64 = 0
-	sel_max := lhost.count()
+	sel_max := data.lhost.count()
 
 	if err != nil {
 		c_die("view", err)
 	}
-	if err := screen.Init(); err != nil {
+	if err := data.s.Init(); err != nil {
 		c_die("view", err)
 	}
 	def_style := tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	screen.SetStyle(def_style)
+	data.s.SetStyle(def_style)
 	quit := func() {
-		screen.Fini()
+		data.s.Fini()
 	}
 	for {
 		term_size[W], term_size[H], _ = term.GetSize(0)
-		screen.Clear()
-		i_bottom_text(screen, term_size)
-		i_host_panel(screen, term_size, def_style, lhost, sel, sel_max)
-		i_info_panel(screen, term_size, def_style, lhost, sel)
-		if lhost.head == nil {
-			i_draw_zhosts_box(screen, term_size, def_style)
+		data.s.Clear()
+		i_bottom_text(data.s, term_size)
+		i_host_panel(data.s, term_size, def_style, data.lhost, sel, sel_max)
+		i_info_panel(data.s, term_size, def_style, data.lhost, sel)
+		if data.lhost.head == nil {
+			i_draw_zhosts_box(data.s, term_size, def_style)
 		}
-		screen.Show()
-		i_events(screen, &sel, &sel_max, &term_size, &lhost, quit)
+		data.s.Show()
+		i_events(data, &sel, &sel_max, &term_size, quit)
 	}
 }
