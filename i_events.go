@@ -76,30 +76,23 @@ func i_events(data *HardData) {
 		   event.Rune() == 'q' {
 			ui.s.Fini()
 			os.Exit(0)
-		}
-		if event.Rune() == 'j' ||
+		} else if event.Rune() == 'j' ||
 		   event.Key() == tcell.KeyDown {
 			if ui.sel < ui.sel_max - 1 {
 				ui.sel += 1
 			}
-		}
-		if event.Rune() == 'k' ||
+		} else if event.Rune() == 'k' ||
 		   event.Key() == tcell.KeyUp {
 			if ui.sel > 0 {
 				ui.sel -= 1
 			}
-		}
-		if event.Rune() == 'g' {
-			   ui.sel = 0
-		}
-		if event.Rune() == 'G' {
-			   ui.sel = ui.sel_max - 1
-		}
-		if event.Rune() == 'D' {
+		} else if event.Rune() == 'g' {
+		   ui.sel = 0
+		} else if event.Rune() == 'G' {
+		   ui.sel = ui.sel_max - 1
+		} else if event.Rune() == 'D' {
 			ui.mode = DELETE_MODE
-			ui.delete_id = ui.sel
-		}
-		if event.Key() == tcell.KeyEnter {
+		} else if event.Key() == tcell.KeyEnter {
 			ui.s.Fini()
 			c_exec(ui.sel, data.lhost)
 			if data.opts.loop == false {

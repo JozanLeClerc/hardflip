@@ -58,10 +58,10 @@ type HardUI struct {
 	s           tcell.Screen
 	list_start  int
 	mode        uint8
-	delete_id   uint64
 	sel         uint64
 	sel_max     uint64
 	def_style   tcell.Style
+	title_style tcell.Style
 	dim         [2]int
 }
 
@@ -199,9 +199,6 @@ func i_host_panel(ui HardUI, lhost *HostList) {
 }
 
 func i_info_panel(ui HardUI, lhost *HostList) {
-	title_style := tcell.StyleDefault.
-			Background(tcell.ColorReset).
-			Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	var host *HostNode
 	curr_line := 2
 	var host_type string
@@ -224,14 +221,14 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		title_style, "Name: ")
+		ui.title_style, "Name: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, host.Name)
 	curr_line += 1
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		title_style, "Type: ")
+		ui.title_style, "Type: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, host_type)
@@ -239,14 +236,14 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	// host, port
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		title_style, "Host: ")
+		ui.title_style, "Host: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, host.Host)
 	curr_line += 1
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		title_style, "Port: ")
+		ui.title_style, "Port: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, strconv.Itoa(int(host.Port)))
@@ -256,7 +253,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		if len(host.Domain) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-				title_style, "Domain: ")
+				ui.title_style, "Domain: ")
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 12, curr_line, ui.dim[W] - 2, curr_line,
 				ui.def_style, host.Domain)
@@ -267,7 +264,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	// user infos
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		title_style, "User: ")
+		ui.title_style, "User: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, host.User)
@@ -275,7 +272,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if len(host.Pass) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Pass: ")
+			ui.title_style, "Pass: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, "***")
@@ -284,7 +281,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if host.Type == 0 && len(host.Priv) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Privkey: ")
+			ui.title_style, "Privkey: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 13, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, host.Priv)
@@ -295,25 +292,25 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if host.Type == 0 && len(host.Jump) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Jump settings: ")
+			ui.title_style, "Jump settings: ")
 		curr_line += 1
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Host: ")
+			ui.title_style, "Host: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, host.Jump)
 		curr_line += 1
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Port: ")
+			ui.title_style, "Port: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, strconv.Itoa(int(host.JumpPort)))
 		curr_line += 1
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "User: ")
+			ui.title_style, "User: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, host.JumpUser)
@@ -321,7 +318,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		if len(host.JumpPass) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
-				title_style, "Pass: ")
+				ui.title_style, "Pass: ")
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
 				ui.def_style, "***")
@@ -330,7 +327,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		if host.Type == 0 && len(host.JumpPriv) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
-				title_style, "Privkey: ")
+				ui.title_style, "Privkey: ")
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 14, curr_line, ui.dim[W] - 2, curr_line,
 				ui.def_style, host.JumpPriv)
@@ -343,7 +340,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		qual := [3]string{"Low", "Medium", "High"}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Screen size: ")
+			ui.title_style, "Screen size: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 17, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style,
@@ -352,14 +349,14 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		curr_line += 1
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Dynamic window: ")
+			ui.title_style, "Dynamic window: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 20, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, strconv.FormatBool(host.Dynamic))
 		curr_line += 1
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Quality: ")
+			ui.title_style, "Quality: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 13, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, qual[host.Quality])
@@ -370,7 +367,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if len(host.Note) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-			title_style, "Note: ")
+			ui.title_style, "Note: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, host.Note)
@@ -393,6 +390,9 @@ func i_ui(data *HardData) {
 	ui.def_style = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
+	ui.title_style = tcell.StyleDefault.
+			Background(tcell.ColorReset).
+			Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.s.SetStyle(ui.def_style)
 	for {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
