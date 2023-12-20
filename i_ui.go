@@ -150,7 +150,6 @@ func i_host_panel(s tcell.Screen, t [2]int,
 
 		for i := 0; i < (t[W] / 3) - len(host.Folder + host.Name) - 2; i++ {
 			spaces += " "
-			i++
 		}
 		if host.Type == 0 {
 			i_draw_text(s,
