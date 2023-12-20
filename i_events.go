@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Dec 20 16:17:19 2023
+ * Wed Dec 20 16:35:04 2023
  * Joe
  *
  * the hosts linked list
@@ -52,81 +52,69 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-func i_delete_selected(data *Data, sel *uint64) {
-	host := data.lhost.sel(*sel)
-	file_path := data.data_dir + "/" + host.Folder + host.Filename
-	err := os.Remove(file_path)
-	if err != nil {
-	}
-	// TODO: err, confirm
-}
-
-func i_reload_data(data *Data, sel, sel_max *uint64) {
+func i_reload_data(data *HardData) {
+	ui := data.ui
 	data.lhost = c_load_data_dir(data.data_dir)
 	l := data.lhost
-	*sel_max = l.count()
-	if *sel >= *sel_max {
-		*sel = *sel_max - 1
+	data.ui.sel_max = l.count()
+	if ui.sel >= ui.sel_max {
+		ui.sel = ui.sel_max - 1
 	}
 }
 
 // screen events such as keypresses
-func i_events(data *Data,
-		sel, sel_max *uint64,
-		term_size *[2]int) {
+func i_events(data *HardData) {
 	var err error
-	event := data.s.PollEvent()
+	ui := &data.ui
+	event := ui.s.PollEvent()
 	switch event := event.(type) {
 	case *tcell.EventResize:
-		data.s.Sync()
+		ui.s.Sync()
 	case *tcell.EventKey:
 		if event.Key() == tcell.KeyEscape ||
 		   event.Key() == tcell.KeyCtrlC ||
 		   event.Rune() == 'q' {
-			data.s.Fini()
+			ui.s.Fini()
 			os.Exit(0)
 		}
 		if event.Rune() == 'j' ||
 		   event.Key() == tcell.KeyDown {
-			if *sel < *sel_max - 1 {
-				*sel += 1
+			if ui.sel < ui.sel_max - 1 {
+				ui.sel += 1
 			}
 		}
 		if event.Rune() == 'k' ||
 		   event.Key() == tcell.KeyUp {
-			if *sel > 0 {
-				*sel -= 1
+			if ui.sel > 0 {
+				ui.sel -= 1
 			}
 		}
 		if event.Rune() == 'g' {
-			   *sel = 0
+			   ui.sel = 0
 		}
 		if event.Rune() == 'G' {
-			   *sel = *sel_max - 1
+			   ui.sel = ui.sel_max - 1
 		}
 		if event.Rune() == 'D' {
-			i_delete_selected(data, sel)
-			i_reload_data(data, sel, sel_max)
+			ui.delete_mode = true
+			ui.delete_id = ui.sel
 		}
 		if event.Key() == tcell.KeyEnter {
-			data.s.Fini()
-			c_exec(*sel, data.lhost)
+			ui.s.Fini()
+			c_exec(ui.sel, data.lhost)
 			if data.opts.loop == false {
 				os.Exit(0)
 			}
-			if data.s, err = tcell.NewScreen(); err != nil {
+			if ui.s, err = tcell.NewScreen(); err != nil {
 				c_die("view", err)
 			}
-			if err := data.s.Init(); err != nil {
+			if err := ui.s.Init(); err != nil {
 				c_die("view", err)
 			}
-			def_style := tcell.StyleDefault.
-				Background(tcell.ColorReset).
-				Foreground(tcell.ColorReset)
-			data.s.SetStyle(def_style)
+			ui.s.SetStyle(ui.def_style)
 		}
 		if event.Key() == tcell.KeyCtrlR {
-			i_reload_data(data, sel, sel_max)
+			i_reload_data(data)
 		}
 	}
 }

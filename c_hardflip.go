@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Wed Dec 20 10:50:24 2023
+ * Wed Dec 20 16:34:51 2023
  * Joe
  *
  * the main
@@ -47,29 +47,22 @@
 
 package main
 
-import (
-	// "os"
-
-	"github.com/gdamore/tcell/v2"
-)
-
-type Data struct {
+// the main data structure, holds up everything important
+type HardData struct {
 	lhost *HostList
 	// dirs  *DirList
-	opts  Opts
-	s     tcell.Screen
+	ui    HardUI
+	opts  HardOpts
 	data_dir string
-	list_start int
 }
 
 func main() {
 	data_dir := c_get_data_dir()
-	data := Data{
+	data := HardData{
 		c_load_data_dir(data_dir),
-		Opts{true, true},
-		nil,
+		HardUI{},
+		HardOpts{true, true},
 		data_dir,
-		0,
 		}
 	i_ui(&data)
 }

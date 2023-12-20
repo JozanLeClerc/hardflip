@@ -52,7 +52,7 @@ import (
 	"path/filepath"
 )
 
-type Opts struct {
+type HardOpts struct {
 	icon bool
 	loop bool
 }
