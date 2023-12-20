@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Tue Dec 19 16:36:48 2023
+ * Wed Dec 20 12:21:38 2023
  * Joe
  *
  * constants
@@ -54,8 +54,9 @@ const (
 (q)uit -
 [x](a)dd/(i)nsert host -
 [x](e)dit -
-[x](D)elete -
+(D)elete -
 [x](s)earch -
 (c-r) reload -
 [x](?) help`
+	DATA_DIR_NAME = "hardflip"
 )

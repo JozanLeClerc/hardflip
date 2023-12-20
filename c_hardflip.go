@@ -47,7 +47,11 @@
 
 package main
 
-import "github.com/gdamore/tcell/v2"
+import (
+	// "os"
+
+	"github.com/gdamore/tcell/v2"
+)
 
 type Data struct {
 	lhost *HostList
@@ -55,6 +59,7 @@ type Data struct {
 	opts  Opts
 	s     tcell.Screen
 	data_dir string
+	list_start int
 }
 
 func main() {
@@ -64,6 +69,7 @@ func main() {
 		Opts{true, true},
 		nil,
 		data_dir,
+		0,
 		}
 	i_ui(&data)
 }

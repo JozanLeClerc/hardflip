@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 20 11:05:07 2023
+ * Wed Dec 20 13:53:02 2023
  * Joe
  *
  * interfacing with the user
@@ -132,14 +132,17 @@ func i_draw_zhosts_box(s tcell.Screen, t [2]int, def_style tcell.Style) {
 		def_style, text)
 }
 
-func i_host_panel(s tcell.Screen, t [2]int,
-		def_style tcell.Style, lhost *HostList,
+func i_host_panel(data *Data, t [2]int,
+		def_style tcell.Style,
 		sel uint64, sel_max uint64) {
-	i_draw_box(s, 0, 0,
+	i_draw_box(data.s, 0, 0,
 		t[W] / 3, t[H] - 2,
 		" Hosts ")
-	host := lhost.head
-	for host != nil {
+	host := data.lhost.head
+	for i := 0; i < data.list_start && host.next != nil; i++ {
+		host = host.next
+	}
+	for line := 1; line < t[H] - 2 && host != nil; line++ {
 		style := def_style
 		if sel == host.ID {
 			style = tcell.StyleDefault.
@@ -147,26 +150,25 @@ func i_host_panel(s tcell.Screen, t [2]int,
 				Foreground(tcell.ColorBlack)
 		}
 		spaces := ""
-
 		for i := 0; i < (t[W] / 3) - len(host.Folder + host.Name) - 2; i++ {
 			spaces += " "
 		}
 		if host.Type == 0 {
-			i_draw_text(s,
-				1, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
+			i_draw_text(data.s,
+				1, line, t[W] / 3, line,
 				style, "   " + host.Folder + host.Name + spaces)
 		} else if host.Type == 1 {
-			i_draw_text(s,
-				1, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
+			i_draw_text(data.s,
+				1, line, t[W] / 3, line,
 				style, "   " + host.Folder + host.Name + spaces)
 		}
-		i_draw_text(s,
-			4, int(host.ID) + 1, t[W] / 3, int(host.ID) + 1,
+		i_draw_text(data.s,
+			4, line, t[W] / 3, line,
 			style, host.Folder + host.Name + spaces)
 		host = host.next
 	}
-	i_draw_text(s,
-		1, t[H] - 2, (t[W] / 3) - 1, t[H] - 1,
+	i_draw_text(data.s,
+		1, t[H] - 2, (t[W] / 3) - 1, t[H] - 2,
 		def_style,
 		" " + strconv.Itoa(int(sel + 1)) + "/" +
 		strconv.Itoa(int(sel_max)) + " hosts ")
@@ -374,12 +376,16 @@ func i_ui(data *Data) {
 		term_size[W], term_size[H], _ = term.GetSize(0)
 		data.s.Clear()
 		i_bottom_text(data.s, term_size)
-		i_host_panel(data.s, term_size, def_style, data.lhost, sel, sel_max)
+		i_host_panel(data, term_size, def_style, sel, sel_max)
 		i_info_panel(data.s, term_size, def_style, data.lhost, sel)
 		if data.lhost.head == nil {
 			i_draw_zhosts_box(data.s, term_size, def_style)
 		}
 		data.s.Show()
 		i_events(data, &sel, &sel_max, &term_size)
+		data.list_start = int(sel) - term_size[H] - 4
+		if data.list_start < 0 {
+			data.list_start = 0
+		}
 	}
 }

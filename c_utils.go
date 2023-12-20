@@ -70,7 +70,7 @@ func c_get_data_dir() string {
 		ptr = &home
 		*ptr += "/.local/share"
 	}
-	*ptr += "/hardflip"
+	*ptr += "/" + DATA_DIR_NAME
 	if _, err := os.Stat(*ptr); os.IsNotExist(err) {
 	    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
 	        c_die("could not create path " + *ptr, err)
