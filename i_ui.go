@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 20 15:24:42 2023
+ * Wed Dec 20 19:07:37 2023
  * Joe
  *
  * interfacing with the user
@@ -83,7 +83,7 @@ func i_draw_text(s tcell.Screen,
 	}
 }
 
-func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
+func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 	style := tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
@@ -110,6 +110,13 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string) {
 		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, style)
 		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
 	}
+	if fill == true {
+		for y := y1 + 1; y < y2; y++ {
+			for x := x1 + 1; x < x2; x++ {
+				s.SetContent(x, y, ' ', nil, style)
+			}
+		}
+	}
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y2 - 1, style, title)
 }
 
@@ -132,7 +139,7 @@ func i_draw_zhosts_box(ui HardUI) {
 	top, bot :=
 		(ui.dim[H] / 2) - 3,
 		(ui.dim[H] / 2) + 3
-	i_draw_box(ui.s, left, top, right, bot, "")
+	i_draw_box(ui.s, left, top, right, bot, "", false)
 	if left < ui.dim[W] / 3 {
 		for y := top + 1; y < bot; y++ {
 		    ui.s.SetContent(ui.dim[W] / 3, y, ' ', nil, ui.def_style)
@@ -145,15 +152,32 @@ func i_draw_zhosts_box(ui HardUI) {
 
 func i_draw_delete_box(ui HardUI, host *HostNode) {
 	// file_path := data.data_dir + "/" + host.Folder + host.Filename
-	text := "Do you really want to delete host " +
-	host.Folder + host.Filename + "?"
+	text := "Really delete this host ?"
+	file := host.Folder + host.Filename
+	max_len := len(text)
+
+	if max_len < len(file) {
+		max_len = len(file)
+	}
 	left, right :=
-	(ui.dim[W] / 2) - (len(text) / 2) - 5,
-	(ui.dim[W] / 2) + (len(text) / 2) + 5
+		(ui.dim[W] / 2) - (max_len / 2) - 5,
+		(ui.dim[W] / 2) + (max_len / 2) + 5
+	if left < ui.dim[W] / 8 { 
+		left = ui.dim[W] / 8
+	}
+	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
+		right = ui.dim[W] - ui.dim[W] / 8 - 1
+	}
 	top, bot :=
-	(ui.dim[H] / 2) - 3,
-	(ui.dim[H] / 2) + 3
-	i_draw_box(ui.s, left, top, right, bot, "")
+		(ui.dim[H] / 2) - 3,
+		(ui.dim[H] / 2) + 3
+	i_draw_box(ui.s, left, top, right, bot, "", true)
+	i_draw_text(ui.s,
+		(ui.dim[W] / 2) - (len(text) / 2), ui.dim[H] / 2 - 1, right, ui.dim[H] / 2 + 1,
+		ui.def_style, text)
+	i_draw_text(ui.s,
+		(ui.dim[W] / 2) - (len(file) / 2), ui.dim[H] / 2, right, ui.dim[H] / 2 + 1,
+		ui.def_style.Bold(true), file)
 	// if err := os.Remove(file_path); err != nil {
 	// c_die("can't remove " + file_path, err)
 	// }
@@ -163,7 +187,7 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 func i_host_panel(ui HardUI, lhost *HostList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
-		" Hosts ")
+		" Hosts ", false)
 	host := lhost.head
 	for i := 0; i < ui.list_start && host.next != nil; i++ {
 		host = host.next
@@ -205,7 +229,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
-		" Infos ")
+		" Infos ", false)
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
 	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2, tcell.RuneBTee, nil, ui.def_style)
 	if lhost.head == nil {
