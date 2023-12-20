@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 20 13:53:02 2023
+ * Wed Dec 20 15:24:42 2023
  * Joe
  *
  * interfacing with the user
@@ -49,6 +49,7 @@ package main
 
 import (
 	"strconv"
+
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
 )
@@ -383,9 +384,8 @@ func i_ui(data *Data) {
 		}
 		data.s.Show()
 		i_events(data, &sel, &sel_max, &term_size)
-		data.list_start = int(sel) - term_size[H] - 4
-		if data.list_start < 0 {
-			data.list_start = 0
+		if int(sel) > term_size[H] - 6 {
+			data.list_start += 1
 		}
 	}
 }
