@@ -384,8 +384,8 @@ func i_ui(data *Data) {
 		}
 		data.s.Show()
 		i_events(data, &sel, &sel_max, &term_size)
-		if int(sel) > term_size[H] - 6 {
-			data.list_start += 1
+		if int(sel) > term_size[H] - 4 {
+			// data.list_start = data.list
 		}
 	}
 }

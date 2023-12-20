@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Dec 20 12:19:56 2023
+ * Wed Dec 20 16:17:19 2023
  * Joe
  *
  * the hosts linked list
@@ -97,6 +97,12 @@ func i_events(data *Data,
 			if *sel > 0 {
 				*sel -= 1
 			}
+		}
+		if event.Rune() == 'g' {
+			   *sel = 0
+		}
+		if event.Rune() == 'G' {
+			   *sel = *sel_max - 1
 		}
 		if event.Rune() == 'D' {
 			i_delete_selected(data, sel)
