@@ -53,13 +53,9 @@ import (
 )
 
 func i_reload_data(data *HardData) {
-	ui := data.ui
 	data.lhost = c_load_data_dir(data.data_dir)
 	l := data.lhost
 	data.ui.sel_max = l.count()
-	if ui.sel >= ui.sel_max {
-		ui.sel = ui.sel_max - 1
-	}
 }
 
 func i_delete_host(data *HardData) {

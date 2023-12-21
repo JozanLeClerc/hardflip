@@ -462,8 +462,8 @@ func i_ui(data *HardData) {
 		}
 		ui.s.Show()
 		i_events(data)
-		if ui.sel > ui.sel_max {
-			ui.sel = ui.sel_max
+		if ui.sel >= ui.sel_max {
+			ui.sel = ui.sel_max - 1
 		} else if ui.sel < 0 {
 			ui.sel = 0
 		}
