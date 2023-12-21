@@ -38,34 +38,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_hardflip.go
- * Wed Dec 20 16:34:51 2023
+ * hardflip: src/c_ldirs.go
+ * Thu Dec 21 14:03:40 2023
  * Joe
  *
- * the main
+ * the directories linked list
  */
 
 package main
 
-// the main data structure, holds up everything important
-type HardData struct {
-	lhost *HostList
-	ldirs *DirList
-	ui    HardUI
-	opts  HardOpts
-	data_dir string
+type DirsNode struct {
+	name   string
+	lhost  *HostList
+	parent *DirsNode
+	next   *DirsNode
 }
 
-func main() {
-	data_dir := c_get_data_dir()
-	lhosts, ldirs := c_load_data_dir(data_dir)
-	data := HardData{
-		lhosts,
-		ldirs,
-		HardUI{},
-		HardOpts{true, true},
-		data_dir,
-		}
-
-	i_ui(&data)
+type DirsList struct {
+	head *DirsNode
 }

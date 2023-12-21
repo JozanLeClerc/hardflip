@@ -42,7 +42,7 @@
  * Thu Dec 21 12:49:09 2023
  * Joe
  *
- * the hosts linked list
+ * events in the code
  */
 
 package main

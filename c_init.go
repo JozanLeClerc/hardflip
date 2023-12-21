@@ -79,8 +79,9 @@ func c_recurse_data_dir(dir string, root string, lhost *HostList) {
 	}
 }
 
-func c_load_data_dir(dir string) *HostList {
+func c_load_data_dir(dir string) (*HostList, *DirsList) {
 	lhost := HostList{}
+	ldirs := DirsList{}
 	c_recurse_data_dir("", dir + "/", &lhost)
-	return &lhost
+	return &lhost, &ldirs
 }
