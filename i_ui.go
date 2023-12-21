@@ -152,7 +152,7 @@ func i_draw_zhosts_box(ui HardUI) {
 
 func i_draw_delete_box(ui HardUI, host *HostNode) {
 	// file_path := data.data_dir + "/" + host.Folder + host.Filename
-	text := "Really delete this host ?"
+	text := "Really delete this host?"
 	file := host.Folder + host.Filename
 	max_len := len(text)
 
@@ -169,15 +169,42 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 		right = ui.dim[W] - ui.dim[W] / 8 - 1
 	}
 	top, bot :=
-		(ui.dim[H] / 2) - 3,
+		(ui.dim[H] / 2) - 4,
 		(ui.dim[H] / 2) + 3
 	i_draw_box(ui.s, left, top, right, bot, "", true)
+	left = (ui.dim[W] / 2) - (len(text) / 2)
+	if left < (ui.dim[W] / 8) + 1 { 
+		left = (ui.dim[W] / 8) + 1
+	}
+	top = ui.dim[H] / 2 - 2
 	i_draw_text(ui.s,
-		(ui.dim[W] / 2) - (len(text) / 2), ui.dim[H] / 2 - 1, right, ui.dim[H] / 2 + 1,
+		left, top, right, top,
 		ui.def_style, text)
+	left = (ui.dim[W] / 2) - (len(file) / 2)
+	if left < (ui.dim[W] / 8) + 1 { 
+		left = (ui.dim[W] / 8) + 1
+	}
+	top += 1
 	i_draw_text(ui.s,
-		(ui.dim[W] / 2) - (len(file) / 2), ui.dim[H] / 2, right, ui.dim[H] / 2 + 1,
+		left, top, right, top,
 		ui.def_style.Bold(true), file)
+	left = right - 11
+	if left < (ui.dim[W] / 8) + 1 { 
+		left = (ui.dim[W] / 8) + 1
+	}
+	top = ui.dim[H] / 2 + 1
+	i_draw_text(ui.s,
+		left, top, right, top,
+		ui.def_style.Bold(true).Underline(true), "y")
+	i_draw_text(ui.s,
+		left + 1, top, right, top,
+		ui.def_style, "es | ")
+	i_draw_text(ui.s,
+		left + 6, top, right, top,
+		ui.def_style.Bold(true).Underline(true), "n")
+	i_draw_text(ui.s,
+		left + 7, top, right, top,
+		ui.def_style, "o")
 	// if err := os.Remove(file_path); err != nil {
 	// c_die("can't remove " + file_path, err)
 	// }
