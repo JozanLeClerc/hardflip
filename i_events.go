@@ -64,18 +64,18 @@ func i_reload_data(data *HardData) {
 
 func i_delete_host(data *HardData) {
 	ui := &data.ui
+	host := data.lhost.sel(data.ui.sel)
+	file_path := data.data_dir + "/" + host.Folder + host.Filename
 
+	if err := os.Remove(file_path); err != nil {
+		c_die("can't remove " + file_path, err)
+	}
 	data.lhost.del(data.ui.sel)
 	data.lhost.reset_id()
 	ui.sel_max = data.lhost.count()
 	if ui.sel >= ui.sel_max {
 		ui.sel = ui.sel_max - 1
 	}
-	// file_path := data.data_dir + "/" + host.Folder + host.Filename
-	// if err := os.Remove(file_path); err != nil {
-		// c_die("can't remove " + file_path, err)
-	// }
-	// i_reload_data(data)
 }
 
 // screen events such as keypresses
