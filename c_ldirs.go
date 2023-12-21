@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Thu Dec 21 14:03:40 2023
+ * Thu Dec 21 18:06:00 2023
  * Joe
  *
  * the directories linked list
@@ -56,4 +56,19 @@ type DirsNode struct {
 
 type DirsList struct {
 	head *DirsNode
+}
+
+// adds a directory node to the list
+func (ldirs *DirsList) add_back(node *DirsNode) {
+	new_node := node
+
+	if ldirs.head == nil {
+		ldirs.head = new_node
+		return
+	}
+	curr := ldirs.head
+	for curr.next != nil {
+		curr = curr.next
+	}
+	curr.next = new_node
 }
