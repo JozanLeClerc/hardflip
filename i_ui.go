@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 20 19:07:37 2023
+ * Thu Dec 21 17:09:00 2023
  * Joe
  *
  * interfacing with the user
@@ -206,11 +206,12 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 		ui.def_style, "o")
 }
 
-func i_host_panel(ui HardUI, lhost *HostList) {
+func i_host_panel(ui HardUI, opts HardOpts, lhost *HostList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	host := lhost.head
+	icons := [2]string{"  ", "  "}
 	for i := 0; i < ui.list_start && host.next != nil; i++ {
 		host = host.next
 	}
@@ -219,22 +220,19 @@ func i_host_panel(ui HardUI, lhost *HostList) {
 		if ui.sel == host.ID {
 			style = ui.def_style.Reverse(true)
 		}
+		text := ""
+		if opts.icon == true {
+			text = icons[host.Type]
+		}
+		text += host.Folder + host.Name
 		spaces := ""
-		for i := 0; i < (ui.dim[W] / 3) - len(host.Folder + host.Name) - 2; i++ {
+		for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
 			spaces += " "
 		}
-		if host.Type == 0 {
-			i_draw_text(ui.s,
-				1, line, ui.dim[W] / 3, line,
-				style, "   " + host.Folder + host.Name + spaces)
-		} else if host.Type == 1 {
-			i_draw_text(ui.s,
-				1, line, ui.dim[W] / 3, line,
-				style, "   " + host.Folder + host.Name + spaces)
-		}
+		text += spaces
 		i_draw_text(ui.s,
-			4, line, ui.dim[W] / 3, line,
-			style, host.Folder + host.Name + spaces)
+			1, line, ui.dim[W] / 3, line,
+			style, text)
 		host = host.next
 	}
 	if ui.sel_max == 0 {
@@ -451,7 +449,7 @@ func i_ui(data *HardData) {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 		ui.s.Clear()
 		i_bottom_text(*ui)
-		i_host_panel(data.ui, data.lhost)
+		i_host_panel(data.ui, data.opts, data.lhost)
 		i_info_panel(data.ui, data.lhost)
 		if data.lhost.head == nil {
 			i_draw_zhosts_box(*ui)

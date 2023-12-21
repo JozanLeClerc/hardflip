@@ -50,7 +50,7 @@ package main
 // the main data structure, holds up everything important
 type HardData struct {
 	lhost *HostList
-	ldirs *DirList
+	ldirs *DirsList
 	ui    HardUI
 	opts  HardOpts
 	data_dir string
