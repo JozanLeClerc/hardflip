@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Dec 20 16:35:04 2023
+ * Thu Dec 21 12:03:59 2023
  * Joe
  *
  * the hosts linked list
@@ -62,6 +62,22 @@ func i_reload_data(data *HardData) {
 	}
 }
 
+func i_delete_host(data *HardData) {
+	ui := &data.ui
+
+	data.lhost.del(data.ui.sel)
+	data.lhost.reset_id()
+	ui.sel_max = data.lhost.count()
+	if ui.sel >= ui.sel_max {
+		ui.sel = ui.sel_max - 1
+	}
+	// file_path := data.data_dir + "/" + host.Folder + host.Filename
+	// if err := os.Remove(file_path); err != nil {
+		// c_die("can't remove " + file_path, err)
+	// }
+	// i_reload_data(data)
+}
+
 // screen events such as keypresses
 func i_events(data *HardData) {
 	var err error
@@ -71,43 +87,55 @@ func i_events(data *HardData) {
 	case *tcell.EventResize:
 		ui.s.Sync()
 	case *tcell.EventKey:
-		if event.Key() == tcell.KeyEscape ||
-		   event.Key() == tcell.KeyCtrlC ||
-		   event.Rune() == 'q' {
-			ui.s.Fini()
-			os.Exit(0)
-		} else if event.Rune() == 'j' ||
-		   event.Key() == tcell.KeyDown {
-			if ui.sel < ui.sel_max - 1 {
-				ui.sel += 1
-			}
-		} else if event.Rune() == 'k' ||
-		   event.Key() == tcell.KeyUp {
-			if ui.sel > 0 {
-				ui.sel -= 1
-			}
-		} else if event.Rune() == 'g' {
-		   ui.sel = 0
-		} else if event.Rune() == 'G' {
-		   ui.sel = ui.sel_max - 1
-		} else if event.Rune() == 'D' {
-			ui.mode = DELETE_MODE
-		} else if event.Key() == tcell.KeyEnter {
-			ui.s.Fini()
-			c_exec(ui.sel, data.lhost)
-			if data.opts.loop == false {
+		switch ui.mode {
+		case NORMAL_MODE:
+			if event.Key() == tcell.KeyCtrlC ||
+			   event.Rune() == 'q' {
+				ui.s.Fini()
 				os.Exit(0)
+			} else if event.Rune() == 'j' ||
+				      event.Key() == tcell.KeyDown {
+				if ui.sel < ui.sel_max - 1 {
+					ui.sel += 1
+				}
+			} else if event.Rune() == 'k' ||
+			   event.Key() == tcell.KeyUp {
+				if ui.sel > 0 {
+					ui.sel -= 1
+				}
+			} else if event.Rune() == 'g' {
+			   ui.sel = 0
+			} else if event.Rune() == 'G' {
+			   ui.sel = ui.sel_max - 1
+			} else if event.Rune() == 'D' {
+				ui.mode = DELETE_MODE
+			} else if event.Key() == tcell.KeyEnter {
+				ui.s.Fini()
+				c_exec(ui.sel, data.lhost)
+				if data.opts.loop == false {
+					os.Exit(0)
+				}
+				if ui.s, err = tcell.NewScreen(); err != nil {
+					c_die("view", err)
+				}
+				if err := ui.s.Init(); err != nil {
+					c_die("view", err)
+				}
+				ui.s.SetStyle(ui.def_style)
 			}
-			if ui.s, err = tcell.NewScreen(); err != nil {
-				c_die("view", err)
+			if event.Key() == tcell.KeyCtrlR {
+				i_reload_data(data)
 			}
-			if err := ui.s.Init(); err != nil {
-				c_die("view", err)
+		case DELETE_MODE:
+			if event.Key() == tcell.KeyEscape ||
+			   event.Key() == tcell.KeyCtrlC ||
+			   event.Rune() == 'q' ||
+			   event.Rune() == 'n' {
+				ui.mode = NORMAL_MODE
+			} else if event.Rune() == 'y' {
+				i_delete_host(data)
+				ui.mode = NORMAL_MODE
 			}
-			ui.s.SetStyle(ui.def_style)
-		}
-		if event.Key() == tcell.KeyCtrlR {
-			i_reload_data(data)
 		}
 	}
 }

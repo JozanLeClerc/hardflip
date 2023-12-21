@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Tue Dec 19 18:51:12 2023
+ * Thu, 21 Dec 2023 11:51:44 +0100
  * Joe
  *
  * the hosts linked list
@@ -94,23 +94,31 @@ func (lhost *HostList) add_back(node *HostNode) {
 	curr.next = new_node
 }
 
-// not used - removes a host node from the list
-// func (lhost *HostList) del(id uint64) {
-//     if lhost.head == nil {
-//         return
-//     }
-//     if lhost.head.ID == id {
-//         lhost.head = lhost.head.next
-//         return
-//     }
-//     curr := lhost.head
-//     for curr.next != nil && curr.next.ID != id {
-//         curr = curr.next
-//     }
-//     if curr.next != nil {
-//         curr.next = curr.next.next
-//     }
-// }
+func (lhost *HostList) reset_id() {
+	curr := lhost.head
+	for i := 0; curr != nil; i++ {
+		curr.ID = uint64(i)
+		curr = curr.next
+	}
+}
+
+// removes a host node from the list
+func (lhost *HostList) del(id uint64) {
+    if lhost.head == nil {
+        return
+    }
+    if lhost.head.ID == id {
+        lhost.head = lhost.head.next
+        return
+    }
+    curr := lhost.head
+    for curr.next != nil && curr.next.ID != id {
+        curr = curr.next
+    }
+    if curr.next.ID == id {
+        curr.next = curr.next.next
+    }
+}
 
 // return the list node with the according id
 func (lhost *HostList) sel(id uint64) *HostNode {

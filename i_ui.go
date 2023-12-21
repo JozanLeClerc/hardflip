@@ -151,7 +151,6 @@ func i_draw_zhosts_box(ui HardUI) {
 }
 
 func i_draw_delete_box(ui HardUI, host *HostNode) {
-	// file_path := data.data_dir + "/" + host.Folder + host.Filename
 	text := "Really delete this host?"
 	file := host.Folder + host.Filename
 	max_len := len(text)
@@ -205,10 +204,6 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 	i_draw_text(ui.s,
 		left + 7, top, right, top,
 		ui.def_style, "o")
-	// if err := os.Remove(file_path); err != nil {
-	// c_die("can't remove " + file_path, err)
-	// }
-	// i_reload_data(data, sel, sel_max)
 }
 
 func i_host_panel(ui HardUI, lhost *HostList) {
