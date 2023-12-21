@@ -237,11 +237,18 @@ func i_host_panel(ui HardUI, lhost *HostList) {
 			style, host.Folder + host.Name + spaces)
 		host = host.next
 	}
-	i_draw_text(ui.s,
-		1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
-		ui.def_style,
-		" " + strconv.Itoa(int(ui.sel + 1)) + "/" +
-		strconv.Itoa(int(ui.sel_max)) + " hosts ")
+	if ui.sel_max == 0 {
+		i_draw_text(ui.s,
+			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
+			ui.def_style,
+			" " + strconv.Itoa(int(ui.sel_max)) + " hosts ")
+	} else {
+		i_draw_text(ui.s,
+			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
+			ui.def_style,
+			" " + strconv.Itoa(int(ui.sel + 1)) + "/" +
+			strconv.Itoa(int(ui.sel_max)) + " hosts ")
+	}
 }
 
 func i_info_panel(ui HardUI, lhost *HostList) {
@@ -455,6 +462,11 @@ func i_ui(data *HardData) {
 		}
 		ui.s.Show()
 		i_events(data)
+		if ui.sel > ui.sel_max {
+			ui.sel = ui.sel_max
+		} else if ui.sel < 0 {
+			ui.sel = 0
+		}
 		if int(ui.sel) > ui.list_start + ui.dim[H] - 4 {
 			ui.list_start = int(ui.sel + 1) - ui.dim[H] + 3
 		} else if int(ui.sel) < ui.list_start {

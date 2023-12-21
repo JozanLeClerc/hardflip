@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Dec 21 12:03:59 2023
+ * Thu Dec 21 12:49:09 2023
  * Joe
  *
  * the hosts linked list
@@ -107,7 +107,7 @@ func i_events(data *HardData) {
 			   ui.sel = 0
 			} else if event.Rune() == 'G' {
 			   ui.sel = ui.sel_max - 1
-			} else if event.Rune() == 'D' {
+			} else if event.Rune() == 'D' && data.lhost.head != nil {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				ui.s.Fini()
