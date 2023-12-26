@@ -74,13 +74,12 @@ func main() {
 		for i := 0; uint16(i) < dir.Depth; i++ {
 			spaces += "  "
 		}
-		fmt.Println(spaces, dir.ID, dir.Name)
+		fmt.Println(spaces, dir.ID, dir.Name + "/")
 		host := dir.lhost.head
 		for host != nil {
-			fmt.Println(spaces, " ", host.ID, host.Name)
+			fmt.Println(spaces, " ", host.ID, host.Filename)
 			host = host.next
 		}
-		fmt.Println()
 		dir = dir.next
 	}
 	// i_ui(&data)
