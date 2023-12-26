@@ -53,25 +53,24 @@ import (
 )
 
 func i_reload_data(data *HardData) {
-	data.lhost, _ = c_load_data_dir(data.data_dir)
-	l := data.lhost
-	data.ui.sel_max = l.count()
+	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
+	data.ui.sel_max, data.ui.count_dirs, data.ui.count_hosts = i_get_sel_max(data.ldirs)
 }
 
 func i_delete_host(data *HardData) {
-	ui := &data.ui
-	host := data.lhost.sel(data.ui.sel)
-	file_path := data.data_dir + "/" + host.Folder + host.Filename
-
-	if err := os.Remove(file_path); err != nil {
-		c_die("can't remove " + file_path, err)
-	}
-	data.lhost.del(data.ui.sel)
-	data.lhost.reset_id()
-	ui.sel_max = data.lhost.count()
-	if ui.sel >= ui.sel_max {
-		ui.sel = ui.sel_max - 1
-	}
+//     ui := &data.ui
+//     host := data.lhost.sel(data.ui.sel)
+//     file_path := data.data_dir + "/" + host.Folder + host.Filename
+//
+//     if err := os.Remove(file_path); err != nil {
+//         c_die("can't remove " + file_path, err)
+//     }
+//     data.lhost.del(data.ui.sel)
+//     data.lhost.reset_id()
+//     ui.sel_max = data.lhost.count()
+//     if ui.sel >= ui.sel_max {
+//         ui.sel = ui.sel_max - 1
+//     }
 }
 
 // screen events such as keypresses
@@ -103,12 +102,14 @@ func i_events(data *HardData) {
 			   ui.sel = 0
 			} else if event.Rune() == 'G' {
 			   ui.sel = ui.sel_max - 1
-			} else if event.Rune() == 'D' && data.lhost.head != nil {
+			} else if event.Rune() == 'D' &&
+					data.ldirs.head != nil &&
+					ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				ui.s.Fini()
-				c_exec(ui.sel, data.lhost)
-				if data.opts.loop == false {
+				c_exec(ui.sel, ui.sel, data.ldirs)
+				if data.opts.Loop == false {
 					os.Exit(0)
 				}
 				if ui.s, err = tcell.NewScreen(); err != nil {

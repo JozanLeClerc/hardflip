@@ -94,11 +94,11 @@ func c_recurse_data_dir(dir, root string, opts HardOpts, ldirs *DirsList,
 	}
 }
 
-func c_load_data_dir(dir string) *DirsList {
+func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 	ldirs := DirsList{}
 	var id uint64
 
 	id = 0
-	c_recurse_data_dir("", data.opts, dir + "/", &ldirs, &id, "", nil, 1)
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, &id, "", nil, 1)
 	return &ldirs
 }

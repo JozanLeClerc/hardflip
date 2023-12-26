@@ -60,6 +60,8 @@ type HardUI struct {
 	mode        uint8
 	sel         uint64
 	sel_max     uint64
+	count_dirs  uint64
+	count_hosts uint64
 	def_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
@@ -151,80 +153,86 @@ func i_draw_zhosts_box(ui HardUI) {
 }
 
 func i_draw_delete_box(ui HardUI, host *HostNode) {
-	text := "Really delete this host?"
-	file := host.Folder + host.Filename
-	max_len := len(text)
-
-	if max_len < len(file) {
-		max_len = len(file)
-	}
-	left, right :=
-		(ui.dim[W] / 2) - (max_len / 2) - 5,
-		(ui.dim[W] / 2) + (max_len / 2) + 5
-	if left < ui.dim[W] / 8 { 
-		left = ui.dim[W] / 8
-	}
-	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
-		right = ui.dim[W] - ui.dim[W] / 8 - 1
-	}
-	top, bot :=
-		(ui.dim[H] / 2) - 4,
-		(ui.dim[H] / 2) + 3
-	i_draw_box(ui.s, left, top, right, bot, "", true)
-	left = (ui.dim[W] / 2) - (len(text) / 2)
-	if left < (ui.dim[W] / 8) + 1 { 
-		left = (ui.dim[W] / 8) + 1
-	}
-	top = ui.dim[H] / 2 - 2
-	i_draw_text(ui.s,
-		left, top, right, top,
-		ui.def_style, text)
-	left = (ui.dim[W] / 2) - (len(file) / 2)
-	if left < (ui.dim[W] / 8) + 1 { 
-		left = (ui.dim[W] / 8) + 1
-	}
-	top += 1
-	i_draw_text(ui.s,
-		left, top, right, top,
-		ui.def_style.Bold(true), file)
-	left = right - 11
-	if left < (ui.dim[W] / 8) + 1 { 
-		left = (ui.dim[W] / 8) + 1
-	}
-	top = ui.dim[H] / 2 + 1
-	i_draw_text(ui.s,
-		left, top, right, top,
-		ui.def_style.Bold(true).Underline(true), "y")
-	i_draw_text(ui.s,
-		left + 1, top, right, top,
-		ui.def_style, "es | ")
-	i_draw_text(ui.s,
-		left + 6, top, right, top,
-		ui.def_style.Bold(true).Underline(true), "n")
-	i_draw_text(ui.s,
-		left + 7, top, right, top,
-		ui.def_style, "o")
+	// text := "Really delete this host?"
+	// file := host.Folder + host.Filename
+	// max_len := len(text)
+    //
+	// if max_len < len(file) {
+	//     max_len = len(file)
+	// }
+	// left, right :=
+	//     (ui.dim[W] / 2) - (max_len / 2) - 5,
+	//     (ui.dim[W] / 2) + (max_len / 2) + 5
+	// if left < ui.dim[W] / 8 {
+	//     left = ui.dim[W] / 8
+	// }
+	// if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
+	//     right = ui.dim[W] - ui.dim[W] / 8 - 1
+	// }
+	// top, bot :=
+	//     (ui.dim[H] / 2) - 4,
+	//     (ui.dim[H] / 2) + 3
+	// i_draw_box(ui.s, left, top, right, bot, "", true)
+	// left = (ui.dim[W] / 2) - (len(text) / 2)
+	// if left < (ui.dim[W] / 8) + 1 {
+	//     left = (ui.dim[W] / 8) + 1
+	// }
+	// top = ui.dim[H] / 2 - 2
+	// i_draw_text(ui.s,
+	//     left, top, right, top,
+	//     ui.def_style, text)
+	// left = (ui.dim[W] / 2) - (len(file) / 2)
+	// if left < (ui.dim[W] / 8) + 1 {
+	//     left = (ui.dim[W] / 8) + 1
+	// }
+	// top += 1
+	// i_draw_text(ui.s,
+	//     left, top, right, top,
+	//     ui.def_style.Bold(true), file)
+	// left = right - 11
+	// if left < (ui.dim[W] / 8) + 1 {
+	//     left = (ui.dim[W] / 8) + 1
+	// }
+	// top = ui.dim[H] / 2 + 1
+	// i_draw_text(ui.s,
+	//     left, top, right, top,
+	//     ui.def_style.Bold(true).Underline(true), "y")
+	// i_draw_text(ui.s,
+	//     left + 1, top, right, top,
+	//     ui.def_style, "es | ")
+	// i_draw_text(ui.s,
+	//     left + 6, top, right, top,
+	//     ui.def_style.Bold(true).Underline(true), "n")
+	// i_draw_text(ui.s,
+	//     left + 7, top, right, top,
+	//     ui.def_style, "o")
 }
 
 func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
-	host := lhost.head
-	icons := [2]string{"  ", "  "}
-	for i := 0; i < ui.list_start && host.next != nil; i++ {
-		host = host.next
+	// host := lhost.head
+	dirs := ldirs.head
+	// prot_icons := [2]string{"  ", "  "}
+	dirs_icons := [2]string{"  ", "  "}
+	for i := 0; i < ui.list_start && dirs.next != nil; i++ {
+		dirs = dirs.next
 	}
-	for line := 1; line < ui.dim[H] - 2 && host != nil; line++ {
+	for line := 1; line < ui.dim[H] - 2 && dirs != nil; line++ {
 		style := ui.def_style
-		if ui.sel == host.ID {
+		if ui.sel == dirs.ID {
 			style = ui.def_style.Reverse(true)
 		}
 		text := ""
-		if opts.icon == true {
-			text = icons[host.Type]
+		if opts.Icon == true {
+			var fold_var uint8
+			if dirs.Folded == true {
+				fold_var = 1
+			}
+			text = dirs_icons[fold_var]
 		}
-		text += host.Folder + host.Name
+		text += dirs.Name
 		spaces := ""
 		for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
 			spaces += " "
@@ -233,7 +241,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		i_draw_text(ui.s,
 			1, line, ui.dim[W] / 3, line,
 			style, text)
-		host = host.next
+		dirs = dirs.next
 	}
 	if ui.sel_max == 0 {
 		i_draw_text(ui.s,
@@ -300,7 +308,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		ui.def_style, strconv.Itoa(int(host.Port)))
 	curr_line += 1
 	// RDP shit
-	if host.Type == 1 {
+	if host.Protocol == 1 {
 		if len(host.Domain) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
@@ -329,7 +337,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 			ui.def_style, "***")
 		curr_line += 1
 	}
-	if host.Type == 0 && len(host.Priv) > 0 {
+	if host.Protocol == 0 && len(host.Priv) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
 			ui.title_style, "Privkey: ")
@@ -340,7 +348,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	}
 	curr_line += 1
 	// jump
-	if host.Type == 0 && len(host.Jump) > 0 {
+	if host.Protocol == 0 && len(host.Jump) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
 			ui.title_style, "Jump settings: ")
@@ -375,7 +383,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 				ui.def_style, "***")
 			curr_line += 1
 		}
-		if host.Type == 0 && len(host.JumpPriv) > 0 {
+		if host.Protocol == 0 && len(host.JumpPriv) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
 				ui.title_style, "Privkey: ")
@@ -387,7 +395,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		curr_line += 1
 	}
 	// RDP shit
-	if host.Type == 1 {
+	if host.Protocol == 1 {
 		qual := [3]string{"Low", "Medium", "High"}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
@@ -426,12 +434,17 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	}
 }
 
+func i_get_sel_max(ldirs *DirsList) (uint64, uint64, uint64) {
+	count_dirs, count_hosts := ldirs.count()
+
+	return count_dirs + count_hosts, count_dirs, count_hosts
+}
+
 func i_ui(data *HardData) {
 	var err error
 	ui := &data.ui
 	ui.s, err = tcell.NewScreen()
-	count_dirs, count_hosts := data.ldirs.count()
-	ui.sel_max = count_dirs + count_hosts
+	ui.sel_max, ui.count_dirs, ui.count_hosts = i_get_sel_max(data.ldirs)
 
 	if err != nil {
 		c_die("view", err)

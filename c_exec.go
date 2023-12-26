@@ -128,11 +128,10 @@ func c_format_rdp(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_cmd(id uint64, lhost *HostList) {
-	host := lhost.head
+func c_format_cmd(dir_id, host_id uint64, ldirs *DirsList) {
 	var cmd_fmt []string
+	host := ldirs.sel(dir_id).lhost.sel(host_id)
 
-	host = lhost.sel(id)
 	if host == nil {
 		c_die("host id not found", nil)
 	}
@@ -146,9 +145,9 @@ func c_format_cmd(id uint64, lhost *HostList) {
 	c_exec_cmd(cmd_fmt)
 }
 
-func c_exec(id uint64, lhost *HostList) {
-	if lhost.head == nil {
+func c_exec(dir_id, host_id uint64, ldirs *DirsList) {
+	if ldirs.head == nil {
 		return
 	}
-	c_format_cmd(id, lhost)
+	c_format_cmd(dir_id, host_id, ldirs)
 }
