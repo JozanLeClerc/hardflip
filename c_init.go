@@ -76,15 +76,16 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 	}
 	ldirs.add_back(&dir_node)
 	for _, file := range files {
+		filename := file.Name()
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + file.Name() + "/", root, ldirs,
+			c_recurse_data_dir(dir + filename + "/", root, ldirs,
 				id + 1, file.Name(), &dir_node, depth + 1)
-		} else if filepath.Ext(file.Name()) == ".yml" {
-			host := c_read_yaml_file(root + dir + file.Name())
+		} else if filepath.Ext(filename) == ".yml" {
+			host := c_read_yaml_file(root + dir + filename)
 			if host == nil {
 				return
 			}
-			host.Filename = file.Name()
+			host.Filename = filename
 			host.Dir = &dir_node
 			dir_node.lhost.add_back(host)
 		}
