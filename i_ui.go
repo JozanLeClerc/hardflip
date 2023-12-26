@@ -63,6 +63,7 @@ type HardUI struct {
 	count_dirs  uint64
 	count_hosts uint64
 	def_style   tcell.Style
+	dir_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
 }
@@ -220,17 +221,23 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		dirs = dirs.next
 	}
 	for line := 1; line < ui.dim[H] - 2 && dirs != nil; line++ {
-		style := ui.def_style
+		if dirs.ID == 0 {
+			dirs = dirs.next
+		}
+		style := ui.dir_style
 		if ui.sel == dirs.ID {
-			style = ui.def_style.Reverse(true)
+			style = ui.dir_style.Reverse(true)
 		}
 		text := ""
+		for i := 0; i < int(dirs.Depth) - 2; i++ {
+			text += "  "
+		}
 		if opts.Icon == true {
 			var fold_var uint8
 			if dirs.Folded == true {
 				fold_var = 1
 			}
-			text = dirs_icons[fold_var]
+			text += dirs_icons[fold_var]
 		}
 		text += dirs.Name
 		spaces := ""
@@ -455,9 +462,12 @@ func i_ui(data *HardData) {
 	ui.def_style = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
+	ui.dir_style = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.title_style = tcell.StyleDefault.
-			Background(tcell.ColorReset).
-			Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.s.SetStyle(ui.def_style)
 	for {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
