@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Tue Dec 26 12:14:34 2023
+ * Tue Dec 26 16:19:46 2023
  * Joe
  *
  * init functions
@@ -66,7 +66,6 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 		c_die("could not read data directory", err)
 	}
 	dir_node := DirsNode{
-		// TODO - ID wrong - how do i static in go
 		*id,
 		name,
 		parent,
