@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Tue Dec 26 11:51:10 2023
+ * Tue Dec 26 12:14:34 2023
  * Joe
  *
  * init functions
@@ -49,7 +49,7 @@ package main
 
 import (
 	"os"
-	// "path/filepath"
+	"path/filepath"
 )
 
 type HardOpts struct {
@@ -64,25 +64,33 @@ func c_read_dir_hosts() *HostList {
 
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
-func c_recurse_data_dir(dir string, root string,
-		ldirs *DirsList, parent *DirsNode) {
+func c_recurse_data_dir(dir, root string, ldirs *DirsList,
+		id uint64, name string, parent *DirsNode) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}
-	var dir_node *DirsNode
-	if parent == nil {
-		dir_node.ID = parent.ID + 1
-	} else {
-		dir_node.ID = 0
+	dir_node := DirsNode{
+		// TODO - id is wrong
+		id,
+		name,
+		&HostList{},
+		parent,
+		nil,
 	}
-	dir_node.name = file.Name()
-	dir_node.parent = parent
-	ldirs.add_back(dir_node)
+	ldirs.add_back(&dir_node)
 	for _, file := range files {
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + file.Name() + "/", root, ldirs, dir_node)
-		} else {
+			c_recurse_data_dir(dir + file.Name() + "/", root, ldirs,
+				dir_node.ID + 1, file.Name(), &dir_node)
+		} else if filepath.Ext(file.Name()) == ".yml" {
+			host := c_read_yaml_file(root + dir + file.Name())
+			if host == nil {
+				return
+			}
+			host.Filename = file.Name()
+			host.Dir = &dir_node
+			dir_node.lhost.add_back(host)
 		}
 		// else if filepath.Ext(file.Name()) == ".yml" {
 		//     host := c_read_yaml_file(root + dir + file.Name())
@@ -99,6 +107,6 @@ func c_recurse_data_dir(dir string, root string,
 func c_load_data_dir(dir string) *DirsList {
 	ldirs := DirsList{}
 
-	c_recurse_data_dir("", dir + "/", &ldirs, nil)
+	c_recurse_data_dir("", dir + "/", &ldirs, 0, "", nil)
 	return &ldirs
 }

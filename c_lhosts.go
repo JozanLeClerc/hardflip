@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Thu, 21 Dec 2023 11:51:44 +0100
+ * Tue Dec 26 12:07:56 2023
  * Joe
  *
  * the hosts linked list
@@ -70,7 +70,7 @@ type HostNode struct {
 	Dynamic  bool   `yaml:"dynamic"`
 	Note     string `yaml:"note"`
 	Filename string
-	Folder   string
+	Dir      *DirsNode
 	next     *HostNode
 }
 

@@ -65,8 +65,17 @@ func main() {
 		// HardUI{},
 		HardOpts{true, true},
 		data_dir,
-		}
+	}
 
-	fmt.Println(data)
+	dir := data.ldirs.head
+	for dir != nil {
+		fmt.Println(dir)
+		host := dir.lhost.head
+		for host != nil {
+			fmt.Println(" ", host.ID, host.Filename)
+			host = host.next
+		}
+		dir = dir.next
+	}
 	// i_ui(&data)
 }
