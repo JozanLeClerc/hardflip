@@ -53,8 +53,8 @@ import (
 )
 
 type HardOpts struct {
-	icon bool
-	loop bool
+	Icon bool
+	Loop bool
 }
 
 // this function recurses into the specified root directory in order to load
@@ -66,7 +66,7 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 		c_die("could not read data directory", err)
 	}
 	dir_node := DirsNode{
-		// TODO - ID wrong
+		// TODO - ID wrong - how do i static in go
 		id,
 		name,
 		parent,
