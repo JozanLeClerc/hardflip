@@ -132,7 +132,7 @@ func i_bottom_text(ui HardUI) {
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	text := "Hosts list empty. Add hosts by pressing (a)"
+	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
 	left, right :=
 		(ui.dim[W] / 2) - (len(text) / 2) - 5,
 		(ui.dim[W] / 2) + (len(text) / 2) + 5
@@ -206,7 +206,7 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 		ui.def_style, "o")
 }
 
-func i_host_panel(ui HardUI, opts HardOpts, lhost *HostList) {
+func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
@@ -430,7 +430,8 @@ func i_ui(data *HardData) {
 	var err error
 	ui := &data.ui
 	ui.s, err = tcell.NewScreen()
-	ui.sel_max = data.lhost.count()
+	count_dirs, count_hosts := data.ldirs.count()
+	ui.sel_max = count_dirs + count_hosts
 
 	if err != nil {
 		c_die("view", err)
@@ -449,14 +450,18 @@ func i_ui(data *HardData) {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 		ui.s.Clear()
 		i_bottom_text(*ui)
-		i_host_panel(data.ui, data.opts, data.lhost)
-		i_info_panel(data.ui, data.lhost)
-		if data.lhost.head == nil {
+		i_host_panel(data.ui, data.opts, data.ldirs)
+		// TODO - info panel
+
+		// i_info_panel(data.ui, data.lhost)
+		if ui.sel_max == 0 {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {
-			host := data.lhost.sel(ui.sel)
-			i_draw_delete_box(*ui, host)
+			// TODO - delete mode
+
+			// host := data.lhost.sel(ui.sel)
+			// i_draw_delete_box(*ui, host)
 		}
 		ui.s.Show()
 		i_events(data)
