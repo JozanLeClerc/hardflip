@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Thu Dec 21 18:12:49 2023
+ * Tue Dec 26 11:11:55 2023
  * Joe
  *
  * the main
@@ -47,25 +47,26 @@
 
 package main
 
+import "fmt"
+
 // the main data structure, holds up everything important
 type HardData struct {
-	lhost *HostList
 	ldirs *DirsList
-	ui    HardUI
+	// ui    HardUI
 	opts  HardOpts
 	data_dir string
 }
 
 func main() {
 	data_dir := c_get_data_dir()
-	lhosts, ldirs := c_load_data_dir(data_dir)
+	ldirs := c_load_data_dir(data_dir)
 	data := HardData{
-		lhosts,
 		ldirs,
-		HardUI{},
+		// HardUI{},
 		HardOpts{true, true},
 		data_dir,
 		}
 
-	i_ui(&data)
+	fmt.Println(data)
+	// i_ui(&data)
 }

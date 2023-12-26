@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Wed Dec 20 10:47:33 2023
+ * Tue Dec 26 11:51:10 2023
  * Joe
  *
  * init functions
@@ -49,7 +49,7 @@ package main
 
 import (
 	"os"
-	"path/filepath"
+	// "path/filepath"
 )
 
 type HardOpts struct {
@@ -57,40 +57,48 @@ type HardOpts struct {
 	loop bool
 }
 
+// TODO
+func c_read_dir_hosts() *HostList {
+	return nil
+}
+
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
-// TODO - must rewrite this function entirely
 func c_recurse_data_dir(dir string, root string,
-	lhost *HostList, ldirs *DirsList) {
+		ldirs *DirsList, parent *DirsNode) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}
+	var dir_node *DirsNode
+	if parent == nil {
+		dir_node.ID = parent.ID + 1
+	} else {
+		dir_node.ID = 0
+	}
+	dir_node.name = file.Name()
+	dir_node.parent = parent
+	ldirs.add_back(dir_node)
 	for _, file := range files {
 		if file.IsDir() == true {
-			var dir_node *DirsNode
-			dir_node.name = file.Name()
-			dir_node.parent = dont_know
-			ldirs.add_back(dir_node)
-			c_recurse_data_dir(dir + file.Name() + "/", root, lhost, ldirs)
-		} else if filepath.Ext(file.Name()) == ".yml" {
-			host := c_read_yaml_file(root + dir + file.Name())
-			if host == nil {
-				return
-			}
-			host.Filename = file.Name()
-			host.Folder = dir
-			lhost.add_back(host)
+			c_recurse_data_dir(dir + file.Name() + "/", root, ldirs, dir_node)
+		} else {
 		}
+		// else if filepath.Ext(file.Name()) == ".yml" {
+		//     host := c_read_yaml_file(root + dir + file.Name())
+		//     if host == nil {
+		//         return
+		//     }
+		//     host.Filename = file.Name()
+		//     host.Folder = dir
+			// lhost.add_back(host)
+		// }
 	}
 }
 
-func c_load_data_dir(dir string) (*HostList, *DirsList) {
-	lhost := HostList{}
+func c_load_data_dir(dir string) *DirsList {
 	ldirs := DirsList{}
-	var root_dir DirsNode
 
-	ldirs.add_back(&root_dir)
-	c_recurse_data_dir("", dir + "/", &lhost, &ldirs)
-	return &lhost, &ldirs
+	c_recurse_data_dir("", dir + "/", &ldirs, nil)
+	return &ldirs
 }

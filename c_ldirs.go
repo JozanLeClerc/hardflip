@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Thu Dec 21 18:06:00 2023
+ * Tue Dec 26 11:09:27 2023
  * Joe
  *
  * the directories linked list
@@ -48,6 +48,7 @@
 package main
 
 type DirsNode struct {
+	ID     uint64
 	name   string
 	lhost  *HostList
 	parent *DirsNode
@@ -71,4 +72,35 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 		curr = curr.next
 	}
 	curr.next = new_node
+}
+
+// return the list node with the according id
+func (ldirs *DirsList) sel(id uint64) *DirsNode {
+	curr := ldirs.head
+
+	if curr == nil {
+		return nil
+	}
+    for curr.next != nil && curr.ID != id {
+        curr = curr.next
+    }
+	if curr.ID != id {
+		return nil
+	}
+	return curr
+}
+
+// returns a string with the full path of the dir
+func (ldirs *DirsList) path(node *DirsNode) string {
+	var path string
+
+	if node == nil {
+		return ""
+	}
+	curr := node
+	for curr != nil {
+		path = curr.name + "/" + path
+		curr = curr.parent
+	}
+	return path
 }
