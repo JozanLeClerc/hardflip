@@ -47,7 +47,10 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 // the main data structure, holds up everything important
 type HardData struct {
@@ -66,16 +69,7 @@ func main() {
 		HardOpts{true, true},
 		data_dir,
 	}
-
-	dir := data.ldirs.head
-	for dir != nil {
-		fmt.Println(dir)
-		host := dir.lhost.head
-		for host != nil {
-			fmt.Println(" ", host.ID, host.Filename)
-			host = host.next
-		}
-		dir = dir.next
-	}
+	os.Exit(0)
+	fmt.Println(data)
 	// i_ui(&data)
 }
