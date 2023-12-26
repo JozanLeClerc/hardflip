@@ -47,14 +47,10 @@
 
 package main
 
-import (
-	"fmt"
-)
-
 // the main data structure, holds up everything important
 type HardData struct {
 	ldirs *DirsList
-	// ui    HardUI
+	ui    HardUI
 	opts  HardOpts
 	data_dir string
 }
@@ -64,23 +60,23 @@ func main() {
 	ldirs := c_load_data_dir(data_dir)
 	data := HardData{
 		ldirs,
-		// HardUI{},
+		HardUI{},
 		HardOpts{true, true},
 		data_dir,
 	}
-	dir := data.ldirs.head
-	for dir != nil {
-		spaces := ""
-		for i := 0; uint16(i) < dir.Depth; i++ {
-			spaces += "  "
-		}
-		fmt.Println(spaces, dir.ID, dir.Name + "/")
-		host := dir.lhost.head
-		for host != nil {
-			fmt.Println(spaces, " ", host.ID, host.Filename)
-			host = host.next
-		}
-		dir = dir.next
-	}
-	// i_ui(&data)
+	// dir := data.ldirs.head
+	// for dir != nil {
+	//     spaces := ""
+	//     for i := 0; uint16(i) < dir.Depth; i++ {
+	//         spaces += "  "
+	//     }
+	//     fmt.Println(spaces, dir.ID, dir.Name + "/")
+	//     host := dir.lhost.head
+	//     for host != nil {
+	//         fmt.Println(spaces, " ", host.ID, host.Filename)
+	//         host = host.next
+	//     }
+	//     dir = dir.next
+	// }
+	i_ui(&data)
 }

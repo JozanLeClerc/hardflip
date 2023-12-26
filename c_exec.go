@@ -136,11 +136,11 @@ func c_format_cmd(id uint64, lhost *HostList) {
 	if host == nil {
 		c_die("host id not found", nil)
 	}
-	if host.Type == 0 {
+	if host.Protocol == 0 {
 		cmd_fmt = c_format_ssh(host)
-	} else if host.Type == 1 { 
+	} else if host.Protocol == 1 { 
 		cmd_fmt = c_format_rdp(host)
-	} else if host.Type > 1 {
+	} else if host.Protocol > 1 {
 		c_die("type not found", nil)
 	}
 	c_exec_cmd(cmd_fmt)
