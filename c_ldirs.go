@@ -49,9 +49,10 @@ package main
 
 type DirsNode struct {
 	ID     uint64
-	name   string
+	Name   string
+	Parent *DirsNode
+	Depth  uint16
 	lhost  *HostList
-	parent *DirsNode
 	next   *DirsNode
 }
 
@@ -99,8 +100,8 @@ func (ldirs *DirsList) path(node *DirsNode) string {
 	}
 	curr := node
 	for curr != nil {
-		path = curr.name + "/" + path
-		curr = curr.parent
+		path = curr.Name + "/" + path
+		curr = curr.Parent
 	}
 	return path
 }

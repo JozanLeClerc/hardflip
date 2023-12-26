@@ -49,6 +49,7 @@ package main
 
 import (
 	"os"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -68,7 +69,7 @@ func c_read_yaml_file(file string) *HostNode {
 	if len(host.Host) == 0 {
 		return nil
 	}
-	if host.Type == 0 {
+	if host.Protocol == 0 {
 		if host.Port == 0 {
 			host.Port = 22
 		}
@@ -83,7 +84,7 @@ func c_read_yaml_file(file string) *HostNode {
 				host.JumpUser = "root"
 			}
 		}
-	} else if host.Type == 1 {
+	} else if host.Protocol == 1 {
 		if len(host.User) == 0 {
 			host.User = "Administrator"
 		}
@@ -96,7 +97,7 @@ func c_read_yaml_file(file string) *HostNode {
 		if host.Height == 0 {
 			host.Height = 1200
 		}
-	} else if host.Type > 1 {
+	} else if host.Protocol > 1 {
 		return nil
 	}
 	if host.Quality > 2 {

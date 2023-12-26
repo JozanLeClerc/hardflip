@@ -57,32 +57,28 @@ type HardOpts struct {
 	loop bool
 }
 
-// TODO
-func c_read_dir_hosts() *HostList {
-	return nil
-}
-
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, ldirs *DirsList,
-		id uint64, name string, parent *DirsNode) {
+		id uint64, name string, parent *DirsNode, depth uint16) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}
 	dir_node := DirsNode{
-		// TODO - id is wrong
+		// TODO - ID wrong
 		id,
 		name,
-		&HostList{},
 		parent,
+		depth,
+		&HostList{},
 		nil,
 	}
 	ldirs.add_back(&dir_node)
 	for _, file := range files {
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + file.Name() + "/", root, ldirs,
-				dir_node.ID + 1, file.Name(), &dir_node)
+				id + 1, file.Name(), &dir_node, depth + 1)
 		} else if filepath.Ext(file.Name()) == ".yml" {
 			host := c_read_yaml_file(root + dir + file.Name())
 			if host == nil {
@@ -92,21 +88,12 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 			host.Dir = &dir_node
 			dir_node.lhost.add_back(host)
 		}
-		// else if filepath.Ext(file.Name()) == ".yml" {
-		//     host := c_read_yaml_file(root + dir + file.Name())
-		//     if host == nil {
-		//         return
-		//     }
-		//     host.Filename = file.Name()
-		//     host.Folder = dir
-			// lhost.add_back(host)
-		// }
 	}
 }
 
 func c_load_data_dir(dir string) *DirsList {
 	ldirs := DirsList{}
 
-	c_recurse_data_dir("", dir + "/", &ldirs, 0, "", nil)
+	c_recurse_data_dir("", dir + "/", &ldirs, 0, "", nil, 0)
 	return &ldirs
 }
