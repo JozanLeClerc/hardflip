@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Tue Dec 26 16:19:46 2023
+ * Tue Dec 26 16:32:26 2023
  * Joe
  *
  * init functions
@@ -53,13 +53,14 @@ import (
 )
 
 type HardOpts struct {
-	Icon bool
-	Loop bool
+	Icon    bool
+	Loop    bool
+	FoldAll bool
 }
 
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
-func c_recurse_data_dir(dir, root string, ldirs *DirsList,
+func c_recurse_data_dir(dir, root string, opts HardOpts, ldirs *DirsList,
 		id *uint64, name string, parent *DirsNode, depth uint16) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
@@ -71,6 +72,7 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 		parent,
 		depth,
 		&HostList{},
+		opts.FoldAll,
 		nil,
 	}
 	*id++
@@ -78,7 +80,7 @@ func c_recurse_data_dir(dir, root string, ldirs *DirsList,
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + filename + "/", root, ldirs,
+			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
 				id, file.Name(), &dir_node, depth + 1)
 		} else if filepath.Ext(filename) == ".yml" {
 			host := c_read_yaml_file(root + dir + filename)
@@ -97,6 +99,6 @@ func c_load_data_dir(dir string) *DirsList {
 	var id uint64
 
 	id = 0
-	c_recurse_data_dir("", dir + "/", &ldirs, &id, "", nil, 0)
+	c_recurse_data_dir("", data.opts, dir + "/", &ldirs, &id, "", nil, 1)
 	return &ldirs
 }

@@ -61,7 +61,7 @@ func main() {
 	data := HardData{
 		ldirs,
 		HardUI{},
-		HardOpts{true, true},
+		HardOpts{true, true, false},
 		data_dir,
 	}
 	// dir := data.ldirs.head

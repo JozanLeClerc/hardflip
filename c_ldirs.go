@@ -53,6 +53,7 @@ type DirsNode struct {
 	Parent *DirsNode
 	Depth  uint16
 	lhost  *HostList
+	Folded bool
 	next   *DirsNode
 }
 

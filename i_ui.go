@@ -263,9 +263,9 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		return
 	}
 	host = lhost.sel(ui.sel)
-	if host.Type == 0 {
+	if host.Protocol == 0 {
 		host_type = "SSH"
-	} else if host.Type == 1 {
+	} else if host.Protocol == 1 {
 		host_type = "RDP"
 	}
 
