@@ -59,6 +59,7 @@ type DirsNode struct {
 
 type DirsList struct {
 	head *DirsNode
+	last *DirsNode
 }
 
 // adds a directory node to the list
@@ -67,13 +68,15 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 
 	if ldirs.head == nil {
 		ldirs.head = new_node
+		ldirs.last = ldirs.head
 		return
 	}
-	curr := ldirs.head
+	curr := ldirs.last
 	for curr.next != nil {
 		curr = curr.next
 	}
 	curr.next = new_node
+	ldirs.last = curr.next
 }
 
 // return the list node with the according id

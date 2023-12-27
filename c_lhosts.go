@@ -76,6 +76,7 @@ type HostNode struct {
 
 type HostList struct {
 	head *HostNode
+	last *HostNode
 }
 
 // adds a host node to the list
@@ -84,14 +85,16 @@ func (lhost *HostList) add_back(node *HostNode) {
 
 	if lhost.head == nil {
 		lhost.head = new_node
+		lhost.last = lhost.head
 		return
 	}
-	curr := lhost.head
+	curr := lhost.last
 	for curr.next != nil {
 		curr = curr.next
 	}
 	new_node.ID = curr.ID + 1
 	curr.next = new_node
+	lhost.last = curr.next
 }
 
 func (lhost *HostList) reset_id() {

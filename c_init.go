@@ -98,6 +98,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node.Filename = filename
 			host_node.Dir = &dir_node
 			dir_node.lhost.add_back(host_node)
+			litems.add_back(&item_node)
 		}
 	}
 }
