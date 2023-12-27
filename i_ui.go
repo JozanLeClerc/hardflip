@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 27 12:18:01 2023
+ * Wed Dec 27 16:41:52 2023
  * Joe
  *
  * interfacing with the user
@@ -273,20 +273,24 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
+	line := 1
 	dirs := ldirs.head
-	for i := 0; i < ui.list_start && dirs.next != nil; i++ {
-		dirs = dirs.next
+	for host := dirs.lhost.head;
+		dirs.Folded == false && host != nil;
+		host = host.next {
+		i_host_panel_host(ui, opts, dirs, host, line)
+		line++
 	}
-	for line := 1; line < ui.dim[H] - 2 && dirs != nil; line = line {
+	dirs = dirs.next
+	for line = line; line < ui.dim[H] - 2 && dirs != nil; dirs = dirs.next {
 		i_host_panel_dirs(ui, opts, dirs, line)
 		line++
-		host := dirs.lhost.head
-		for dirs.Folded == false && host != nil {
+		for host := dirs.lhost.head;
+				dirs.Folded == false && host != nil;
+				host = host.next {
 			i_host_panel_host(ui, opts, dirs, host, line)
 			line++
-			host = host.next
 		}
-		dirs = dirs.next
 	}
 	if ui.sel_max == 0 {
 		i_draw_text(ui.s,
@@ -513,14 +517,12 @@ func i_ui(data *HardData) {
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts, data.ldirs)
 		// TODO - info panel
-
 		// i_info_panel(data.ui, data.lhost)
 		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {
 			// TODO - delete mode
-
 			// host := data.lhost.sel(ui.sel)
 			// i_draw_delete_box(*ui, host)
 		}
