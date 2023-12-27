@@ -74,12 +74,9 @@ type HardSelect struct {
 	host_ptr *HostNode
 }
 
-func (ui *HardUI) inc_sel(n ...int) {
+func (ui *HardUI) inc_sel(n int) {
 	sel := &ui.sel
-	if n[0] == 0 {
-		n[0] = 1
-	}
-	sel.line += n[0]
+	sel.line += n
 }
 
 func i_draw_text(s tcell.Screen,
