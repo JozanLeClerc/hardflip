@@ -56,6 +56,7 @@ const (
 [x](e)dit -
 (D)elete -
 [x](s)earch -
+[x](m)kdir -
 (c-r) reload -
 [x](?) help`
 	DATA_DIR_NAME = "hardflip"
@@ -64,6 +65,6 @@ const (
 )
 
 var (
-HOST_ICONS = [2]string{"  ", "  "}
-DIRS_ICONS = [2]string{"  ", "  "}
+	HOST_ICONS = [2]string{"  ", "  "}
+	DIRS_ICONS = [2]string{"  ", "  "}
 )

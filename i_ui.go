@@ -209,6 +209,12 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 	//     ui.def_style, "o")
 }
 
+func i_host_panel_dirs() {
+}
+
+func i_host_panel_host() {
+}
+
 func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
@@ -253,11 +259,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 			}
 			text := ""
 			for i := 0; i < int(dirs.Depth) - 2; i++ {
-				if host.next == nil {
-					text += "    "
-				} else {
-					text += "    "
-				}
+				text += "    "
 			}
 			if opts.Icon == true {
 				text += HOST_ICONS[int(host.Protocol)]
@@ -299,7 +301,8 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		" Infos ", false)
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
-	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2, tcell.RuneBTee, nil, ui.def_style)
+	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
+		tcell.RuneBTee, nil, ui.def_style)
 	if lhost.head == nil {
 		return
 	}
