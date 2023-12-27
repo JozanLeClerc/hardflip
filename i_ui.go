@@ -125,13 +125,20 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 
 func i_bottom_text(ui HardUI) {
 	spaces := ""
+	text := ""
 	
-	for i := 0; i < (ui.dim[W]) - len(KEYS_HINTS); i++ {
+	switch ui.mode {
+	case NORMAL_MODE:
+		text = NORMAL_KEYS_HINTS
+	case DELETE_MODE:
+		text = DELETE_KEYS_HINTS
+	}
+	for i := 0; i < (ui.dim[W]) - len(text); i++ {
 		spaces += " "
 	}
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), spaces + KEYS_HINTS)
+		ui.def_style.Dim(true), spaces + text)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -209,17 +216,9 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 	//     ui.def_style, "o")
 }
 
-func i_host_panel_dirs() {
-}
-
-func i_host_panel_host() {
-}
-
-func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
-	i_draw_box(ui.s, 0, 0,
-		ui.dim[W] / 3, ui.dim[H] - 2,
-		" Hosts ", false)
+func i_host_panel_dirs(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	dirs := ldirs.head
+
 	for i := 0; i < ui.list_start && dirs.next != nil; i++ {
 		dirs = dirs.next
 	}
@@ -251,33 +250,45 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 			1, line, ui.dim[W] / 3, line,
 			style, text)
 		line++
-		host := dirs.lhost.head
-		for dirs.Folded == false && host != nil {
-			style := ui.def_style
-			if ui.sel == dirs.ID {
-				style = style.Reverse(true)
-			}
-			text := ""
-			for i := 0; i < int(dirs.Depth) - 2; i++ {
-				text += "    "
-			}
-			if opts.Icon == true {
-				text += HOST_ICONS[int(host.Protocol)]
-			}
-			text += host.Name
-			spaces := ""
-			for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
-				spaces += " "
-			}
-			text += spaces
-			i_draw_text(ui.s,
-				1, line, ui.dim[W] / 3, line,
-				style, text)
-			line++
-			host = host.next
-		}
+		i_host_panel_host(ui, opts, dirs, &line)
 		dirs = dirs.next
 	}
+}
+
+func i_host_panel_host(ui HardUI, opts HardOpts, dirs *DirsNode, line *int) {
+	host := dirs.lhost.head
+
+	for dirs.Folded == false && host != nil {
+		style := ui.def_style
+		if ui.sel == dirs.ID {
+			style = style.Reverse(true)
+		}
+		text := ""
+		for i := 0; i < int(dirs.Depth) - 2; i++ {
+			text += "    "
+		}
+		if opts.Icon == true {
+			text += HOST_ICONS[int(host.Protocol)]
+		}
+		text += host.Name
+		spaces := ""
+		for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
+			spaces += " "
+		}
+		text += spaces
+		i_draw_text(ui.s,
+			1, *line, ui.dim[W] / 3, *line,
+			style, text)
+		*line++
+		host = host.next
+	}
+}
+
+func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
+	i_draw_box(ui.s, 0, 0,
+		ui.dim[W] / 3, ui.dim[H] - 2,
+		" Hosts ", false)
+	i_host_panel_dirs(ui, opts, ldirs)
 	if ui.sel_max == 0 {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
@@ -505,7 +516,7 @@ func i_ui(data *HardData) {
 		// TODO - info panel
 
 		// i_info_panel(data.ui, data.lhost)
-		if ui.sel_max == 0 {
+		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {
