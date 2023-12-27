@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 27 16:41:52 2023
+ * Wed Dec 27 18:19:37 2023
  * Joe
  *
  * interfacing with the user
@@ -65,18 +65,17 @@ type HardUI struct {
 	dir_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
-	sel			HardSelect
+	sel			HardSelector
 }
 
-type HardSelect struct {
+type HardSelector struct {
 	line     int
 	dirs_ptr *DirsNode
 	host_ptr *HostNode
 }
 
 func (ui *HardUI) inc_sel(n int) {
-	sel := &ui.sel
-	sel.line += n
+	ui.sel.line += n
 }
 
 func i_draw_text(s tcell.Screen,

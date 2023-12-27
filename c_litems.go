@@ -38,76 +38,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_init.go
- * Tue Dec 26 16:32:26 2023
+ * hardflip: src/c_litems.go
+ * Wed Dec 27 18:55:37 2023
  * Joe
  *
- * init functions
+ * the dir and hosts linked list
  */
 
 package main
 
-import (
-	"os"
-	"path/filepath"
-)
-
-type HardOpts struct {
-	Icon    bool
-	Loop    bool
-	FoldAll bool
+type ItemsNode struct {
+	ID   int
+	Dirs *DirsNode
+	Host *HostNode
+	next *ItemsNode
 }
 
-// this function recurses into the specified root directory in order to load
-// every yaml file into memory
-func c_recurse_data_dir(dir, root string, opts HardOpts,
-		litems *ItemsList, ldirs *DirsList,
-		id *uint64, name string, parent *DirsNode, depth uint16) {
-	files, err := os.ReadDir(root + dir)
-	if err != nil {
-		c_die("could not read data directory", err)
-	}
-	dir_node := DirsNode{
-		*id,
-		name,
-		parent,
-		depth,
-		&HostList{},
-		opts.FoldAll,
-		nil,
-	}
-	item_node := ItemsNode{}
-	item_node.Dirs = &dir_node
-	item_node.Host = nil
-	*id++
-	ldirs.add_back(&dir_node)
-	litems.add_back(&item_node)
-	for _, file := range files {
-		filename := file.Name()
-		if file.IsDir() == true {
-			c_recurse_data_dir(dir + filename + "/", root, opts, litems, ldirs,
-				id, file.Name(), &dir_node, depth + 1)
-		} else if filepath.Ext(filename) == ".yml" {
-			host_node := c_read_yaml_file(root + dir + filename)
-			if host_node == nil {
-				return
-			}
-			item_node := ItemsNode{}
-			item_node.Dirs = nil
-			item_node.Host = host_node
-			host_node.Filename = filename
-			host_node.Dir = &dir_node
-			dir_node.lhost.add_back(host_node)
-		}
-	}
+type ItemsList struct {
+	head *ItemsNode
 }
 
-func c_load_data_dir(dir string, opts HardOpts) (*ItemsList, *DirsList) {
-	litems := ItemsList{}
-	ldirs  := DirsList{}
-	var id uint64
+func (litems *ItemsList) add_back(node *ItemsNode) {
+	new_node := node
 
-	id = 0
-	c_recurse_data_dir("", dir + "/", opts, &litems, &ldirs, &id, "", nil, 1)
-	return &litems, &ldirs
+	if litems.head == nil {
+		litems.head = new_node
+		return
+	}
+	curr := litems.head
+	for curr.next != nil {
+		curr = curr.next
+	}
+	new_node.ID = curr.ID + 1
+	curr.next = new_node
 }
+

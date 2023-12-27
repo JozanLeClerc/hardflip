@@ -53,7 +53,7 @@ import (
 )
 
 func i_reload_data(data *HardData) {
-	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
+	data.litems, data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.ui.sel_max,
 	data.ui.count_dirs,
 	data.ui.count_hosts = i_get_sel_max(data.ldirs)

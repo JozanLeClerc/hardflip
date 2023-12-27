@@ -47,8 +47,11 @@
 
 package main
 
+import "fmt"
+
 // the main data structure, holds up everything important
 type HardData struct {
+	litems *ItemsList
 	ldirs *DirsList
 	ui    HardUI
 	opts  HardOpts
@@ -58,8 +61,9 @@ type HardData struct {
 func main() {
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
-	ldirs := c_load_data_dir(data_dir, opts)
+	litems, ldirs := c_load_data_dir(data_dir, opts)
 	data := HardData{
+		litems,
 		ldirs,
 		HardUI{},
 		opts,
@@ -79,5 +83,7 @@ func main() {
 	//     }
 	//     dir = dir.next
 	// }
-	i_ui(&data)
+	return
+	fmt.Println(data)
+	// i_ui(&data)
 }
