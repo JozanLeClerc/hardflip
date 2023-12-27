@@ -214,8 +214,6 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	dirs := ldirs.head
-	host_icons := [2]string{"  ", "  "}
-	dirs_icons := [2]string{"  ", "  "}
 	for i := 0; i < ui.list_start && dirs.next != nil; i++ {
 		dirs = dirs.next
 	}
@@ -235,7 +233,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 			if dirs.Folded == true {
 				fold_var = 1
 			}
-			text += dirs_icons[fold_var]
+			text += DIRS_ICONS[fold_var]
 		}
 		text += dirs.Name
 		spaces := ""
@@ -262,7 +260,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 				}
 			}
 			if opts.Icon == true {
-				text += host_icons[int(host.Protocol)]
+				text += HOST_ICONS[int(host.Protocol)]
 			}
 			text += host.Name
 			spaces := ""
