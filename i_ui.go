@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Dec 21 17:09:00 2023
+ * Wed Dec 27 12:18:01 2023
  * Joe
  *
  * interfacing with the user
@@ -213,24 +213,22 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
-	// host := lhost.head
 	dirs := ldirs.head
-	// prot_icons := [2]string{"  ", "  "}
+	host_icons := [2]string{"  ", "  "}
 	dirs_icons := [2]string{"  ", "  "}
 	for i := 0; i < ui.list_start && dirs.next != nil; i++ {
 		dirs = dirs.next
 	}
-	for line := 1; line < ui.dim[H] - 2 && dirs != nil; line++ {
-		if dirs.ID == 0 {
-			dirs = dirs.next
-		}
+	for line := 1; line < ui.dim[H] - 2 && dirs != nil; line = line {
 		style := ui.dir_style
 		if ui.sel == dirs.ID {
-			style = ui.dir_style.Reverse(true)
+			style = style.Reverse(true)
 		}
 		text := ""
 		for i := 0; i < int(dirs.Depth) - 2; i++ {
-			text += "  "
+			for i := 0; i < int(dirs.Depth) - 2; i++ {
+				text += "  "
+			}
 		}
 		if opts.Icon == true {
 			var fold_var uint8
@@ -248,6 +246,36 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		i_draw_text(ui.s,
 			1, line, ui.dim[W] / 3, line,
 			style, text)
+		line++
+		host := dirs.lhost.head
+		for dirs.Folded == false && host != nil {
+			style := ui.def_style
+			if ui.sel == dirs.ID {
+				style = style.Reverse(true)
+			}
+			text := ""
+			for i := 0; i < int(dirs.Depth) - 2; i++ {
+				if host.next == nil {
+					text += "    "
+				} else {
+					text += "    "
+				}
+			}
+			if opts.Icon == true {
+				text += host_icons[int(host.Protocol)]
+			}
+			text += host.Name
+			spaces := ""
+			for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
+				spaces += " "
+			}
+			text += spaces
+			i_draw_text(ui.s,
+				1, line, ui.dim[W] / 3, line,
+				style, text)
+			line++
+			host = host.next
+		}
 		dirs = dirs.next
 	}
 	if ui.sel_max == 0 {
@@ -283,7 +311,6 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	} else if host.Protocol == 1 {
 		host_type = "RDP"
 	}
-
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
