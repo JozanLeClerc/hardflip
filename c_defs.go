@@ -75,6 +75,6 @@ const (
 )
 
 var (
-	HOST_ICONS = [2]string{"  ", "  "}
-	DIRS_ICONS = [2]string{"  ", "  "}
+	HOST_ICONS = [2]string{" ", " "}
+	DIRS_ICONS = [2]string{" ", " "}
 )
