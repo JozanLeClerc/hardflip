@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Dec 21 12:49:09 2023
+ * Wed Dec 27 17:56:44 2023
  * Joe
  *
  * events in the code
@@ -54,7 +54,9 @@ import (
 
 func i_reload_data(data *HardData) {
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
-	data.ui.sel_max, data.ui.count_dirs, data.ui.count_hosts = i_get_sel_max(data.ldirs)
+	data.ui.sel_max,
+	data.ui.count_dirs,
+	data.ui.count_hosts = i_get_sel_max(data.ldirs)
 }
 
 func i_delete_host(data *HardData) {
@@ -90,27 +92,29 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				if ui.sel < ui.sel_max - 1 {
-					ui.sel += 1
+				if ui.sel.line < ui.sel_max - 1 {
+					ui.inc_sel(1)
 				}
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
-				if ui.sel > 0 {
-					ui.sel -= 1
+				if ui.sel.line > 0 {
+					ui.inc_sel(-1)
 				}
 			} else if event.Rune() == 'g' {
-			   ui.sel = 0
+			   ui.sel.line = 0
 			} else if event.Rune() == 'G' {
-			   ui.sel = ui.sel_max - 1
+			   ui.sel.line = ui.sel_max - 1
 			} else if event.Rune() == 'D' &&
 					data.ldirs.head != nil &&
 					ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
-				ui.s.Fini()
-				c_exec(ui.sel, ui.sel, data.ldirs)
-				if data.opts.Loop == false {
-					os.Exit(0)
+				if ui.sel.host_ptr != nil {
+					ui.s.Fini()
+					c_exec(ui.sel.host_ptr)
+					if data.opts.Loop == false {
+						os.Exit(0)
+					}
 				}
 				if ui.s, err = tcell.NewScreen(); err != nil {
 					c_die("view", err)

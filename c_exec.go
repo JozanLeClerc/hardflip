@@ -128,26 +128,23 @@ func c_format_rdp(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_cmd(dir_id, host_id uint64, ldirs *DirsList) {
+func c_format_cmd(host *HostNode) {
 	var cmd_fmt []string
-	host := ldirs.sel(dir_id).lhost.sel(host_id)
 
-	if host == nil {
-		c_die("host id not found", nil)
-	}
-	if host.Protocol == 0 {
+	switch host.Protocol {
+	case 0:
 		cmd_fmt = c_format_ssh(host)
-	} else if host.Protocol == 1 { 
+	case 1:
 		cmd_fmt = c_format_rdp(host)
-	} else if host.Protocol > 1 {
+	default:
 		c_die("type not found", nil)
 	}
 	c_exec_cmd(cmd_fmt)
 }
 
-func c_exec(dir_id, host_id uint64, ldirs *DirsList) {
-	if ldirs.head == nil {
+func c_exec(host *HostNode) {
+	if host == nil {
 		return
 	}
-	c_format_cmd(dir_id, host_id, ldirs)
+	c_format_cmd(host)
 }

@@ -58,14 +58,28 @@ type HardUI struct {
 	s           tcell.Screen
 	list_start  int
 	mode        uint8
-	sel         uint64
-	sel_max     uint64
+	sel_max     int
 	count_dirs  uint64
 	count_hosts uint64
 	def_style   tcell.Style
 	dir_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
+	sel			HardSelect
+}
+
+type HardSelect struct {
+	line     int
+	dirs_ptr *DirsNode
+	host_ptr *HostNode
+}
+
+func (ui *HardUI) inc_sel(n ...int) {
+	sel := &ui.sel
+	if n[0] == 0 {
+		n[0] = 1
+	}
+	sel.line += n[0]
 }
 
 func i_draw_text(s tcell.Screen,
@@ -218,7 +232,7 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 
 func i_host_panel_dirs(ui HardUI, opts HardOpts, dirs *DirsNode, line int) {
 	style := ui.dir_style
-	if ui.sel == dirs.ID {
+	if &ui.sel.dirs_ptr == &dirs {
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -248,7 +262,7 @@ func i_host_panel_dirs(ui HardUI, opts HardOpts, dirs *DirsNode, line int) {
 func i_host_panel_host(ui HardUI, opts HardOpts,
 			dirs *DirsNode, host *HostNode, line int) {
 		style := ui.def_style
-		if ui.sel == host.ID {
+		if &ui.sel.host_ptr == &host {
 			style = style.Reverse(true)
 		}
 		text := ""
@@ -301,7 +315,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
-			" " + strconv.Itoa(int(ui.sel + 1)) + "/" +
+			" " + strconv.Itoa(int(ui.sel.line + 1)) + "/" +
 			strconv.Itoa(int(ui.sel_max)) + " hosts ")
 	}
 }
@@ -320,7 +334,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if lhost.head == nil {
 		return
 	}
-	host = lhost.sel(ui.sel)
+	host = ui.sel.host_ptr
 	if host.Protocol == 0 {
 		host_type = "SSH"
 	} else if host.Protocol == 1 {
@@ -483,10 +497,10 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	}
 }
 
-func i_get_sel_max(ldirs *DirsList) (uint64, uint64, uint64) {
+func i_get_sel_max(ldirs *DirsList) (int, uint64, uint64) {
 	count_dirs, count_hosts := ldirs.count()
 
-	return count_dirs + count_hosts, count_dirs, count_hosts
+	return int(count_dirs + count_hosts), count_dirs, count_hosts
 }
 
 func i_ui(data *HardData) {
@@ -528,15 +542,15 @@ func i_ui(data *HardData) {
 		}
 		ui.s.Show()
 		i_events(data)
-		if ui.sel >= ui.sel_max {
-			ui.sel = ui.sel_max - 1
-		} else if ui.sel < 0 {
-			ui.sel = 0
+		if ui.sel.line >= ui.sel_max {
+			ui.sel.line = ui.sel_max - 1
+		} else if ui.sel.line < 0 {
+			ui.sel.line = 0
 		}
-		if int(ui.sel) > ui.list_start + ui.dim[H] - 4 {
-			ui.list_start = int(ui.sel + 1) - ui.dim[H] + 3
-		} else if int(ui.sel) < ui.list_start {
-			ui.list_start = int(ui.sel)
+		if int(ui.sel.line) > ui.list_start + ui.dim[H] - 4 {
+			ui.list_start = int(ui.sel.line + 1) - ui.dim[H] + 3
+		} else if int(ui.sel.line) < ui.list_start {
+			ui.list_start = int(ui.sel.line)
 		}
 	}
 }
