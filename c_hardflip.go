@@ -47,6 +47,8 @@
 
 package main
 
+import "fmt"
+
 // the main data structure, holds up everything important
 type HardData struct {
 	litems *ItemsList
@@ -66,6 +68,9 @@ func main() {
 		HardUI{},
 		opts,
 		data_dir,
+	}
+	for dir := ldirs.head; dir != nil ; dir = dir.next {
+		fmt.Println("next dir")
 	}
 	return
 	i_ui(&data)

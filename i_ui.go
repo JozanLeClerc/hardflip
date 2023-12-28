@@ -296,8 +296,8 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		i_host_panel_dirs(ui, opts, dirs, line)
 		line++
 		for host := dirs.lhost.head;
-				dirs.Folded == false && host != nil;
-				host = host.next {
+			dirs.Folded == false && host != nil;
+			host = host.next {
 			i_host_panel_host(ui, opts, dirs, host, line)
 			line++
 		}
