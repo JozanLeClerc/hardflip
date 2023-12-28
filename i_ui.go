@@ -136,7 +136,7 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 func i_bottom_text(ui HardUI) {
 	spaces := ""
 	text := ""
-	
+
 	switch ui.mode {
 	case NORMAL_MODE:
 		text = NORMAL_KEYS_HINTS

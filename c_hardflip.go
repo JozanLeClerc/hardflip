@@ -70,6 +70,9 @@ func main() {
 		data_dir,
 	}
 	for dir := ldirs.head; dir != nil ; dir = dir.next {
+		for host := ldirs.head.lhost.head; host != nil; host = host.next {
+			fmt.Println(host.ID, host.Filename)
+		}
 		fmt.Println("next dir")
 	}
 	return
