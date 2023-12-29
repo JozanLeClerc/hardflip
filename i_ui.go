@@ -526,13 +526,14 @@ func i_ui(data *HardData) {
 		ui.s.Clear()
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts, data.ldirs)
-		// TODO - info panel
+		// TODO: info panel
 		// i_info_panel(data.ui, data.lhost)
 		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {
-			// TODO - delete mode
+			// TODO: delete mode
+
 			// host := data.lhost.sel(ui.sel)
 			// i_draw_delete_box(*ui, host)
 		}
