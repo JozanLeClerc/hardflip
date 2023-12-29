@@ -89,9 +89,9 @@ func (lhost *HostList) add_back(node *HostNode) {
 		return
 	}
 	curr := lhost.last
-	for curr.next != nil {
-		curr = curr.next
-	}
+	// for curr.next != nil {
+	// 	curr = curr.next
+	// }
 	new_node.ID = curr.ID + 1
 	curr.next = new_node
 	lhost.last = curr.next

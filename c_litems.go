@@ -68,9 +68,9 @@ func (litems *ItemsList) add_back(node *ItemsNode) {
 		return
 	}
 	curr := litems.last
-	for curr.next != nil {
-		curr = curr.next
-	}
+	// for curr.next != nil {
+	// 	curr = curr.next
+	// }
 	new_node.ID = curr.ID + 1
 	curr.next = new_node
 	litems.last = curr.next

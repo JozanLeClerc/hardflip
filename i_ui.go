@@ -533,7 +533,6 @@ func i_ui(data *HardData) {
 		}
 		if ui.mode == DELETE_MODE {
 			// TODO: delete mode
-
 			// host := data.lhost.sel(ui.sel)
 			// i_draw_delete_box(*ui, host)
 		}

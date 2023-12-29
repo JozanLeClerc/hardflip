@@ -69,12 +69,22 @@ func main() {
 		opts,
 		data_dir,
 	}
-	for dir := ldirs.head; dir != nil ; dir = dir.next {
-		for host := ldirs.head.lhost.head; host != nil; host = host.next {
-			fmt.Println(host.ID, host.Filename)
-		}
-		fmt.Println("next dir")
-	}
+	// for dir := ldirs.head; dir != nil ; dir = dir.next {
+	// 	fmt.Println(dir.ID, dir.Name)
+	// }
+	// for dir := ldirs.head; dir != nil ; dir = dir.next {
+	// 	for host := dir.lhost.head; host != nil; host = host.next {
+	// 		fmt.Println(host.ID, host.Name)
+	// 	}
+	// }
+	// for item := litems.head; item != nil ; item = item.next {
+	// 	if item.Dirs != nil {
+	// 		fmt.Println(item.ID, item.Dirs.Name)
+	// 	} else {
+	// 		fmt.Println(item.ID, item.Host.Name)
+	// 	}
+	// }
+
 	return
 	i_ui(&data)
 }

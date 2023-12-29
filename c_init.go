@@ -61,32 +61,31 @@ type HardOpts struct {
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
-		litems *ItemsList, ldirs *DirsList,                        dir_node *DirsNode,
-		id *uint64, name string, parent *DirsNode, depth uint16) {
+		litems *ItemsList, ldirs *DirsList,
+		name string, parent *DirsNode, depth uint16) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
 	}
-	// dir_node := DirsNode{
-	// 	*id,
-	// 	name,
-	// 	parent,
-	// 	depth,
-	// 	&HostList{},
-	// 	opts.FoldAll,
-	// 	nil,
-	// }
-	// item_node := ItemsNode{}
-	// item_node.Dirs = dir_node
-	// item_node.Host = nil
-	*id++
-	// ldirs.add_back(&dir_node)
-	// litems.add_back(&item_node)
+	dir_node := DirsNode{
+		0,
+		name,
+		parent,
+		depth,
+		&HostList{},
+		opts.FoldAll,
+		nil,
+	}
+	item_node := ItemsNode{}
+	item_node.Dirs = &dir_node
+	item_node.Host = nil
+	ldirs.add_back(&dir_node)
+	litems.add_back(&item_node)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + filename + "/", root, opts, litems, ldirs,       dir_node,
-				id, file.Name(), dir_node, depth + 1)
+			c_recurse_data_dir(dir + filename + "/", root, opts, litems, ldirs,
+				file.Name(), &dir_node, depth + 1)
 		} else if filepath.Ext(filename) == ".yml" {
 			host_node := c_read_yaml_file(root + dir + filename)
 			if host_node == nil {
@@ -97,7 +96,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			item_node.Host = host_node
 			litems.add_back(&item_node)
 			host_node.Filename = filename
-			host_node.Dir = dir_node
+			host_node.Dir = &dir_node
 			dir_node.lhost.add_back(host_node)
 		}
 	}
@@ -106,19 +105,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 func c_load_data_dir(dir string, opts HardOpts) (*ItemsList, *DirsList) {
 	litems := ItemsList{}
 	ldirs  := DirsList{}
-	var id uint64
 
-		dir_node := DirsNode{
-			0,
-			"qwe",
-			nil,
-			0,
-			&HostList{},
-			opts.FoldAll,
-			nil,
-		}
-		ldirs.add_back(&dir_node)
-	id = 0
-	c_recurse_data_dir("", dir + "/", opts, &litems, &ldirs,          &dir_node,             &id, "", nil, 1)
+	c_recurse_data_dir("", dir + "/", opts, &litems, &ldirs, "", nil, 1)
 	return &litems, &ldirs
 }
