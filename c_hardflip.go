@@ -51,7 +51,7 @@
 
 package main
 
-import "fmt"
+// import "fmt"
 
 // the main data structure, holds up everything important
 type HardData struct {
@@ -89,6 +89,5 @@ func main() {
 	// 	}
 	// }
 
-	return
 	i_ui(&data)
 }
