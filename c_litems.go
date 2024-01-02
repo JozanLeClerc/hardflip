@@ -63,6 +63,24 @@ type ItemsList struct {
 	last *ItemsNode
 }
 
+func (litems *ItemsList) is_dir(id int) bool {
+	curr := litems.head
+
+	if curr == nil {
+		return false
+	}
+	for curr.next != nil && curr.ID != id {
+		curr = curr.next
+	}
+	if curr.ID != id {
+		return false
+	}
+	if curr.Dirs != nil {
+		return true
+	}
+	return false
+}
+
 func (litems *ItemsList) add_back(node *ItemsNode) {
 	new_node := node
 

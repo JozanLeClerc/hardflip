@@ -89,5 +89,6 @@ func main() {
 	// 	}
 	// }
 
+	// PERF: test performance over a large amount of hosts with litems
 	i_ui(&data)
 }
