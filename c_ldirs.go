@@ -70,6 +70,7 @@ type DirsList struct {
 func (ldirs *DirsList) add_back(node *DirsNode) {
 	new_node := node
 
+	new_node.ID = global_id
 	if ldirs.head == nil {
 		ldirs.head = new_node
 		ldirs.last = ldirs.head
@@ -79,7 +80,6 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 	// for curr.next != nil {
 	// 	curr = curr.next
 	// }
-	new_node.ID = curr.ID + 1
 	curr.next = new_node
 	ldirs.last = curr.next
 }

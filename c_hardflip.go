@@ -51,7 +51,7 @@
 
 package main
 
-// import "fmt"
+import "fmt"
 
 // the main data structure, holds up everything important
 type HardData struct {
@@ -73,12 +73,24 @@ func main() {
 		opts,
 		data_dir,
 	}
-	// for dir := ldirs.head; dir != nil ; dir = dir.next {
-	// 	fmt.Println(dir.ID, dir.Name)
-	// }
+	for dir := ldirs.head; dir != nil ; dir = dir.next {
+		spaces := ""
+		for i := 0; i < int(dir.Depth - 1) * 2; i++ {
+			spaces += " "
+		}
+		fmt.Println(dir.ID, spaces, dir.Name, "DIR")
+		for host := dir.lhost.head; host != nil; host = host.next {
+			spaces := ""
+			for i := 0; i < int(host.Parent.Depth - 1) * 2; i++ {
+				spaces += " "
+			}
+			spaces += " " 
+			fmt.Println(host.ID, spaces, host.Name, "HOST")
+		}
+	}
 	// for dir := ldirs.head; dir != nil ; dir = dir.next {
 	// 	for host := dir.lhost.head; host != nil; host = host.next {
-	// 		fmt.Println(host.ID, host.Name)
+	// 		fmt.Println(host.ID, host.Name, "HOST")
 	// 	}
 	// }
 	// for item := litems.head; item != nil ; item = item.next {
@@ -90,5 +102,6 @@ func main() {
 	// }
 
 	// PERF: test performance over a large amount of hosts with litems
+	return
 	i_ui(&data)
 }

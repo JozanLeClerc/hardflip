@@ -74,7 +74,7 @@ type HostNode struct {
 	Dynamic   bool   `yaml:"dynamic"`
 	Note      string `yaml:"note"`
 	Filename  string
-	Dir       *DirsNode
+	Parent    *DirsNode
 	next      *HostNode
 }
 
@@ -87,6 +87,7 @@ type HostList struct {
 func (lhost *HostList) add_back(node *HostNode) {
 	new_node := node
 
+	new_node.ID = global_id
 	if lhost.head == nil {
 		lhost.head = new_node
 		lhost.last = lhost.head
@@ -96,7 +97,6 @@ func (lhost *HostList) add_back(node *HostNode) {
 	// for curr.next != nil {
 	// 	curr = curr.next
 	// }
-	new_node.ID = curr.ID + 1
 	curr.next = new_node
 	lhost.last = curr.next
 }
