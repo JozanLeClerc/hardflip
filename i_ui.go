@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Dec 27 18:19:37 2023
+ * Thu 04 Jan 2024 12:03:11 PM CET
  * Joe
  *
  * interfacing with the user
@@ -63,23 +63,17 @@ type HardUI struct {
 	list_start  int
 	mode        uint8
 	sel_max     int
-	count_dirs  uint64
-	count_hosts uint64
+	line		int
+	count_dirs  int
+	count_hosts int
 	def_style   tcell.Style
 	dir_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
-	sel			HardSelector
-}
-
-type HardSelector struct {
-	line     int
-	dirs_ptr *DirsNode
-	host_ptr *HostNode
 }
 
 func (ui *HardUI) inc_sel(n int) {
-	ui.sel.line += n
+	ui.line += n
 }
 
 func i_draw_text(s tcell.Screen,
@@ -230,9 +224,9 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 	//     ui.def_style, "o")
 }
 
-func i_host_panel_dirs(ui HardUI, opts HardOpts, dirs *DirsNode, line int) {
+func i_host_panel_dirs(ui HardUI, icons bool, dirs *DirsNode, line int) {
 	style := ui.dir_style
-	if &ui.sel.dirs_ptr == &dirs {
+	if ui.line == dirs.ID {
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -241,7 +235,7 @@ func i_host_panel_dirs(ui HardUI, opts HardOpts, dirs *DirsNode, line int) {
 			text += "  "
 		}
 	}
-	if opts.Icon == true {
+	if icons == true {
 		var fold_var uint8
 		if dirs.Folded == true {
 			fold_var = 1
@@ -259,17 +253,17 @@ func i_host_panel_dirs(ui HardUI, opts HardOpts, dirs *DirsNode, line int) {
 		style, text)
 }
 
-func i_host_panel_host(ui HardUI, opts HardOpts,
+func i_host_panel_host(ui HardUI, icons bool,
 			dirs *DirsNode, host *HostNode, line int) {
 		style := ui.def_style
-		if &ui.sel.host_ptr == &host {
+	if ui.line == host.ID {
 			style = style.Reverse(true)
 		}
 		text := ""
 		for i := 0; i < int(dirs.Depth) - 2; i++ {
 			text += "    "
 		}
-		if opts.Icon == true {
+		if icons == true {
 			text += HOST_ICONS[int(host.Protocol)]
 		}
 		text += host.Name
@@ -283,7 +277,7 @@ func i_host_panel_host(ui HardUI, opts HardOpts,
 			style, text)
 }
 
-func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
+func i_host_panel(ui HardUI, icons bool, ldirs *DirsList) {
 	// TODO: this must work
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
@@ -293,17 +287,17 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 	for host := dirs.lhost.head;
 		dirs.Folded == false && host != nil;
 		host = host.next {
-		i_host_panel_host(ui, opts, dirs, host, line)
+		i_host_panel_host(ui, icons, dirs, host, line)
 		line++
 	}
 	dirs = dirs.next
 	for line = line; line < ui.dim[H] - 2 && dirs != nil; dirs = dirs.next {
-		i_host_panel_dirs(ui, opts, dirs, line)
+		i_host_panel_dirs(ui, icons, dirs, line)
 		line++
 		for host := dirs.lhost.head;
 			dirs.Folded == false && host != nil;
 			host = host.next {
-			i_host_panel_host(ui, opts, dirs, host, line)
+			i_host_panel_host(ui, icons, dirs, host, line)
 			line++
 		}
 	}
@@ -316,7 +310,7 @@ func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
-			" " + strconv.Itoa(int(ui.sel.line + 1)) + "/" +
+			" " + strconv.Itoa(int(ui.line + 1)) + "/" +
 			strconv.Itoa(int(ui.sel_max)) + " hosts ")
 	}
 }
@@ -335,12 +329,8 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if lhost.head == nil {
 		return
 	}
-	host = ui.sel.host_ptr
-	if host.Protocol == 0 {
-		host_type = "SSH"
-	} else if host.Protocol == 1 {
-		host_type = "RDP"
-	}
+	host = lhost.sel(ui.line)
+	host_type = host.protocol_str()
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
@@ -498,10 +488,10 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	}
 }
 
-func i_get_sel_max(ldirs *DirsList) (int, uint64, uint64) {
+func i_get_sel_max(ldirs *DirsList) (int, int, int) {
 	count_dirs, count_hosts := ldirs.count()
 
-	return int(count_dirs + count_hosts), count_dirs, count_hosts
+	return count_dirs + count_hosts, count_dirs, count_hosts
 }
 
 func i_ui(data *HardData) {
@@ -530,7 +520,7 @@ func i_ui(data *HardData) {
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 		ui.s.Clear()
 		i_bottom_text(*ui)
-		i_host_panel(data.ui, data.opts, data.ldirs)
+		i_host_panel(data.ui, data.opts.Icon, data.ldirs)
 		// TODO: info panel
 		// i_info_panel(data.ui, data.lhost)
 		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
@@ -543,15 +533,15 @@ func i_ui(data *HardData) {
 		}
 		ui.s.Show()
 		i_events(data)
-		if ui.sel.line >= ui.sel_max {
-			ui.sel.line = ui.sel_max - 1
-		} else if ui.sel.line < 0 {
-			ui.sel.line = 0
+		if ui.line >= ui.sel_max {
+			ui.line = ui.sel_max - 1
+		} else if ui.line < 0 {
+			ui.line = 0
 		}
-		if int(ui.sel.line) > ui.list_start + ui.dim[H] - 4 {
-			ui.list_start = int(ui.sel.line + 1) - ui.dim[H] + 3
-		} else if int(ui.sel.line) < ui.list_start {
-			ui.list_start = int(ui.sel.line)
+		if int(ui.line) > ui.list_start + ui.dim[H] - 4 {
+			ui.list_start = int(ui.line + 1) - ui.dim[H] + 3
+		} else if int(ui.line) < ui.list_start {
+			ui.list_start = int(ui.line)
 		}
 	}
 }

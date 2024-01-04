@@ -52,7 +52,7 @@
 package main
 
 type DirsNode struct {
-	ID     uint64
+	ID     int
 	Name   string
 	Parent *DirsNode
 	Depth  uint16
@@ -85,7 +85,7 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 }
 
 // return the list node with the according id
-func (ldirs *DirsList) sel(id uint64) *DirsNode {
+func (ldirs *DirsList) sel(id int) *DirsNode {
 	curr := ldirs.head
 
 	if curr == nil {
@@ -115,10 +115,10 @@ func (ldirs *DirsList) path(node *DirsNode) string {
 	return path
 }
 
-func (ldirs *DirsList) count() (uint64, uint64) {
+func (ldirs *DirsList) count() (int, int) {
 	curr := ldirs.head
-	var count_dirs uint64
-	var count_hosts uint64
+	var count_dirs int
+	var count_hosts int
 
 	for count_dirs = 0; curr != nil; count_dirs++ {
 		count_hosts += curr.lhost.count()
@@ -129,4 +129,12 @@ func (ldirs *DirsList) count() (uint64, uint64) {
 
 func (dir *DirsNode) is_dir() bool {
 	return true
+}
+
+func (dir *DirsNode) get_self_dirs() *DirsNode {
+	return dir
+}
+
+func (dir *DirsNode) get_self_host() *HostNode {
+	return nil
 }

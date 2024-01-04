@@ -53,6 +53,7 @@ package main
 
 import (
 	"os"
+
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -96,37 +97,38 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				if ui.sel.line < ui.sel_max - 1 {
+				if ui.line < ui.sel_max - 1 {
 					ui.inc_sel(1)
 				}
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
-				if ui.sel.line > 0 {
+				if ui.line > 0 {
 					ui.inc_sel(-1)
 				}
 			} else if event.Rune() == 'g' {
-			   ui.sel.line = 0
+			   ui.line = 0
 			} else if event.Rune() == 'G' {
-			   ui.sel.line = ui.sel_max - 1
+			   ui.line = ui.sel_max - 1
 			} else if event.Rune() == 'D' &&
 					data.ldirs.head != nil &&
 					ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
-				if ui.sel.host_ptr != nil {
+				if data.ptr != nil && data.ptr.is_dir() == false {
 					ui.s.Fini()
-					c_exec(ui.sel.host_ptr)
+					c_exec(data.ptr.get_self_host())
 					if data.opts.Loop == false {
 						os.Exit(0)
+					} else {
+						if ui.s, err = tcell.NewScreen(); err != nil {
+							c_die("view", err)
+						}
+						if err := ui.s.Init(); err != nil {
+							c_die("view", err)
+						}
+						ui.s.SetStyle(ui.def_style)
 					}
 				}
-				if ui.s, err = tcell.NewScreen(); err != nil {
-					c_die("view", err)
-				}
-				if err := ui.s.Init(); err != nil {
-					c_die("view", err)
-				}
-				ui.s.SetStyle(ui.def_style)
 			}
 			if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)

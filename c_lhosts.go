@@ -54,7 +54,7 @@ package main
 // 0: ssh
 // 1: rdp
 type HostNode struct {
-	ID        uint64
+	ID        int
 	Protocol  int8   `yaml:"type"`
 	Name      string `yaml:"name"`
 	Host      string `yaml:"host"`
@@ -104,13 +104,13 @@ func (lhost *HostList) add_back(node *HostNode) {
 func (lhost *HostList) reset_id() {
 	curr := lhost.head
 	for i := 0; curr != nil; i++ {
-		curr.ID = uint64(i)
+		curr.ID = i
 		curr = curr.next
 	}
 }
 
 // removes a host node from the list
-func (lhost *HostList) del(id uint64) {
+func (lhost *HostList) del(id int) {
     if lhost.head == nil {
         return
     }
@@ -128,7 +128,7 @@ func (lhost *HostList) del(id uint64) {
 }
 
 // return the list node with the according id
-func (lhost *HostList) sel(id uint64) *HostNode {
+func (lhost *HostList) sel(id int) *HostNode {
 	curr := lhost.head
 
 	if curr == nil {
@@ -143,9 +143,9 @@ func (lhost *HostList) sel(id uint64) *HostNode {
 	return curr
 }
 
-func (lhost *HostList) count() uint64 {
+func (lhost *HostList) count() int {
 	curr := lhost.head
-	var count uint64
+	var count int
 
 	for count = 0; curr != nil; count++ {
 		curr = curr.next
@@ -155,4 +155,20 @@ func (lhost *HostList) count() uint64 {
 
 func (host *HostNode) is_dir() bool {
 	return false
+}
+
+func (host *HostNode) get_self_dirs() *DirsNode {
+	return nil
+}
+
+func (host *HostNode) get_self_host() *HostNode {
+	return host
+}
+
+func (host *HostNode) protocol_str() string {
+	switch host.Protocol {
+	case 0: return "SSH"
+	case 1: return "RDP"
+	default: return ""
+	}
 }

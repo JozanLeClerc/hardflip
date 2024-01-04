@@ -63,7 +63,7 @@ type HardOpts struct {
 }
 
 
-var global_id uint64
+var global_id int
 
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory

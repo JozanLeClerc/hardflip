@@ -51,7 +51,13 @@
 
 package main
 
-import "fmt"
+// import "fmt"
+
+type HardPtr interface {
+	is_dir() bool
+	get_self_dirs() *DirsNode
+	get_self_host() *HostNode
+}
 
 // the main data structure, holds up everything important
 type HardData struct {
@@ -60,11 +66,8 @@ type HardData struct {
 	ui     HardUI
 	opts   HardOpts
 	data_dir string
+	ptr    HardPtr
 }
-
-// type HardPtr interface {
-// 	is_dir() bool
-// }
 
 func main() {
 	data_dir := c_get_data_dir()
@@ -76,10 +79,9 @@ func main() {
 		HardUI{},
 		opts,
 		data_dir,
+		nil,
 	}
 
-
-	// var ptr HardPtr
 	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
 	// 	spaces := ""
 	// 	for i := 0; i < int(ptr.Depth - 1) * 2; i++ {
@@ -115,6 +117,5 @@ func main() {
 	// }
 
 	// PERF: test performance over a large amount of hosts with litems
-	return
 	i_ui(&data)
 }
