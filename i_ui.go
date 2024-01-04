@@ -72,14 +72,13 @@ type HardUI struct {
 	dim         [2]int
 }
 
-func (ui *HardUI) inc_sel(n int) {
+func (ui *HardUI) inc_sel(n int, data *HardData) {
+	if ui.line + n < 1 || 
+	   ui.line + n >= ui.sel_max {
+		n = 0
+	}
 	ui.line += n
-	if ui.line < 1 {
-		ui.line = 1
-	}
-	if ui.line >= ui.sel_max {
-		ui.line = ui.sel_max - 1
-	}
+	data.sel_unique_id(ui.line)
 	if ui.line > ui.list_start + ui.dim[H] - 4 {
 		ui.list_start = (ui.line + 1) - (ui.dim[H] + 3)
 	} else if ui.line < ui.list_start {

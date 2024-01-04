@@ -98,12 +98,12 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
 				if ui.line < ui.sel_max - 1 {
-					ui.inc_sel(1)
+					ui.inc_sel(1, data)
 				}
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
 				if ui.line > 0 {
-					ui.inc_sel(-1)
+					ui.inc_sel(-1, data)
 				}
 			} else if event.Rune() == 'g' {
 			   ui.line = 0

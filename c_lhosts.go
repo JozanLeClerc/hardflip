@@ -157,6 +157,10 @@ func (host *HostNode) is_dir() bool {
 	return false
 }
 
+func (host *HostNode) get_id() int {
+	return host.ID
+}
+
 func (host *HostNode) get_self_dirs() *DirsNode {
 	return nil
 }

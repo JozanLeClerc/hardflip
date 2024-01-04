@@ -55,6 +55,7 @@ package main
 
 type HardPtr interface {
 	is_dir() bool
+	get_id() int
 	get_self_dirs() *DirsNode
 	get_self_host() *HostNode
 }
@@ -74,6 +75,21 @@ func c_reset_ptr(data *HardData) {
 		data.ui.line = 1
 	} else if data.ptr = data.ldirs.head.next; data.ptr != nil {
 		data.ui.line = 1
+	}
+}
+
+func (data *HardData) sel_unique_id(id int) {
+	for ptr := data.ldirs.head; ptr != nil; ptr = ptr.next {
+		if ptr.ID == id {
+			data.ptr = ptr
+			return
+		}
+		for ptr := ptr.lhost.head; ptr != nil; ptr = ptr.next {
+			if ptr.ID == id {
+				data.ptr = ptr
+				return
+			}
+		}
 	}
 }
 
