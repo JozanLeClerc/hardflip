@@ -126,3 +126,15 @@ func (ldirs *DirsList) count() (uint64, uint64) {
 	}
 	return count_dirs, count_hosts
 }
+
+func (dir *DirsNode) is_dir() bool {
+	return true
+}
+
+func (dir *DirsNode) get_id() uint64 {
+	return dir.ID
+}
+
+func (dir *DirsNode) get_next() *DirsNode {
+	return dir.next
+}

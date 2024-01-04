@@ -152,3 +152,15 @@ func (lhost *HostList) count() uint64 {
 	}
 	return count
 }
+
+func (host *HostNode) is_dir() bool {
+	return false
+}
+
+func (host *HostNode) get_id() uint64 {
+	return host.ID
+}
+
+func (host *HostNode) get_next() *HostNode {
+	return host.next
+}

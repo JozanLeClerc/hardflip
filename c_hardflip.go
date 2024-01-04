@@ -62,6 +62,11 @@ type HardData struct {
 	data_dir string
 }
 
+type HardSel interface {
+	is_dir() bool
+	get_id() uint64
+}
+
 func main() {
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
@@ -73,19 +78,26 @@ func main() {
 		opts,
 		data_dir,
 	}
-	for dir := ldirs.head; dir != nil ; dir = dir.next {
+
+	for sel := ldirs.head; sel != nil ; sel = sel.next {
 		spaces := ""
-		for i := 0; i < int(dir.Depth - 1) * 2; i++ {
+		for i := 0; i < int(sel.Depth - 1) * 2; i++ {
 			spaces += " "
 		}
-		fmt.Println(dir.ID, spaces, dir.Name, "DIR")
-		for host := dir.lhost.head; host != nil; host = host.next {
+		if sel.is_dir() == true {
+			fmt.Print(spaces, "DIR ", sel.ID, " ")
+		}
+		fmt.Println(sel.Name)
+		for sel := sel.lhost.head; sel != nil; sel = sel.next {
 			spaces := ""
-			for i := 0; i < int(host.Parent.Depth - 1) * 2; i++ {
+			for i := 0; i < int(sel.Parent.Depth - 1) * 2; i++ {
 				spaces += " "
 			}
 			spaces += " " 
-			fmt.Println(host.ID, spaces, host.Name, "HOST")
+			if sel.is_dir() == false {
+				fmt.Print(spaces, "HOST ", sel.ID, " ")
+			}
+			fmt.Println(sel.Name)
 		}
 	}
 	// for dir := ldirs.head; dir != nil ; dir = dir.next {
