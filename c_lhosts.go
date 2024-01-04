@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Tue Dec 26 12:07:56 2023
+ * Thu 04 Jan 2024 11:50:55 AM CET
  * Joe
  *
  * the hosts linked list
@@ -155,12 +155,4 @@ func (lhost *HostList) count() uint64 {
 
 func (host *HostNode) is_dir() bool {
 	return false
-}
-
-func (host *HostNode) get_id() uint64 {
-	return host.ID
-}
-
-func (host *HostNode) get_next() *HostNode {
-	return host.next
 }

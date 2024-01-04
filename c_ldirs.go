@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Tue Dec 26 11:09:27 2023
+ * Thu 04 Jan 2024 11:50:52 AM CET
  * Joe
  *
  * the directories linked list
@@ -129,12 +129,4 @@ func (ldirs *DirsList) count() (uint64, uint64) {
 
 func (dir *DirsNode) is_dir() bool {
 	return true
-}
-
-func (dir *DirsNode) get_id() uint64 {
-	return dir.ID
-}
-
-func (dir *DirsNode) get_next() *DirsNode {
-	return dir.next
 }

@@ -62,9 +62,8 @@ type HardData struct {
 	data_dir string
 }
 
-type HardSel interface {
+type HardPtr interface {
 	is_dir() bool
-	get_id() uint64
 }
 
 func main() {
