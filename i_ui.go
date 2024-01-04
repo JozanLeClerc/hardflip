@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu 04 Jan 2024 12:03:11 PM CET
+ * Thu Jan 04 15:36:48 2024
  * Joe
  *
  * interfacing with the user
@@ -74,6 +74,17 @@ type HardUI struct {
 
 func (ui *HardUI) inc_sel(n int) {
 	ui.line += n
+	if ui.line < 1 {
+		ui.line = 1
+	}
+	if ui.line >= ui.sel_max {
+		ui.line = ui.sel_max - 1
+	}
+	if ui.line > ui.list_start + ui.dim[H] - 4 {
+		ui.list_start = (ui.line + 1) - (ui.dim[H] + 3)
+	} else if ui.line < ui.list_start {
+		ui.list_start = ui.line
+	}
 }
 
 func i_draw_text(s tcell.Screen,
@@ -533,15 +544,5 @@ func i_ui(data *HardData) {
 		}
 		ui.s.Show()
 		i_events(data)
-		if ui.line >= ui.sel_max {
-			ui.line = ui.sel_max - 1
-		} else if ui.line < 0 {
-			ui.line = 0
-		}
-		if int(ui.line) > ui.list_start + ui.dim[H] - 4 {
-			ui.list_start = int(ui.line + 1) - ui.dim[H] + 3
-		} else if int(ui.line) < ui.list_start {
-			ui.list_start = int(ui.line)
-		}
 	}
 }

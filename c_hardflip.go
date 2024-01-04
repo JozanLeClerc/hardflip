@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Tue Dec 26 14:40:37 2023
+ * Thu Jan 04 15:37:01 2024
  * Joe
  *
  * the main
@@ -69,6 +69,15 @@ type HardData struct {
 	ptr    HardPtr
 }
 
+func c_reset_ptr(data *HardData) {
+	if data.ptr = data.ldirs.head.lhost.head; data.ptr != nil {
+		data.ui.line = 1
+		return
+	}
+	data.ptr = data.ldirs.head.next
+	data.ui.line = 1
+}
+
 func main() {
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
@@ -81,6 +90,7 @@ func main() {
 		data_dir,
 		nil,
 	}
+	c_reset_ptr(&data)
 
 	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
 	// 	spaces := ""
