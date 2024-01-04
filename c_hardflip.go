@@ -62,9 +62,9 @@ type HardData struct {
 	data_dir string
 }
 
-type HardPtr interface {
-	is_dir() bool
-}
+// type HardPtr interface {
+// 	is_dir() bool
+// }
 
 func main() {
 	data_dir := c_get_data_dir()
@@ -78,27 +78,29 @@ func main() {
 		data_dir,
 	}
 
-	for sel := ldirs.head; sel != nil ; sel = sel.next {
-		spaces := ""
-		for i := 0; i < int(sel.Depth - 1) * 2; i++ {
-			spaces += " "
-		}
-		if sel.is_dir() == true {
-			fmt.Print(spaces, "DIR ", sel.ID, " ")
-		}
-		fmt.Println(sel.Name)
-		for sel := sel.lhost.head; sel != nil; sel = sel.next {
-			spaces := ""
-			for i := 0; i < int(sel.Parent.Depth - 1) * 2; i++ {
-				spaces += " "
-			}
-			spaces += " " 
-			if sel.is_dir() == false {
-				fmt.Print(spaces, "HOST ", sel.ID, " ")
-			}
-			fmt.Println(sel.Name)
-		}
-	}
+
+	// var ptr HardPtr
+	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
+	// 	spaces := ""
+	// 	for i := 0; i < int(ptr.Depth - 1) * 2; i++ {
+	// 		spaces += " "
+	// 	}
+	// 	if ptr.is_dir() == true {
+	// 		fmt.Print(spaces, "DIR ", ptr.ID, " ")
+	// 	}
+	// 	fmt.Println(ptr.Name)
+	// 	for ptr = ptr.lhost.head; ptr != nil; ptr = ptr.next {
+	// 		spaces := ""
+	// 		for i := 0; i < int(ptr.Parent.Depth - 1) * 2; i++ {
+	// 			spaces += " "
+	// 		}
+	// 		spaces += " " 
+	// 		if ptr.is_dir() == false {
+	// 			fmt.Print(spaces, "HOST ", ptr.ID, " ")
+	// 		}
+	// 		fmt.Println(ptr.Name)
+	// 	}
+	// }
 	// for dir := ldirs.head; dir != nil ; dir = dir.next {
 	// 	for host := dir.lhost.head; host != nil; host = host.next {
 	// 		fmt.Println(host.ID, host.Name, "HOST")

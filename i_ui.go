@@ -284,7 +284,7 @@ func i_host_panel_host(ui HardUI, opts HardOpts,
 }
 
 func i_host_panel(ui HardUI, opts HardOpts, ldirs *DirsList) {
-	// TODO: litems instead of lhosts
+	// TODO: this must work
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
