@@ -72,10 +72,9 @@ type HardData struct {
 func c_reset_ptr(data *HardData) {
 	if data.ptr = data.ldirs.head.lhost.head; data.ptr != nil {
 		data.ui.line = 1
-		return
+	} else if data.ptr = data.ldirs.head.next; data.ptr != nil {
+		data.ui.line = 1
 	}
-	data.ptr = data.ldirs.head.next
-	data.ui.line = 1
 }
 
 func main() {
