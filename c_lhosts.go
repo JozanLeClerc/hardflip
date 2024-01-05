@@ -74,6 +74,7 @@ type HostNode struct {
 	Dynamic   bool   `yaml:"dynamic"`
 	Note      string `yaml:"note"`
 	Filename  string
+	Parent    *DirsNode
 	next      *HostNode
 }
 

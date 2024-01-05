@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Tue Dec 26 16:32:26 2023
+ * Fri Jan 05 16:53:38 2024
  * Joe
  *
  * init functions
@@ -100,7 +100,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			// item_node.Host = host_node
 			// litems.add_back(&item_node)
 			host_node.Filename = filename
-			// host_node.Parent = &dir_node
+			host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
 		}
 	}
