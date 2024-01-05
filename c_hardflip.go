@@ -97,7 +97,8 @@ func main() {
 	// TODO: no ldirs just hosts raw hosts
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
-	litems, ldirs := c_load_data_dir(data_dir, opts)
+	ldirs := c_load_data_dir(data_dir, opts)
+	litems := c_load_litems(ldirs)
 	data := HardData{
 		litems,
 		ldirs,
@@ -106,7 +107,6 @@ func main() {
 		data_dir,
 		nil,
 	}
-	c_fill_litems()
 	c_reset_ptr(&data)
 
 	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {

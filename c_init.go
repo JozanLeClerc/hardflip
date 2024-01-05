@@ -65,7 +65,7 @@ type HardOpts struct {
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
-		litems *ItemsList, ldirs *DirsList,
+		ldirs *DirsList,
 		name string, parent *DirsNode, depth uint16) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
@@ -88,7 +88,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
-			c_recurse_data_dir(dir + filename + "/", root, opts, litems, ldirs,
+			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
 				file.Name(), &dir_node, depth + 1)
 		} else if filepath.Ext(filename) == ".yml" {
 			host_node := c_read_yaml_file(root + dir + filename)
@@ -106,10 +106,15 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 	}
 }
 
-func c_load_data_dir(dir string, opts HardOpts) (*ItemsList, *DirsList) {
-	litems := ItemsList{}
+func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 	ldirs  := DirsList{}
 
-	c_recurse_data_dir("", dir + "/", opts, &litems, &ldirs, "", nil, 1)
-	return &litems, &ldirs
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1)
+	return &ldirs
+}
+
+func c_load_litems(ldirs *DirsList) *ItemsList {
+	litems := ItemsList{}
+
+	return &litems
 }
