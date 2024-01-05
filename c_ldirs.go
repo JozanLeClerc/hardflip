@@ -121,19 +121,3 @@ func (ldirs *DirsList) count() (int, int) {
 	}
 	return count_dirs, count_hosts
 }
-
-func (dir *DirsNode) is_dir() bool {
-	return true
-}
-
-func (dir *DirsNode) get_id() int {
-	return dir.ID
-}
-
-func (dir *DirsNode) get_self_dirs() *DirsNode {
-	return dir
-}
-
-func (dir *DirsNode) get_self_host() *HostNode {
-	return nil
-}

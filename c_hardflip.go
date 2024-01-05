@@ -53,13 +53,6 @@ package main
 
 import "fmt"
 
-type HardPtr interface {
-	is_dir() bool
-	get_id() int
-	get_self_dirs() *DirsNode
-	get_self_host() *HostNode
-}
-
 // the main data structure, holds up everything important
 type HardData struct {
 	litems *ItemsList
@@ -67,30 +60,6 @@ type HardData struct {
 	ui     HardUI
 	opts   HardOpts
 	data_dir string
-	ptr    HardPtr
-}
-
-func c_reset_ptr(data *HardData) {
-	if data.ptr = data.ldirs.head.lhost.head; data.ptr != nil {
-		data.ui.line = 1
-	} else if data.ptr = data.ldirs.head.next; data.ptr != nil {
-		data.ui.line = 1
-	}
-}
-
-func (data *HardData) sel_unique_id(id int) {
-	for ptr := data.ldirs.head; ptr != nil; ptr = ptr.next {
-		if ptr.ID == id {
-			data.ptr = ptr
-			return
-		}
-		for ptr := ptr.lhost.head; ptr != nil; ptr = ptr.next {
-			if ptr.ID == id {
-				data.ptr = ptr
-				return
-			}
-		}
-	}
 }
 
 func main() {
@@ -105,9 +74,7 @@ func main() {
 		HardUI{},
 		opts,
 		data_dir,
-		nil,
 	}
-	c_reset_ptr(&data)
 
 	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
 	// 	spaces := ""

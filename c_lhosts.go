@@ -147,22 +147,6 @@ func (lhost *HostList) count() int {
 	return count
 }
 
-func (host *HostNode) is_dir() bool {
-	return false
-}
-
-func (host *HostNode) get_id() int {
-	return host.ID
-}
-
-func (host *HostNode) get_self_dirs() *DirsNode {
-	return nil
-}
-
-func (host *HostNode) get_self_host() *HostNode {
-	return host
-}
-
 func (host *HostNode) protocol_str() string {
 	switch host.Protocol {
 	case 0: return "SSH"
