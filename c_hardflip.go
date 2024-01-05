@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Thu Jan 04 15:37:01 2024
+ * Fri Jan 05 14:41:26 2024
  * Joe
  *
  * the main
@@ -51,7 +51,7 @@
 
 package main
 
-// import "fmt"
+import "fmt"
 
 type HardPtr interface {
 	is_dir() bool
@@ -94,7 +94,8 @@ func (data *HardData) sel_unique_id(id int) {
 }
 
 func main() {
-	// TODO: no ldirs just hosts raw hosts
+	// TODO: fill litems
+	// TODO: delete data.ptr | replace with litems
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
 	ldirs := c_load_data_dir(data_dir, opts)
@@ -135,13 +136,13 @@ func main() {
 	// 		fmt.Println(host.ID, host.Name, "HOST")
 	// 	}
 	// }
-	// for item := litems.head; item != nil ; item = item.next {
-	// 	if item.Dirs != nil {
-	// 		fmt.Println(item.ID, item.Dirs.Name)
-	// 	} else {
-	// 		fmt.Println(item.ID, item.Host.Name)
-	// 	}
-	// }
+	for item := litems.head; item != nil ; item = item.next {
+		if item.is_dir() == true {
+			fmt.Println(item.ID, item.Dirs.Name)
+		} else {
+			fmt.Println(item.ID, item.Host.Name)
+		}
+	}
 
 	// PERF: test performance over a large amount of hosts with litems
 	i_ui(&data)

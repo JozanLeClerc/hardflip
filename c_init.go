@@ -116,5 +116,7 @@ func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 func c_load_litems(ldirs *DirsList) *ItemsList {
 	litems := ItemsList{}
 
+	for dir := ldirs.head; dir != nil; dir = dir.next {
+	}
 	return &litems
 }
