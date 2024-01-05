@@ -56,6 +56,7 @@ import "fmt"
 // the main data structure, holds up everything important
 type HardData struct {
 	litems *ItemsList
+	ptr    *ItemsNode
 	ldirs  *DirsList
 	ui     HardUI
 	opts   HardOpts
