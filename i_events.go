@@ -115,9 +115,9 @@ func i_events(data *HardData) {
 					ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
-				if data.ptr != nil && data.ptr.is_dir() == false {
+				if data.litems.curr != nil && data.litems.curr.is_dir() == false {
 					ui.s.Fini()
-					c_exec(data.ptr.get_self_host())
+					c_exec(data.litems.curr.Host)
 					if data.opts.Loop == false {
 						os.Exit(0)
 					} else {

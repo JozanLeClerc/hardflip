@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Fri Jan 05 14:41:26 2024
+ * Fri Jan 05 16:10:29 2024
  * Joe
  *
  * the main
@@ -51,12 +51,11 @@
 
 package main
 
-import "fmt"
+// import "fmt"
 
 // the main data structure, holds up everything important
 type HardData struct {
 	litems *ItemsList
-	ptr    *ItemsNode
 	ldirs  *DirsList
 	ui     HardUI
 	opts   HardOpts
@@ -64,7 +63,7 @@ type HardData struct {
 }
 
 func main() {
-	// TODO: delete data.ptr | replace everything ui with litems
+	// TODO: replace everything ui with litems
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
 	ldirs := c_load_data_dir(data_dir, opts)
@@ -103,15 +102,14 @@ func main() {
 	// 		fmt.Println(host.ID, host.Name, "HOST")
 	// 	}
 	// }
-	for item := litems.head; item != nil ; item = item.next {
-		if item.is_dir() == true {
-			fmt.Println(item.ID, item.Dirs.Name)
-		} else {
-			fmt.Println(item.ID, item.Host.Name)
-		}
-	}
+	// for item := litems.head; item != nil; item = item.next {
+	// 	if item.is_dir() == true {
+	// 		fmt.Println(item.ID, item.Dirs.Name)
+	// 	} else {
+	// 		fmt.Println(item.ID, item.Host.Name)
+	// 	}
+	// }
 
-	return
 	// PERF: test performance over a large amount of hosts with litems
 	i_ui(&data)
 }

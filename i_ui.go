@@ -78,7 +78,7 @@ func (ui *HardUI) inc_sel(n int, data *HardData) {
 		n = 0
 	}
 	ui.line += n
-	data.sel_unique_id(ui.line)
+	data.litems.curr = data.litems.curr.inc(n)
 	if ui.line > ui.list_start + ui.dim[H] - 4 {
 		ui.list_start = (ui.line + 1) - (ui.dim[H] + 3)
 	} else if ui.line < ui.list_start {
@@ -326,8 +326,8 @@ func i_host_panel(ui HardUI, icons bool, ldirs *DirsList) {
 
 func i_info_panel(ui HardUI, lhost *HostList) {
 	var host *HostNode
-	curr_line := 2
 	var host_type string
+	curr_line := 2
 
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
