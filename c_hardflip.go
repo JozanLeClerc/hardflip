@@ -106,6 +106,7 @@ func main() {
 		data_dir,
 		nil,
 	}
+	c_fill_litems()
 	c_reset_ptr(&data)
 
 	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
