@@ -297,6 +297,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
+	// TODO: start here
 	for ptr := litems.head; ptr != nil; ptr = ptr.next {
 		if ptr.is_dir() == false {
 			i_host_panel_host(ui, icons, ptr.Host.Parent.Depth, ptr.Host, line)
