@@ -63,7 +63,6 @@ type HardData struct {
 }
 
 func main() {
-	// TODO: replace everything ui with litems
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
 	ldirs := c_load_data_dir(data_dir, opts)

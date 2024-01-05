@@ -98,18 +98,20 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				if ui.line < ui.sel_max - 1 {
+				if ui.sel_id < ui.sel_max - 1 {
 					ui.inc_sel(1, data)
 				}
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
-				if ui.line > 0 {
+				if ui.sel_id > 0 {
 					ui.inc_sel(-1, data)
 				}
 			} else if event.Rune() == 'g' {
-			   ui.line = 0
+				// TODO: litems.curr
+				ui.sel_id = 0
 			} else if event.Rune() == 'G' {
-			   ui.line = ui.sel_max - 1
+				// TODO: litems.curr
+				ui.sel_id = ui.sel_max - 1
 			} else if event.Rune() == 'D' &&
 					data.ldirs.head != nil &&
 					ui.sel_max != 0 {

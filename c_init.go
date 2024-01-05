@@ -115,9 +115,14 @@ func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 
 // fills litems sorting with dirs last
 // other sorting algos are concievable
+// this func also sets the root folder to unfolded as it may never be folded
+// this func also sets the default litems.curr
 func c_load_litems(ldirs *DirsList) *ItemsList {
 	litems := ItemsList{}
 
+	if ldirs.head != nil {
+		ldirs.head.Folded = false
+	}
 	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
 		item := ItemsNode{ Dirs: ptr, Host: nil }
 		litems.add_back(&item)
@@ -126,5 +131,6 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 			litems.add_back(&item)
 		}
 	}
+	litems.curr = litems.head.next
 	return &litems
 }

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Jan 04 16:20:24 2024
+ * Fri Jan 05 16:40:33 2024
  * Joe
  *
  * interfacing with the user
@@ -63,7 +63,7 @@ type HardUI struct {
 	list_start  int
 	mode        uint8
 	sel_max     int
-	line		int
+	sel_id		int
 	count_dirs  int
 	count_hosts int
 	def_style   tcell.Style
@@ -73,16 +73,21 @@ type HardUI struct {
 }
 
 func (ui *HardUI) inc_sel(n int, data *HardData) {
-	if ui.line + n < 1 || 
-	   ui.line + n >= ui.sel_max {
+	// HACK: ui.sel_id and litems.curr.ID are essentially the same thing
+	// NOTE: maybe keep only one there, see later
+	if data.litems.curr == nil {
+		return
+	}
+	if ui.sel_id + n < 1 || 
+	   ui.sel_id + n >= ui.sel_max {
 		n = 0
 	}
-	ui.line += n
 	data.litems.curr = data.litems.curr.inc(n)
-	if ui.line > ui.list_start + ui.dim[H] - 4 {
-		ui.list_start = (ui.line + 1) - (ui.dim[H] + 3)
-	} else if ui.line < ui.list_start {
-		ui.list_start = ui.line
+	ui.sel_id = data.litems.curr.ID
+	if ui.sel_id > ui.list_start + ui.dim[H] - 4 {
+		ui.list_start = (ui.sel_id + 1) - (ui.dim[H] + 3)
+	} else if ui.sel_id < ui.list_start {
+		ui.list_start = ui.sel_id
 	}
 }
 
@@ -236,7 +241,7 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 
 func i_host_panel_dirs(ui HardUI, icons bool, dirs *DirsNode, line int) {
 	style := ui.dir_style
-	if ui.line == dirs.ID {
+	if ui.sel_id == dirs.ID {
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -266,7 +271,7 @@ func i_host_panel_dirs(ui HardUI, icons bool, dirs *DirsNode, line int) {
 func i_host_panel_host(ui HardUI, icons bool,
 			dirs *DirsNode, host *HostNode, line int) {
 		style := ui.def_style
-	if ui.line == host.ID {
+	if ui.sel_id == host.ID {
 			style = style.Reverse(true)
 		}
 		text := ""
@@ -319,7 +324,7 @@ func i_host_panel(ui HardUI, icons bool, ldirs *DirsList) {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
-			" " + strconv.Itoa(int(ui.line + 1)) + "/" +
+			" " + strconv.Itoa(int(ui.sel_id + 1)) + "/" +
 			strconv.Itoa(int(ui.sel_max)) + " hosts ")
 	}
 }
@@ -338,7 +343,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if lhost.head == nil {
 		return
 	}
-	host = lhost.sel(ui.line)
+	host = lhost.sel(ui.sel_id)
 	host_type = host.protocol_str()
 	// name, type
 	i_draw_text(ui.s,
@@ -504,11 +509,14 @@ func i_get_sel_max(ldirs *DirsList) (int, int, int) {
 }
 
 func i_ui(data *HardData) {
+	// TODO: replace everything ui with litems
 	var err error
 	ui := &data.ui
-	ui.s, err = tcell.NewScreen()
+	// TODO: get better counts
+	// NOTE: put this in c_load_data and also produce better code
 	ui.sel_max, ui.count_dirs, ui.count_hosts = i_get_sel_max(data.ldirs)
 
+	ui.s, err = tcell.NewScreen()
 	if err != nil {
 		c_die("view", err)
 	}
