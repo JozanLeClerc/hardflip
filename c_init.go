@@ -113,10 +113,18 @@ func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 	return &ldirs
 }
 
+// fills litems sorting with dirs last
+// other sorting algos are concievable
 func c_load_litems(ldirs *DirsList) *ItemsList {
 	litems := ItemsList{}
 
-	for dir := ldirs.head; dir != nil; dir = dir.next {
+	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
+		item := ItemsNode{ Dirs: ptr, Host: nil }
+		litems.add_back(&item)
+		for ptr := ptr.lhost.head; ptr != nil; ptr = ptr.next {
+			item := ItemsNode{ Dirs: nil, Host: ptr }
+			litems.add_back(&item)
+		}
 	}
 	return &litems
 }

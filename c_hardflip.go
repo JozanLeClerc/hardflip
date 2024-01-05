@@ -94,8 +94,7 @@ func (data *HardData) sel_unique_id(id int) {
 }
 
 func main() {
-	// TODO: fill litems
-	// TODO: delete data.ptr | replace with litems
+	// TODO: delete data.ptr | replace everything ui with litems
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
 	ldirs := c_load_data_dir(data_dir, opts)
@@ -144,6 +143,7 @@ func main() {
 		}
 	}
 
+	return
 	// PERF: test performance over a large amount of hosts with litems
 	i_ui(&data)
 }
