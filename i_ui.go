@@ -288,7 +288,6 @@ func i_host_panel_host(ui HardUI, icons bool,
 }
 
 func i_host_panel(ui HardUI, icons bool, ldirs *DirsList) {
-	// TODO: this must work
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)

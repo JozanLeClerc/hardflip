@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Thu 04 Jan 2024 11:50:55 AM CET
+ * Fri Jan 05 12:29:56 2024
  * Joe
  *
  * the hosts linked list
@@ -84,13 +84,13 @@ type HostList struct {
 
 // adds a host node to the list
 func (lhost *HostList) add_back(node *HostNode) {
-	node.ID = global_id
 	if lhost.head == nil {
 		lhost.head = node
 		lhost.last = lhost.head
 		return
 	}
 	last := lhost.last
+	node.ID = last.ID + 1
 	last.next = node
 	lhost.last = last.next
 }

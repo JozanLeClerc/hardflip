@@ -94,6 +94,7 @@ func (data *HardData) sel_unique_id(id int) {
 }
 
 func main() {
+	// TODO: no ldirs just hosts raw hosts
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false}
 	litems, ldirs := c_load_data_dir(data_dir, opts)

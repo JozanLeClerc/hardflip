@@ -62,9 +62,6 @@ type HardOpts struct {
 	FoldAll bool
 }
 
-
-var global_id int
-
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
@@ -87,7 +84,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 	// item_node.Dirs = &dir_node
 	// item_node.Host = nil
 	ldirs.add_back(&dir_node)
-	global_id++
 	// litems.add_back(&item_node)
 	for _, file := range files {
 		filename := file.Name()
@@ -106,7 +102,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node.Filename = filename
 			// host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
-			global_id++
 		}
 	}
 }
