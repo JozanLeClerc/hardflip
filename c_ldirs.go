@@ -96,16 +96,23 @@ func (ldirs *DirsList) sel(id int) *DirsNode {
 }
 
 // returns a string with the full path of the dir
-func (ldirs *DirsList) path(node *DirsNode) string {
+func (dir *DirsNode) path() string {
 	var path string
 
-	if node == nil {
+	if dir == nil {
 		return ""
 	}
-	curr := node
+	curr := dir
 	for curr != nil {
 		path = curr.Name + "/" + path
 		curr = curr.Parent
 	}
 	return path
+}
+
+func (dir *DirsNode) count_hosts() int {
+	if dir.lhost.head == nil {
+		return 0
+	}
+	return dir.lhost.last.ID + 1
 }

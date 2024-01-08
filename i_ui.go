@@ -305,22 +305,54 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 	}
 }
 
-func i_info_panel(ui HardUI, lhost *HostList) {
-	var host *HostNode
-	var host_type string
+func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
 	curr_line := 2
 
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		ui.title_style, "Name: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		ui.def_style, dir.Name)
+	curr_line += 1
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		ui.title_style, "Type: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		ui.def_style, "Directory")
+	curr_line += 2
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		ui.title_style, "Path: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		ui.def_style, dir.path())
+	curr_line += 1
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		ui.title_style, "Hosts: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
+		ui.def_style, strconv.Itoa(dir.count_hosts()))
+}
+
+func i_info_panel(ui HardUI, litems *ItemsList) {
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		" Infos ", false)
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
 	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
 		tcell.RuneBTee, nil, ui.def_style)
-	if lhost.head == nil {
+	if litems.head == nil {
+		return
+	} else if litems.curr.is_dir() == true {
+		i_info_panel_dirs(ui, litems.curr.Dirs)
 		return
 	}
-	// host = lhost.sel(ui.sel_id)
-	host_type = host.protocol_str()
+	host := litems.curr.Host
+	host_type := host.protocol_str()
+	curr_line := 2
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
@@ -506,7 +538,7 @@ func i_ui(data *HardData) {
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts.Icon, data.litems)
 		// TODO: info panel
-		// i_info_panel(data.ui, data.lhost)
+		i_info_panel(data.ui, data.litems)
 		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
 			i_draw_zhosts_box(*ui)
 		}
