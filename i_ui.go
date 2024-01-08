@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Jan 05 16:59:59 2024
+ * Mon Jan 08 11:37:32 2024
  * Joe
  *
  * interfacing with the user
@@ -79,7 +79,7 @@ func (ui *HardUI) inc_sel(n int, data *HardData) {
 		return
 	}
 	if ui.sel_id + n < 1 || 
-	   ui.sel_id + n >= ui.sel_max {
+	   ui.sel_id + n > ui.sel_max {
 		n = 0
 	}
 	data.litems.curr = data.litems.curr.inc(n)
@@ -334,17 +334,17 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 	// 		line++
 	// 	}
 	// }
-	if ui.sel_max == 0 {
+	if ui.sel_max != 0 {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
-			" " + strconv.Itoa(int(ui.sel_max)) + " hosts ")
+			" " + strconv.Itoa(litems.curr.ID) + "/" +
+			strconv.Itoa(int(ui.sel_max)) + " items ")
 	} else {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
-			" " + strconv.Itoa(int(ui.sel_id + 1)) + "/" +
-			strconv.Itoa(int(ui.sel_max)) + " hosts ")
+			" 0 hosts ")
 	}
 }
 
@@ -524,6 +524,7 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 func i_get_sel_max(ldirs *DirsList) (int, int, int) {
 	count_dirs, count_hosts := ldirs.count()
 
+	count_dirs -= 1
 	return count_dirs + count_hosts, count_dirs, count_hosts
 }
 

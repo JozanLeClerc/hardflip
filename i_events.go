@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Dec 27 17:56:44 2023
+ * Mon Jan 08 11:35:21 2024
  * Joe
  *
  * events in the code
@@ -60,9 +60,8 @@ import (
 func i_reload_data(data *HardData) {
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
-	data.ui.sel_max,
-	data.ui.count_dirs,
-	data.ui.count_hosts = i_get_sel_max(data.ldirs)
+	data.ui.sel_max, data.ui.count_dirs, data.ui.count_hosts =
+		i_get_sel_max(data.ldirs)
 }
 
 func i_delete_host(data *HardData) {
@@ -98,14 +97,10 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				if ui.sel_id < ui.sel_max - 1 {
-					ui.inc_sel(1, data)
-				}
+				ui.inc_sel(1, data)
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
-				if ui.sel_id > 0 {
-					ui.inc_sel(-1, data)
-				}
+				ui.inc_sel(-1, data)
 			} else if event.Rune() == 'g' {
 				// TODO: litems.curr
 				ui.sel_id = 0

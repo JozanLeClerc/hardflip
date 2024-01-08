@@ -109,18 +109,24 @@ func (item *ItemsNode) inc(jump int) *ItemsNode {
 	if jump == 0 {
 		return item
 	} else if jump == 1 {
-		return item.next
+		if item.next != nil {
+			return item.next
+		}
+		return item
 	} else if jump == -1 {
-		return item.prev
+		if item.prev != nil {
+			return item.prev
+		}
+		return item
 	}
 	new_item := item
 	if jump > 0 {
-		for i := 0; new_item != nil && i < jump; i++ {
+		for i := 0; new_item.next != nil && i < jump; i++ {
 			new_item = new_item.next
 		}
 		return new_item
 	}
-	for i := 0; new_item != nil && i > jump; i-- {
+	for i := 0; new_item.prev != nil && i > jump; i-- {
 		new_item = new_item.prev
 	}
 	return new_item
