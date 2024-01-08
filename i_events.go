@@ -128,8 +128,8 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'G' {
 				data.litems.curr = data.litems.last
 			} else if event.Rune() == 'D' &&
-					data.ldirs.head != nil &&
-					ui.sel_max != 0 {
+					  data.ldirs.head != nil &&
+					  ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				if data.litems.curr != nil &&
@@ -152,6 +152,7 @@ func i_events(data *HardData) {
 			if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)
 			}
+			i_list_follow_cursor(data.litems, ui)
 		case DELETE_MODE:
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC ||
@@ -163,6 +164,5 @@ func i_events(data *HardData) {
 				ui.mode = NORMAL_MODE
 			}
 		}	
-		i_list_follow_cursor(data.litems, ui)
 	}
 }
