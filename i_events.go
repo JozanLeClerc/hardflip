@@ -97,14 +97,14 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				ui.inc_sel(+1, data)
+				ui.inc_cursor(+1, data)
 			} else if event.Rune() == 'k' ||
 			   event.Key() == tcell.KeyUp {
-				ui.inc_sel(-1, data)
+				ui.inc_cursor(-1, data)
 			} else if event.Key() == tcell.KeyCtrlD {
-				ui.inc_sel(+(ui.dim[H] / 4), data)
+				ui.inc_cursor(+(ui.dim[H] / 4), data)
 			} else if event.Key() == tcell.KeyCtrlU {
-				ui.inc_sel(-(ui.dim[H] / 4), data)
+				ui.inc_cursor(-(ui.dim[H] / 4), data)
 			} else if event.Rune() == 'g' {
 				data.litems.curr = data.litems.head
 			} else if event.Rune() == 'G' {

@@ -71,7 +71,7 @@ type HardUI struct {
 	dim         [2]int
 }
 
-func (ui *HardUI) inc_sel(n int, data *HardData) {
+func (ui *HardUI) inc_cursor(n int, data *HardData) {
 	if data.litems.curr == nil {
 		return
 	}
