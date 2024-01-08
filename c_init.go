@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Fri Jan 05 16:53:38 2024
+ * Mon Jan 08 11:53:48 2024
  * Joe
  *
  * init functions
@@ -80,11 +80,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		opts.FoldAll,
 		nil,
 	}
-	// item_node := ItemsNode{}
-	// item_node.Dirs = &dir_node
-	// item_node.Host = nil
 	ldirs.add_back(&dir_node)
-	// litems.add_back(&item_node)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
@@ -95,10 +91,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			if host_node == nil {
 				return
 			}
-			// item_node := ItemsNode{}
-			// item_node.Dirs = nil
-			// item_node.Host = host_node
-			// litems.add_back(&item_node)
 			host_node.Filename = filename
 			host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
@@ -131,6 +123,10 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 			litems.add_back(&item)
 		}
 	}
-	litems.curr = litems.head.next
+	litems.head = litems.head.next
+	if litems.head != nil {
+		litems.head.prev = nil
+	}
+	litems.curr = litems.head
 	return &litems
 }

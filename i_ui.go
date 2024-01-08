@@ -78,10 +78,6 @@ func (ui *HardUI) inc_sel(n int, data *HardData) {
 	if data.litems.curr == nil {
 		return
 	}
-	if ui.sel_id + n < 1 || 
-	   ui.sel_id + n > ui.sel_max {
-		n = 0
-	}
 	data.litems.curr = data.litems.curr.inc(n)
 	ui.sel_id = data.litems.curr.ID
 	if ui.sel_id > ui.list_start + ui.dim[H] - 4 {
@@ -298,8 +294,8 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
-	ptr := litems.head.next
-	for ptr = ptr; ptr != nil; ptr = ptr.next {
+	ptr := litems.head
+	for ptr = ptr; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false {
 			i_host_panel_host(ui,
 				icons,
