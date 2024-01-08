@@ -109,15 +109,3 @@ func (ldirs *DirsList) path(node *DirsNode) string {
 	}
 	return path
 }
-
-func (ldirs *DirsList) count() (int, int) {
-	curr := ldirs.head
-	var count_dirs int
-	var count_hosts int
-
-	for count_dirs = 0; curr != nil; count_dirs++ {
-		count_hosts += curr.lhost.count()
-		curr = curr.next
-	}
-	return count_dirs, count_hosts
-}

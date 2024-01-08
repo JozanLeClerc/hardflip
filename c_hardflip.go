@@ -74,41 +74,5 @@ func main() {
 		opts,
 		data_dir,
 	}
-
-	// for ptr = ldirs.head; ptr != nil ; ptr = ptr.next {
-	// 	spaces := ""
-	// 	for i := 0; i < int(ptr.Depth - 1) * 2; i++ {
-	// 		spaces += " "
-	// 	}
-	// 	if ptr.is_dir() == true {
-	// 		fmt.Print(spaces, "DIR ", ptr.ID, " ")
-	// 	}
-	// 	fmt.Println(ptr.Name)
-	// 	for ptr = ptr.lhost.head; ptr != nil; ptr = ptr.next {
-	// 		spaces := ""
-	// 		for i := 0; i < int(ptr.Parent.Depth - 1) * 2; i++ {
-	// 			spaces += " "
-	// 		}
-	// 		spaces += " " 
-	// 		if ptr.is_dir() == false {
-	// 			fmt.Print(spaces, "HOST ", ptr.ID, " ")
-	// 		}
-	// 		fmt.Println(ptr.Name)
-	// 	}
-	// }
-	// for dir := ldirs.head; dir != nil ; dir = dir.next {
-	// 	for host := dir.lhost.head; host != nil; host = host.next {
-	// 		fmt.Println(host.ID, host.Name, "HOST")
-	// 	}
-	// }
-	// for item := litems.head; item != nil; item = item.next {
-	// 	if item.is_dir() == true {
-	// 		fmt.Println(item.ID, item.Dirs.Name)
-	// 	} else {
-	// 		fmt.Println(item.ID, item.Host.Name)
-	// 	}
-	// }
-
-	// PERF: test performance over a large amount of hosts with litems
 	i_ui(&data)
 }

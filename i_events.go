@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Mon Jan 08 13:56:06 2024
+ * Mon Jan 08 16:40:17 2024
  * Joe
  *
  * events in the code
@@ -75,8 +75,7 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 func i_reload_data(data *HardData) {
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
-	data.ui.sel_max, data.ui.count_dirs, data.ui.count_hosts =
-		i_get_sel_max(data.ldirs)
+	data.ui.sel_max = data.litems.last.ID
 }
 
 func i_delete_host(data *HardData) {

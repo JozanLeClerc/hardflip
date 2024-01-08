@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Mon Jan 08 12:18:01 2024
+ * Mon Jan 08 14:53:10 2024
  * Joe
  *
  * interfacing with the user
@@ -61,8 +61,6 @@ type HardUI struct {
 	s           tcell.Screen
 	mode        uint8
 	sel_max     int
-	count_dirs  int
-	count_hosts int
 	def_style   tcell.Style
 	dir_style   tcell.Style
 	title_style tcell.Style
@@ -321,7 +319,6 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if lhost.head == nil {
 		return
 	}
-	// HACK: litems instead of this mess
 	// host = lhost.sel(ui.sel_id)
 	host_type = host.protocol_str()
 	// name, type
@@ -481,20 +478,11 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	}
 }
 
-func i_get_sel_max(ldirs *DirsList) (int, int, int) {
-	count_dirs, count_hosts := ldirs.count()
-
-	count_dirs -= 1
-	return count_dirs + count_hosts, count_dirs, count_hosts
-}
-
 func i_ui(data *HardData) {
 	// TODO: replace everything ui with litems
 	var err error
 	ui := &data.ui
-	// TODO: get better counts
-	// NOTE: put this in c_load_data and also produce better code
-	ui.sel_max, ui.count_dirs, ui.count_hosts = i_get_sel_max(data.ldirs)
+	ui.sel_max = data.litems.last.ID
 
 	ui.s, err = tcell.NewScreen()
 	if err != nil {
