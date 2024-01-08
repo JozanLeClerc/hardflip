@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Mon Jan 08 11:37:32 2024
+ * Mon Jan 08 12:18:01 2024
  * Joe
  *
  * interfacing with the user
@@ -139,7 +139,6 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 }
 
 func i_bottom_text(ui HardUI) {
-	spaces := ""
 	text := ""
 
 	switch ui.mode {
@@ -148,12 +147,13 @@ func i_bottom_text(ui HardUI) {
 	case DELETE_MODE:
 		text = DELETE_KEYS_HINTS
 	}
-	for i := 0; i < (ui.dim[W]) - len(text); i++ {
-		spaces += " "
-	}
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), spaces + text)
+		ui.def_style.Dim(true), text)
+	text = " " + VERSION
+	i_draw_text(ui.s,
+		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
+		ui.def_style.Dim(true), text)
 }
 
 func i_draw_zhosts_box(ui HardUI) {

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Wed Dec 27 15:55:11 2023
+ * Mon Jan 08 12:20:53 2024
  * Joe
  *
  * constants
@@ -55,17 +55,14 @@ const (
     W = 0
     H = 1
 	DATA_DIR_NAME = "hardflip"
+	VERSION = "v0.0"
 )
 
 const (
 	NORMAL_KEYS_HINTS = `
-(q)uit -
 [x](a)dd/(i)nsert host -
-[x](e)dit -
-(D)elete -
-[x](s)earch -
 [x](m)kdir -
-(c-r) reload -
+[x](s)earch -
 [x](?) help`
 	DELETE_KEYS_HINTS = `
 (q)uit -

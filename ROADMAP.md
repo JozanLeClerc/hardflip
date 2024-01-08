@@ -2,7 +2,7 @@
 
 ## v0.1
 
-- [ ] folders
+- [x] folders
 - [ ] folding folders
 
 ## v0.2
