@@ -239,9 +239,10 @@ func i_draw_delete_box(ui HardUI, host *HostNode) {
 	//     ui.def_style, "o")
 }
 
-func i_host_panel_dirs(ui HardUI, icons bool, dirs *DirsNode, line int) {
+func i_host_panel_dirs(ui HardUI, icons bool,
+	dirs *DirsNode, curr *DirsNode, line int) {
 	style := ui.dir_style
-	if ui.sel_id == dirs.ID {
+	if dirs == curr {
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -269,9 +270,9 @@ func i_host_panel_dirs(ui HardUI, icons bool, dirs *DirsNode, line int) {
 }
 
 func i_host_panel_host(ui HardUI, icons bool,
-		depth uint16, host *HostNode, line int) {
+		depth uint16, host *HostNode, curr *HostNode, line int) {
 	style := ui.def_style
-	if ui.sel_id == host.ID {
+	if host == curr {
 			style = style.Reverse(true)
 		}
 		text := ""
@@ -297,12 +298,20 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
-	// TODO: start here
-	for ptr := litems.head; ptr != nil; ptr = ptr.next {
+	ptr := litems.head.next
+	for ptr = ptr; ptr != nil; ptr = ptr.next {
 		if ptr.is_dir() == false {
-			i_host_panel_host(ui, icons, ptr.Host.Parent.Depth, ptr.Host, line)
+			i_host_panel_host(ui,
+				icons,
+				ptr.Host.Parent.Depth,
+				ptr.Host,
+				litems.curr.Host,
+				line)
 		} else {
-			i_host_panel_dirs(ui, icons, ptr.Dirs, line)
+			i_host_panel_dirs(ui, icons,
+				ptr.Dirs,
+				litems.curr.Dirs,
+				line)
 		}
 		line++
 	}
