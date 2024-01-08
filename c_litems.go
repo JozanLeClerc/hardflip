@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_litems.go
- * Mon Jan 08 11:53:22 2024
+ * Mon Jan 08 13:36:49 2024
  * Joe
  *
  * the dir and hosts linked list
@@ -63,6 +63,7 @@ type ItemsList struct {
 	head *ItemsNode
 	last *ItemsNode
 	curr *ItemsNode
+	draw_start *ItemsNode
 }
 
 // adds an item node to the list
@@ -102,32 +103,33 @@ func (item *ItemsNode) is_dir() bool {
 	return true
 }
 
-func (item *ItemsNode) inc(jump int) *ItemsNode {
+func (litems *ItemsList) inc(jump int) {
+	item := litems.curr
 	if item == nil {
-		return nil
+		return
 	}
 	if jump == 0 {
-		return item
+		litems.curr = item
 	} else if jump == 1 {
 		if item.next != nil {
-			return item.next
+			litems.curr = item.next
 		}
-		return item
+		litems.curr = item
 	} else if jump == -1 {
 		if item.prev != nil {
-			return item.prev
+			litems.curr = item.prev
 		}
-		return item
+		litems.curr = item
 	}
 	new_item := item
 	if jump > 0 {
 		for i := 0; new_item.next != nil && i < jump; i++ {
 			new_item = new_item.next
 		}
-		return new_item
+		litems.curr = new_item
 	}
 	for i := 0; new_item.prev != nil && i > jump; i-- {
 		new_item = new_item.prev
 	}
-	return new_item
+	litems.curr = new_item
 }

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Mon Jan 08 11:53:48 2024
+ * Mon Jan 08 13:39:08 2024
  * Joe
  *
  * init functions
@@ -128,5 +128,6 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 		litems.head.prev = nil
 	}
 	litems.curr = litems.head
+	litems.draw_start = litems.head
 	return &litems
 }

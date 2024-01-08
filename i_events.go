@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Mon Jan 08 11:35:21 2024
+ * Mon Jan 08 13:56:06 2024
  * Joe
  *
  * events in the code
@@ -55,7 +55,22 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
+	"golang.org/x/term"
 )
+
+func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
+	if litems.draw_start == nil {
+		return
+	}
+	for litems.draw_start.ID < litems.curr.ID - (ui.dim[H] - 4) &&
+		litems.draw_start.next != nil {
+		litems.draw_start = litems.draw_start.next
+	}
+	for litems.curr.ID < litems.draw_start.ID &&
+		litems.draw_start.prev != nil {
+		litems.draw_start = litems.draw_start.prev
+	}
+}
 
 func i_reload_data(data *HardData) {
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
@@ -87,6 +102,8 @@ func i_events(data *HardData) {
 	event := ui.s.PollEvent()
 	switch event := event.(type) {
 	case *tcell.EventResize:
+		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
+		i_list_follow_cursor(data.litems, ui)
 		ui.s.Sync()
 	case *tcell.EventKey:
 		switch ui.mode {
@@ -97,16 +114,17 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
 				      event.Key() == tcell.KeyDown {
-				ui.inc_cursor(+1, data)
+				data.litems.inc(+1)
 			} else if event.Rune() == 'k' ||
-			   event.Key() == tcell.KeyUp {
-				ui.inc_cursor(-1, data)
+					  event.Key() == tcell.KeyUp {
+				data.litems.inc(-1)
 			} else if event.Key() == tcell.KeyCtrlD {
-				ui.inc_cursor(+(ui.dim[H] / 4), data)
+				data.litems.inc(+(ui.dim[H] / 3))
 			} else if event.Key() == tcell.KeyCtrlU {
-				ui.inc_cursor(-(ui.dim[H] / 4), data)
+				data.litems.inc(-(ui.dim[H] / 3))
 			} else if event.Rune() == 'g' {
 				data.litems.curr = data.litems.head
+				data.litems.draw_start = data.litems.head
 			} else if event.Rune() == 'G' {
 				data.litems.curr = data.litems.last
 			} else if event.Rune() == 'D' &&
@@ -114,7 +132,8 @@ func i_events(data *HardData) {
 					ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
-				if data.litems.curr != nil && data.litems.curr.is_dir() == false {
+				if data.litems.curr != nil &&
+					data.litems.curr.is_dir() == false {
 					ui.s.Fini()
 					c_exec(data.litems.curr.Host)
 					if data.opts.Loop == false {
@@ -143,6 +162,7 @@ func i_events(data *HardData) {
 				i_delete_host(data)
 				ui.mode = NORMAL_MODE
 			}
-		}
+		}	
+		i_list_follow_cursor(data.litems, ui)
 	}
 }

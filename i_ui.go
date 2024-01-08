@@ -55,12 +55,10 @@ import (
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
-	"golang.org/x/term"
 )
 
 type HardUI struct {
 	s           tcell.Screen
-	list_start  int
 	mode        uint8
 	sel_max     int
 	count_dirs  int
@@ -69,18 +67,6 @@ type HardUI struct {
 	dir_style   tcell.Style
 	title_style tcell.Style
 	dim         [2]int
-}
-
-func (ui *HardUI) inc_cursor(n int, data *HardData) {
-	if data.litems.curr == nil {
-		return
-	}
-	data.litems.curr = data.litems.curr.inc(n)
-	if data.litems.curr.ID > ui.list_start + ui.dim[H] - 4 {
-		ui.list_start = (data.litems.curr.ID + 1) - (ui.dim[H] + 3)
-	} else if data.litems.curr.ID < ui.list_start {
-		ui.list_start = data.litems.curr.ID
-	}
 }
 
 func i_draw_text(s tcell.Screen,
@@ -290,7 +276,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
-	ptr := litems.head
+	ptr := litems.draw_start
 	for ptr = ptr; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false {
 			i_host_panel_host(ui,
@@ -307,25 +293,6 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		}
 		line++
 	}
-
-	// dirs := litems.head.Dirs
-	// for host := dirs.lhost.head;
-	// 	dirs.Folded == false && host != nil;
-	// 	host = host.next {
-	// 	i_host_panel_host(ui, icons, dirs.Depth, host, line)
-	// 	line++
-	// }
-	// dirs = dirs.next
-	// for line = line; line < ui.dim[H] - 2 && dirs != nil; dirs = dirs.next {
-	// 	i_host_panel_dirs(ui, icons, dirs, line)
-	// 	line++
-	// 	for host := dirs.lhost.head;
-	// 		dirs.Folded == false && host != nil;
-	// 		host = host.next {
-	// 		i_host_panel_host(ui, icons, dirs.Depth, host, line)
-	// 		line++
-	// 	}
-	// }
 	if ui.sel_max != 0 {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
@@ -547,7 +514,6 @@ func i_ui(data *HardData) {
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.s.SetStyle(ui.def_style)
 	for {
-		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 		ui.s.Clear()
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts.Icon, data.litems)

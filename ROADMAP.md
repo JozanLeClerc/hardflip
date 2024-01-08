@@ -30,28 +30,24 @@
 
 - [ ] theming
 
-## v1.0
+## v1.0 - wheelbite
 
 - [ ] README.md
 - [ ] man
 - [ ] cli options
 
-## v1.1
+## v1.1 - 360 hard
 
 - [ ] fuzz
 
-## v1.2
+## v1.2 - late flip
 
 - [ ] vnc
 
-## v1.3
-
-- [ ] vnc
-
-## v1.4
+## v1.3 - ghetto bird
 
 - [ ] sorting options
 
-## v1.5
+## v1.4
 
 - [ ] ...

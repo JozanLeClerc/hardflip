@@ -59,8 +59,7 @@ const (
 )
 
 const (
-	NORMAL_KEYS_HINTS = `
-[x](a)dd/(i)nsert host -
+	NORMAL_KEYS_HINTS = `[x](a)dd/(i)nsert host -
 [x](m)kdir -
 [x](s)earch -
 [x](?) help`
