@@ -63,7 +63,6 @@ type HardUI struct {
 	list_start  int
 	mode        uint8
 	sel_max     int
-	sel_id		int
 	count_dirs  int
 	count_hosts int
 	def_style   tcell.Style
@@ -73,17 +72,14 @@ type HardUI struct {
 }
 
 func (ui *HardUI) inc_sel(n int, data *HardData) {
-	// HACK: ui.sel_id and litems.curr.ID are essentially the same thing
-	// NOTE: maybe keep only one there, see later
 	if data.litems.curr == nil {
 		return
 	}
 	data.litems.curr = data.litems.curr.inc(n)
-	ui.sel_id = data.litems.curr.ID
-	if ui.sel_id > ui.list_start + ui.dim[H] - 4 {
-		ui.list_start = (ui.sel_id + 1) - (ui.dim[H] + 3)
-	} else if ui.sel_id < ui.list_start {
-		ui.list_start = ui.sel_id
+	if data.litems.curr.ID > ui.list_start + ui.dim[H] - 4 {
+		ui.list_start = (data.litems.curr.ID + 1) - (ui.dim[H] + 3)
+	} else if data.litems.curr.ID < ui.list_start {
+		ui.list_start = data.litems.curr.ID
 	}
 }
 
@@ -358,7 +354,8 @@ func i_info_panel(ui HardUI, lhost *HostList) {
 	if lhost.head == nil {
 		return
 	}
-	host = lhost.sel(ui.sel_id)
+	// HACK: litems instead of this mess
+	// host = lhost.sel(ui.sel_id)
 	host_type = host.protocol_str()
 	// name, type
 	i_draw_text(ui.s,

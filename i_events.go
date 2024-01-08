@@ -102,7 +102,7 @@ func i_events(data *HardData) {
 			   event.Key() == tcell.KeyUp {
 				ui.inc_sel(-1, data)
 			} else if event.Key() == tcell.KeyCtrlD {
-				ui.inc_sel(ui.dim[H] / 4, data)
+				ui.inc_sel(+(ui.dim[H] / 4), data)
 			} else if event.Key() == tcell.KeyCtrlU {
 				ui.inc_sel(-(ui.dim[H] / 4), data)
 			} else if event.Rune() == 'g' {
