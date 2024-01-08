@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Thu 04 Jan 2024 11:50:52 AM CET
+ * Mon Jan 08 17:44:15 2024
  * Joe
  *
  * the directories linked list

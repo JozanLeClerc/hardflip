@@ -80,6 +80,32 @@ func (litems *ItemsList) add_back(node *ItemsNode) {
 	litems.last = last.next
 }
 
+// removes an item node from the list and resets the ids
+func (litems *ItemsList) del(item *ItemsNode) {
+    if litems.head == nil {
+        return
+    }
+    if litems.head == item {
+        litems.head = litems.head.next
+		litems.head.prev = nil
+		for curr := litems.head; curr != nil; curr = curr.next {
+			curr.ID -= 1
+		}
+        return
+    }
+    curr := litems.head
+    for curr.next != nil && curr.next != item {
+        curr = curr.next
+    }
+    if curr.next == item {
+        curr.next = curr.next.next
+		curr.next.prev = curr
+    }
+	for curr := curr.next; curr != nil; curr = curr.next {
+		curr.ID -= 1
+	}
+}
+
 // sets litems.curr to be used
 func (litems *ItemsList) sel(id int) {
 	curr := litems.head

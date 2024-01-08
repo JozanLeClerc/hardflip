@@ -96,30 +96,28 @@ func (lhost *HostList) add_back(node *HostNode) {
 	lhost.last = last.next
 }
 
-func (lhost *HostList) reset_id() {
-	curr := lhost.head
-	for i := 0; curr != nil; i++ {
-		curr.ID = i
-		curr = curr.next
-	}
-}
-
 // removes a host node from the list
-func (lhost *HostList) del(id int) {
+func (lhost *HostList) del(host *HostNode) {
     if lhost.head == nil {
         return
     }
-    if lhost.head.ID == id {
+    if lhost.head == host {
         lhost.head = lhost.head.next
+		for curr:= lhost.head; curr != nil; curr = curr.next {
+			curr.ID -= 1
+		}
         return
     }
     curr := lhost.head
-    for curr.next != nil && curr.next.ID != id {
+    for curr.next != nil && curr.next != host {
         curr = curr.next
     }
-    if curr.next.ID == id {
+    if curr.next == host {
         curr.next = curr.next.next
     }
+	for curr := curr.next; curr != nil; curr = curr.next {
+		curr.ID -= 1
+	}
 }
 
 // return the list node with the according id

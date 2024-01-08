@@ -79,19 +79,26 @@ func i_reload_data(data *HardData) {
 }
 
 func i_delete_host(data *HardData) {
-//     ui := &data.ui
-//     host := data.lhost.sel(data.ui.sel)
-//     file_path := data.data_dir + "/" + host.Folder + host.Filename
-//
-//     if err := os.Remove(file_path); err != nil {
-//         c_die("can't remove " + file_path, err)
-//     }
-//     data.lhost.del(data.ui.sel)
-//     data.lhost.reset_id()
-//     ui.sel_max = data.lhost.count()
-//     if ui.sel >= ui.sel_max {
-//         ui.sel = ui.sel_max - 1
-//     }
+	curr := data.litems.curr	
+	if curr.is_dir() == true {
+		return
+	}
+	host := curr.Host
+	file_path := data.data_dir + host.Parent.path() + host.Filename
+
+	if err := os.Remove(file_path); err != nil {
+		c_die("can't remove " + file_path, err)
+	}
+	host.Parent.lhost.del(host)
+	prev := data.litems.curr.prev
+	data.litems.del(curr)
+	if prev == nil {
+		prev = data.litems.head
+	}
+	data.litems.curr = prev
+	if data.litems.last != nil {
+		data.ui.sel_max = data.litems.last.ID
+	}
 }
 
 // screen events such as keypresses

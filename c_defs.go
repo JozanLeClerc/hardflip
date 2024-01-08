@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Mon Jan 08 12:20:53 2024
+ * Mon Jan 08 17:08:48 2024
  * Joe
  *
  * constants
@@ -65,7 +65,7 @@ const (
 [x](?) help`
 	DELETE_KEYS_HINTS = `
 (q)uit -
-(y)yes -
+(y)es -
 (n)o`
 )
 

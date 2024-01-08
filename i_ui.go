@@ -165,7 +165,7 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	}
 	host := item.Host
 	text := "Really delete this host?"
-	file := host.Dir + host.Filename
+	file := host.Parent.path() + host.Filename
 	max_len := len(text)
     
 	if max_len < len(file) {
@@ -206,17 +206,20 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	}
 	top = ui.dim[H] / 2 + 1
 	i_draw_text(ui.s,
+	    left - 1, top, right, top,
+	    ui.def_style, "[")
+	i_draw_text(ui.s,
 	    left, top, right, top,
 	    ui.def_style.Bold(true).Underline(true), "y")
 	i_draw_text(ui.s,
 	    left + 1, top, right, top,
-	    ui.def_style, "es | ")
+	    ui.def_style, "es] [")
 	i_draw_text(ui.s,
 	    left + 6, top, right, top,
 	    ui.def_style.Bold(true).Underline(true), "n")
 	i_draw_text(ui.s,
 	    left + 7, top, right, top,
-	    ui.def_style, "o")
+	    ui.def_style, "o]")
 }
 
 func i_host_panel_dirs(ui HardUI, icons bool,
@@ -250,27 +253,30 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 }
 
 func i_host_panel_host(ui HardUI, icons bool,
-		depth uint16, host *HostNode, curr *HostNode, line int) {
+		depth uint16, host *HostNode, curr *HostNode, ptr *ItemsNode, line int) {
 	style := ui.def_style
 	if host == curr {
-			style = style.Reverse(true)
-		}
-		text := ""
-		for i := 0; i < int(depth) - 2; i++ {
-			text += "    "
-		}
-		if icons == true {
-			text += HOST_ICONS[int(host.Protocol)]
-		}
-		text += host.Name
-		spaces := ""
-		for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
-			spaces += " "
-		}
-		text += spaces
-		i_draw_text(ui.s,
-			1, line, ui.dim[W] / 3, line,
-			style, text)
+		style = style.Reverse(true)
+	}
+	text := ""
+	for i := 0; i < int(depth) - 2; i++ {
+		text += "    "
+	}
+	if icons == true {
+		text += HOST_ICONS[int(host.Protocol)]
+	}
+	text += host.Name
+	spaces := ""
+	for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
+		spaces += " "
+	}
+	text += spaces
+	i_draw_text(ui.s,
+		1, line, ui.dim[W] / 3, line,
+		style, text)
+	i_draw_text(ui.s,
+		1, line, ui.dim[W] / 3, line,
+		style, strconv.Itoa(ptr.ID))
 }
 
 func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
@@ -286,6 +292,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				ptr.Host.Parent.Depth,
 				ptr.Host,
 				litems.curr.Host,
+				ptr,
 				line)
 		} else {
 			i_host_panel_dirs(ui, icons,
