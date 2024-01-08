@@ -99,6 +99,7 @@ func i_delete_host(data *HardData) {
 	if data.litems.last != nil {
 		data.ui.sel_max = data.litems.last.ID
 	}
+	// FIX: doesn't del the first one visually
 }
 
 // screen events such as keypresses
