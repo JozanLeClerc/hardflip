@@ -52,7 +52,7 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -72,29 +72,29 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw_start == nil || litems.curr == nil {
 		return
 	}
-	virt_id := litems.curr.ID - (ui.dim[H] - 4) // - ui.folded_count
+	virt_id := litems.curr.ID - (ui.dim[H] - 4) - ui.folded_count
 	for litems.draw_start.ID < virt_id &&
 		litems.draw_start.next != nil {
 		litems.draw_start = litems.draw_start.next
-		
 	}
 	for litems.draw_start.ID > litems.curr.ID &&
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
 	}
 	// fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
-	// if litems.draw_start.prev != nil &&
-	//    litems.draw_start.prev.is_dir() == true &&
-	//    litems.draw_start.prev.Dirs.Folded == true {
-	// 	tmp := litems.draw_start.prev.Dirs.count_elements()
-	// 	for i := 0; i < tmp && litems.draw_start != nil; i++ {
-	// 		litems.draw_start = litems.draw_start.next
-	// 	}
-	// }
+	if litems.draw_start.prev != nil &&
+	   litems.draw_start.prev.is_dir() == true &&
+	   litems.draw_start.prev.Dirs.Folded == true {
+		// tmp := litems.draw_start.prev.Dirs.count_elements()
+		// for i := 0; i < tmp && litems.draw_start != nil; i++ {
+		// 	litems.draw_start = litems.draw_start.next
+		// }
+	}
 }
 
 func i_reload_data(data *HardData) {
 	// FIX: segv if data dir is removed
+	fmt.Println("remove me sometime")
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
 	data.ui.sel_max = data.litems.last.ID
