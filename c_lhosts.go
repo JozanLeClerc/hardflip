@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Tue Jan 09 12:07:53 2024
+ * Tue Jan 09 12:59:11 2024
  * Joe
  *
  * the hosts linked list
@@ -165,13 +165,4 @@ func (host *HostNode) protocol_str() string {
 	case 1: return "RDP"
 	default: return ""
 	}
-}
-
-func (host *HostNode) folded_parents() bool {
-	for ptr := host.Parent; ptr.Parent != nil; ptr = ptr.Parent {
-		if ptr.Folded == true {
-			return true
-		}
-	}
-	return false
 }

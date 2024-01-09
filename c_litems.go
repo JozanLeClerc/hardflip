@@ -147,32 +147,51 @@ func (item *ItemsNode) is_dir() bool {
 }
 
 func (litems *ItemsList) inc(jump int) {
-	item := litems.curr
-	if item == nil {
+	new_item := litems.curr
+
+	if new_item == nil || jump == 0 {
 		return
-	}
-	if jump == 0 {
-		litems.curr = item
 	} else if jump == 1 {
-		if item.next != nil {
-			litems.curr = item.next
-		}
-		litems.curr = item
-	} else if jump == -1 {
-		if item.prev != nil {
-			litems.curr = item.prev
-		}
-		litems.curr = item
-	}
-	new_item := item
-	if jump > 0 {
-		for i := 0; new_item.next != nil && i < jump; i++ {
+		if new_item.next != nil {
 			new_item = new_item.next
 		}
-		litems.curr = new_item
+	} else if jump == -1 {
+		if new_item.prev != nil {
+			new_item = new_item.prev
+		}
+	} else {
+		for i := 0; jump > +1 && new_item.next != nil && i < jump; i++ {
+			new_item = new_item.next
+		}
+		for i := 0; jump < -1 && new_item.prev != nil && i > jump; i-- {
+			new_item = new_item.prev
+		}
 	}
-	for i := 0; new_item.prev != nil && i > jump; i-- {
-		new_item = new_item.prev
+	for new_item.folded_parents() == true &&
+		new_item.next != nil &&
+		new_item.prev != nil {
+		if jump > 0 {
+			new_item = new_item.next
+		} else {
+			new_item = new_item.prev
+		}
 	}
 	litems.curr = new_item
+	// FIX: still will select the last
+}
+
+func (item *ItemsNode) folded_parents() bool {
+	var ptr *DirsNode
+
+	if item.is_dir() == false {
+		ptr = item.Host.Parent
+	} else {
+		ptr = item.Dirs.Parent
+	}
+	for ; ptr.Parent != nil; ptr = ptr.Parent {
+		if ptr.Folded == true {
+			return true
+		}
+	}
+	return false
 }

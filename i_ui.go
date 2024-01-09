@@ -283,9 +283,10 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 	line := 1
 	ptr := litems.draw_start
 	for ptr = ptr; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
-		if ptr.is_dir() == false &&
-		   ptr.Host.folded_parents() == false &&
-		   ptr.Host != nil  {
+		if ptr.folded_parents() == true {
+			continue
+		}
+		if ptr.is_dir() == false && ptr.Host != nil  {
 			i_host_panel_host(ui,
 				icons,
 				ptr.Host.Parent.Depth,
@@ -293,7 +294,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				litems.curr.Host,
 				line)
 			line++
-		} else if ptr.Dirs != nil && ptr.Dirs.folded_parents() == false {
+		} else if ptr.Dirs != nil {
 			i_host_panel_dirs(ui, icons,
 				ptr.Dirs,
 				litems.curr.Dirs,

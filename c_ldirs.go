@@ -116,12 +116,3 @@ func (dir *DirsNode) count_hosts() int {
 	}
 	return dir.lhost.last.ID + 1
 }
-
-func (dir *DirsNode) folded_parents() bool {
-	for ptr := dir.Parent; ptr.Parent != nil; ptr = ptr.Parent {
-		if ptr.Folded == true {
-			return true
-		}
-	}
-	return false
-}
