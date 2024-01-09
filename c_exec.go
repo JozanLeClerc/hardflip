@@ -111,6 +111,9 @@ func c_format_rdp(host *HostNode) []string {
 	if len(host.Pass) > 0 {
 		cmd_fmt = append(cmd_fmt, "/p:" + host.Pass)
 	}
+	if host.Port != 0 {
+		cmd_fmt = append(cmd_fmt, "/port:" + strconv.Itoa(int(host.Port)))
+	}
 	if host.Dynamic == true {
 		cmd_fmt = append(cmd_fmt, "/dynamic-resolution")
 	}
