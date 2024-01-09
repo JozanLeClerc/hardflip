@@ -549,7 +549,7 @@ func i_ui(data *HardData) {
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts.Icon, data.litems)
 		i_info_panel(data.ui, data.litems)
-		if data.ldirs.head.lhost.head == nil && data.ldirs.head.next == nil {
+		if data.litems.head == nil {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {

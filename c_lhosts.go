@@ -112,6 +112,15 @@ func (lhost *HostList) del(host *HostNode) {
 		}
         return
     }
+	if lhost.last == host {
+		ptr := lhost.head
+		for ptr.next != nil {
+			ptr = ptr.next
+		}
+		lhost.last = ptr
+		lhost.last.next = nil
+		return
+	}
     ptr := lhost.head
     for ptr.next != nil && ptr.next != host {
         ptr = ptr.next
@@ -121,13 +130,6 @@ func (lhost *HostList) del(host *HostNode) {
     }
 	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
 		ptr.ID -= 1
-	}
-	if lhost.last == host {
-		ptr := lhost.head
-		for ptr.next != nil {
-			ptr = ptr.next
-		}
-		lhost.last = ptr
 	}
 }
 

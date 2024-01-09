@@ -87,12 +87,11 @@ func i_delete_host(data *HardData) {
 	if host == nil {
 		return
 	}
-	// FIX: uncomment this after fix
-	// file_path := data.data_dir + host.Parent.path() + host.Filename
-	//
-	// if err := os.Remove(file_path); err != nil {
-	// 	c_die("can't remove " + file_path, err)
-	// }
+	file_path := data.data_dir + host.Parent.path() + host.Filename
+
+	if err := os.Remove(file_path); err != nil {
+		c_die("can't remove " + file_path, err)
+	}
 	var tmp *ItemsNode
 	host.Parent.lhost.del(host)
 	if data.litems.curr != nil {
@@ -108,9 +107,6 @@ func i_delete_host(data *HardData) {
 	} else {
 		data.ui.sel_max = 0
 	}
-	// FIX: segv if only one host
-	// FIX: segv if del last host <- this is new, fuck
-	// FIX: doesn't del the first one visually
 }
 
 // screen events such as keypresses
