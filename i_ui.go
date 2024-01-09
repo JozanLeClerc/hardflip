@@ -522,7 +522,6 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 }
 
 func i_ui(data *HardData) {
-	// TODO: replace everything ui with litems
 	var err error
 	ui := &data.ui
 	ui.sel_max = data.litems.last.ID
@@ -553,7 +552,6 @@ func i_ui(data *HardData) {
 			i_draw_zhosts_box(*ui)
 		}
 		if ui.mode == DELETE_MODE {
-			// TODO: delete mode
 			i_draw_delete_box(*ui, data.litems.curr)
 		}
 		ui.s.Show()
