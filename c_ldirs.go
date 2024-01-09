@@ -110,9 +110,21 @@ func (dir *DirsNode) path() string {
 	return path
 }
 
+// returns the number of hosts of the dir
 func (dir *DirsNode) count_hosts() int {
-	if dir.lhost.head == nil {
+	if dir.lhost.head == nil || dir.lhost.last == nil {
 		return 0
 	}
 	return dir.lhost.last.ID + 1
+}
+
+// return the number of hosts and subfolders of the dir
+func (dir *DirsNode) count_elements() int {
+	items := 0
+
+	items += dir.count_hosts()
+	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
+		items += ptr.count_hosts() + 1
+	}
+	return items
 }

@@ -52,7 +52,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -61,15 +61,11 @@ import (
 
 func i_update_folded_count(dir *DirsNode, ui *HardUI) {
 	delta := 0
-	delta += dir.count_hosts()
-	for ptr := dir.next; ptr.Depth > dir.Depth && ptr != nil; ptr = ptr.next {
-		delta += ptr.count_hosts() + 1
-	}
+	delta += dir.count_elements()
 	if dir.Folded == false {
 		delta *= -1
 	}
 	ui.folded_count += delta
-	fmt.Println(">>>>> COUNT:", ui.folded_count)
 }
 
 func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
@@ -85,6 +81,15 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	for litems.draw_start.ID > litems.curr.ID &&
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
+	}
+	// fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
+	if litems.draw_start.prev != nil &&
+	   litems.draw_start.prev.is_dir() == true &&
+	   litems.draw_start.prev.Dirs.Folded == true {
+		tmp := litems.draw_start.prev.Dirs.count_elements()
+		for i := 0; i < tmp && litems.draw_start != nil; i++ {
+			litems.draw_start = litems.draw_start.next
+		}
 	}
 }
 
