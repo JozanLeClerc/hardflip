@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Tue Jan 09 11:16:59 2024
+ * Tue Jan 09 12:07:53 2024
  * Joe
  *
  * the hosts linked list
@@ -54,28 +54,28 @@ package main
 // 0: ssh
 // 1: rdp
 type HostNode struct {
-	ID        int
-	Protocol  int8   `yaml:"type"`
-	Name      string `yaml:"name"`
-	Host      string `yaml:"host"`
-	Port      uint16 `yaml:"port"`
-	User      string `yaml:"user"`
-	Pass      string `yaml:"pass"`
-	Priv      string `yaml:"priv"`
-	Jump      string `yaml:"jump"`
+	ID       int
+	Protocol int8   `yaml:"type"`
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	Port     uint16 `yaml:"port"`
+	User     string `yaml:"user"`
+	Pass     string `yaml:"pass"`
+	Priv     string `yaml:"priv"`
+	Jump     string `yaml:"jump"`
 	JumpPort uint16 `yaml:"jump_port"`
 	JumpUser string `yaml:"jump_user"`
 	JumpPass string `yaml:"jump_pass"`
 	JumpPriv string `yaml:"jump_priv"`
-	Quality   uint8  `yaml:"quality"`
-	Domain    string `yaml:"domain"`
-	Width     uint16 `yaml:"width"`
-	Height    uint16 `yaml:"height"`
-	Dynamic   bool   `yaml:"dynamic"`
-	Note      string `yaml:"note"`
-	Filename  string
-	Parent    *DirsNode
-	next      *HostNode
+	Quality  uint8  `yaml:"quality"`
+	Domain   string `yaml:"domain"`
+	Width    uint16 `yaml:"width"`
+	Height   uint16 `yaml:"height"`
+	Dynamic  bool   `yaml:"dynamic"`
+	Note     string `yaml:"note"`
+	Filename string
+	Parent   *DirsNode
+	next     *HostNode
 }
 
 type HostList struct {
@@ -165,4 +165,13 @@ func (host *HostNode) protocol_str() string {
 	case 1: return "RDP"
 	default: return ""
 	}
+}
+
+func (host *HostNode) folded_parents() bool {
+	for ptr := host.Parent; ptr.Parent != nil; ptr = ptr.Parent {
+		if ptr.Folded == true {
+			return true
+		}
+	}
+	return false
 }

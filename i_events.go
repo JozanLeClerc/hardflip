@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Mon Jan 08 16:40:17 2024
+ * Tue Jan 09 12:00:50 2024
  * Joe
  *
  * events in the code
@@ -146,8 +146,9 @@ func i_events(data *HardData) {
 					  ui.sel_max != 0 {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
-				if data.litems.curr != nil &&
-					data.litems.curr.is_dir() == false {
+				if data.litems.curr == nil {
+					return
+				} else if data.litems.curr.is_dir() == false {
 					ui.s.Fini()
 					c_exec(data.litems.curr.Host)
 					if data.opts.Loop == false {
@@ -160,6 +161,12 @@ func i_events(data *HardData) {
 							c_die("view", err)
 						}
 						ui.s.SetStyle(ui.def_style)
+					}
+				} else {
+					if data.litems.curr.Dirs.Folded == false {
+						data.litems.curr.Dirs.Folded = true
+					} else {
+						data.litems.curr.Dirs.Folded = false
 					}
 				}
 			}

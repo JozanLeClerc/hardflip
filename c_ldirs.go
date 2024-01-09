@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Mon Jan 08 17:44:15 2024
+ * Tue Jan 09 12:06:44 2024
  * Joe
  *
  * the directories linked list
@@ -115,4 +115,13 @@ func (dir *DirsNode) count_hosts() int {
 		return 0
 	}
 	return dir.lhost.last.ID + 1
+}
+
+func (dir *DirsNode) folded_parents() bool {
+	for ptr := dir.Parent; ptr.Parent != nil; ptr = ptr.Parent {
+		if ptr.Folded == true {
+			return true
+		}
+	}
+	return false
 }
