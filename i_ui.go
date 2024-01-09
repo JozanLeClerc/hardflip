@@ -58,13 +58,14 @@ import (
 )
 
 type HardUI struct {
-	s           tcell.Screen
-	mode        uint8
-	sel_max     int
-	def_style   tcell.Style
-	dir_style   tcell.Style
-	title_style tcell.Style
-	dim         [2]int
+	s            tcell.Screen
+	mode         uint8
+	sel_max      int
+	def_style    tcell.Style
+	dir_style    tcell.Style
+	title_style  tcell.Style
+	folded_count int
+	dim          [2]int
 }
 
 func i_draw_text(s tcell.Screen,
@@ -293,12 +294,22 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				ptr.Host,
 				litems.curr.Host,
 				line)
+		// FIX: === delete this after fix
+		i_draw_text(ui.s,
+			1, line, ui.dim[W] / 3, line,
+			ui.def_style, strconv.Itoa(ptr.ID))
+		// FIX: ===
 			line++
 		} else if ptr.Dirs != nil {
 			i_host_panel_dirs(ui, icons,
 				ptr.Dirs,
 				litems.curr.Dirs,
 				line)
+		// FIX: === delete this after fix
+		i_draw_text(ui.s,
+			1, line, ui.dim[W] / 3, line,
+			ui.def_style, strconv.Itoa(ptr.ID))
+		// FIX: ===
 			line++
 		}
 	}
@@ -314,6 +325,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 			ui.def_style,
 			" 0 hosts ")
 	}
+	// FIX: bug on draw_start with folded folders
 }
 
 func i_info_panel_dirs(ui HardUI, dir *DirsNode) {

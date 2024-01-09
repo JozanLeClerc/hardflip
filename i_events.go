@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Tue Jan 09 12:00:50 2024
+ * Tue Jan 09 15:14:14 2024
  * Joe
  *
  * events in the code
@@ -52,21 +52,37 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
 )
 
+func i_update_folded_count(dir *DirsNode, ui *HardUI) {
+	delta := 0
+	delta += dir.count_hosts()
+	for ptr := dir.next; ptr.Depth > dir.Depth && ptr != nil; ptr = ptr.next {
+		delta += ptr.count_hosts() + 1
+	}
+	if dir.Folded == false {
+		delta *= -1
+	}
+	ui.folded_count += delta
+	fmt.Println(">>>>> COUNT:", ui.folded_count)
+}
+
 func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
-	if litems.draw_start == nil {
+	if litems.draw_start == nil || litems.curr == nil {
 		return
 	}
-	for litems.draw_start.ID < litems.curr.ID - (ui.dim[H] - 4) &&
+	virt_id := litems.curr.ID - (ui.dim[H] - 4) - ui.folded_count
+	for litems.draw_start.ID < virt_id &&
 		litems.draw_start.next != nil {
 		litems.draw_start = litems.draw_start.next
+		
 	}
-	for litems.curr.ID < litems.draw_start.ID &&
+	for litems.draw_start.ID > litems.curr.ID &&
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
 	}
@@ -133,9 +149,9 @@ func i_events(data *HardData) {
 					  event.Key() == tcell.KeyUp {
 				data.litems.inc(-1)
 			} else if event.Key() == tcell.KeyCtrlD {
-				data.litems.inc(+1000 + (ui.dim[H] / 3))
+				data.litems.inc(+(ui.dim[H] / 3))
 			} else if event.Key() == tcell.KeyCtrlU {
-				data.litems.inc(-1000 - (ui.dim[H] / 3))
+				data.litems.inc(-(ui.dim[H] / 3))
 			} else if event.Rune() == 'g' {
 				data.litems.curr = data.litems.head
 				data.litems.draw_start = data.litems.head
@@ -147,7 +163,7 @@ func i_events(data *HardData) {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				if data.litems.curr == nil {
-					return
+					break
 				} else if data.litems.curr.is_dir() == false {
 					ui.s.Fini()
 					c_exec(data.litems.curr.Host)
@@ -169,8 +185,18 @@ func i_events(data *HardData) {
 						data.litems.curr.Dirs.Folded = false
 					}
 				}
-			}
-			if event.Key() == tcell.KeyCtrlR {
+			} else if event.Rune() == ' ' {
+				if data.litems.curr == nil ||
+				   data.litems.curr.is_dir() == false {
+					break
+				}
+				if data.litems.curr.Dirs.Folded == false {
+					data.litems.curr.Dirs.Folded = true
+				} else {
+					data.litems.curr.Dirs.Folded = false
+				}
+				i_update_folded_count(data.litems.curr.Dirs, ui)
+			} else if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)
 			}
 			i_list_follow_cursor(data.litems, ui)

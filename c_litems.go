@@ -88,14 +88,11 @@ func (litems *ItemsList) del(item *ItemsNode) {
     if litems.head == item {
         litems.head = litems.head.next
 		if litems.head == nil {
-			litems.last = nil
-			litems.curr = nil
-			litems.draw_start = nil
+			litems.last, litems.curr, litems.draw_start = nil, nil, nil
 			return
 		}
 		litems.head.prev = nil
-		litems.curr = litems.head
-		litems.draw_start = litems.head
+		litems.curr, litems.draw_start = litems.head, litems.head
 		for ptr := litems.head; ptr != nil; ptr = ptr.next {
 			ptr.ID -= 1
 		}
