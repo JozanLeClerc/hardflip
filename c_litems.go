@@ -167,14 +167,18 @@ func (litems *ItemsList) inc(jump int) {
 			new_item = new_item.prev
 		}
 	}
-	for new_item.folded_parents() == true &&
-		new_item.next != nil &&
+	for jump > 0 &&
+		new_item.folded_parents() == true &&
+		new_item.next != nil {
+		new_item = new_item.next
+	}
+	for jump < 0 &&
+		new_item.folded_parents() == true &&
 		new_item.prev != nil {
-		if jump > 0 {
-			new_item = new_item.next
-		} else {
-			new_item = new_item.prev
-		}
+		new_item = new_item.prev
+	}
+	if new_item == litems.last && new_item.folded_parents() == true {
+		return
 	}
 	litems.curr = new_item
 	// FIX: still will select the last
