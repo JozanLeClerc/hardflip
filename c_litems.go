@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_litems.go
- * Mon Jan 08 13:36:49 2024
+ * Tue Jan 09 10:51:22 2024
  * Joe
  *
  * the dir and hosts linked list
@@ -87,22 +87,39 @@ func (litems *ItemsList) del(item *ItemsNode) {
     }
     if litems.head == item {
         litems.head = litems.head.next
+		if litems.head == nil {
+			litems.last = nil
+			litems.curr = nil
+			litems.draw_start = nil
+			return
+		}
 		litems.head.prev = nil
-		for curr := litems.head; curr != nil; curr = curr.next {
-			curr.ID -= 1
+		litems.curr = litems.head
+		litems.draw_start = litems.head
+		for ptr := litems.head; ptr != nil; ptr = ptr.next {
+			ptr.ID -= 1
 		}
         return
     }
-    curr := litems.head
-    for curr.next != nil && curr.next != item {
-        curr = curr.next
+	if litems.last == item {
+		litems.last = litems.last.prev
+		litems.last.next = nil
+		litems.curr = litems.last
+		if litems.draw_start == item {
+			litems.draw_start = litems.last
+		}
+		return
+	}
+    ptr := litems.head
+    for ptr.next != nil && ptr.next != item {
+        ptr = ptr.next
     }
-    if curr.next == item {
-        curr.next = curr.next.next
-		curr.next.prev = curr
+    if ptr.next == item {
+        ptr.next = ptr.next.next
+		ptr.next.prev = ptr
     }
-	for curr := curr.next; curr != nil; curr = curr.next {
-		curr.ID -= 1
+	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
+		ptr.ID -= 1
 	}
 }
 

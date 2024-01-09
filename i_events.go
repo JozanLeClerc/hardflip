@@ -84,21 +84,32 @@ func i_delete_host(data *HardData) {
 		return
 	}
 	host := curr.Host
-	file_path := data.data_dir + host.Parent.path() + host.Filename
-
-	if err := os.Remove(file_path); err != nil {
-		c_die("can't remove " + file_path, err)
+	if host == nil {
+		return
 	}
+	// FIX: uncomment this after fix
+	// file_path := data.data_dir + host.Parent.path() + host.Filename
+	//
+	// if err := os.Remove(file_path); err != nil {
+	// 	c_die("can't remove " + file_path, err)
+	// }
+	var tmp *ItemsNode
 	host.Parent.lhost.del(host)
-	prev := data.litems.curr.prev
-	data.litems.del(curr)
-	if prev == nil {
-		prev = data.litems.head
+	if data.litems.curr != nil {
+		tmp = data.litems.curr.prev
 	}
-	data.litems.curr = prev
+	data.litems.del(curr)
+	if tmp == nil {
+		tmp = data.litems.head
+	}
+	data.litems.curr = tmp
 	if data.litems.last != nil {
 		data.ui.sel_max = data.litems.last.ID
+	} else {
+		data.ui.sel_max = 0
 	}
+	// FIX: segv if only one host
+	// FIX: segv if del last host <- this is new, fuck
 	// FIX: doesn't del the first one visually
 }
 

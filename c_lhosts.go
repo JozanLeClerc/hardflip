@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Fri Jan 05 12:29:56 2024
+ * Tue Jan 09 11:16:59 2024
  * Joe
  *
  * the hosts linked list
@@ -103,20 +103,31 @@ func (lhost *HostList) del(host *HostNode) {
     }
     if lhost.head == host {
         lhost.head = lhost.head.next
-		for curr:= lhost.head; curr != nil; curr = curr.next {
-			curr.ID -= 1
+		if lhost.head == nil {
+			lhost.last = nil
+			return
+		}
+		for ptr := lhost.head; ptr != nil; ptr = ptr.next {
+			ptr.ID -= 1
 		}
         return
     }
-    curr := lhost.head
-    for curr.next != nil && curr.next != host {
-        curr = curr.next
+    ptr := lhost.head
+    for ptr.next != nil && ptr.next != host {
+        ptr = ptr.next
     }
-    if curr.next == host {
-        curr.next = curr.next.next
+    if ptr.next == host {
+        ptr.next = ptr.next.next
     }
-	for curr := curr.next; curr != nil; curr = curr.next {
-		curr.ID -= 1
+	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
+		ptr.ID -= 1
+	}
+	if lhost.last == host {
+		ptr := lhost.head
+		for ptr.next != nil {
+			ptr = ptr.next
+		}
+		lhost.last = ptr
 	}
 }
 
