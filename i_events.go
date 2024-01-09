@@ -133,9 +133,9 @@ func i_events(data *HardData) {
 					  event.Key() == tcell.KeyUp {
 				data.litems.inc(-1)
 			} else if event.Key() == tcell.KeyCtrlD {
-				data.litems.inc(+(ui.dim[H] / 3))
+				data.litems.inc(+1000 + (ui.dim[H] / 3))
 			} else if event.Key() == tcell.KeyCtrlU {
-				data.litems.inc(-(ui.dim[H] / 3))
+				data.litems.inc(-1000 - (ui.dim[H] / 3))
 			} else if event.Rune() == 'g' {
 				data.litems.curr = data.litems.head
 				data.litems.draw_start = data.litems.head

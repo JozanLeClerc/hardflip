@@ -181,7 +181,6 @@ func (litems *ItemsList) inc(jump int) {
 		return
 	}
 	litems.curr = new_item
-	// FIX: still will select the last
 }
 
 func (item *ItemsNode) folded_parents() bool {
