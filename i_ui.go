@@ -253,7 +253,7 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 }
 
 func i_host_panel_host(ui HardUI, icons bool,
-		depth uint16, host *HostNode, curr *HostNode, ptr *ItemsNode, line int) {
+		depth uint16, host *HostNode, curr *HostNode, line int) {
 	style := ui.def_style
 	if host == curr {
 		style = style.Reverse(true)
@@ -274,9 +274,6 @@ func i_host_panel_host(ui HardUI, icons bool,
 	i_draw_text(ui.s,
 		1, line, ui.dim[W] / 3, line,
 		style, text)
-	i_draw_text(ui.s,
-		1, line, ui.dim[W] / 3, line,
-		style, strconv.Itoa(ptr.ID))
 }
 
 func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
@@ -292,7 +289,6 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				ptr.Host.Parent.Depth,
 				ptr.Host,
 				litems.curr.Host,
-				ptr,
 				line)
 		} else {
 			i_host_panel_dirs(ui, icons,
