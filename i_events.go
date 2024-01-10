@@ -52,7 +52,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -148,8 +147,6 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 }
 
 func i_reload_data(data *HardData) {
-	// TODO: remove this after debug
-	fmt.Println("remove me sometime")
 	data.data_dir = c_get_data_dir()
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
