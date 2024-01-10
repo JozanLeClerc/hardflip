@@ -231,9 +231,7 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 	}
 	text := ""
 	for i := 0; i < int(dirs.Depth) - 2; i++ {
-		for i := 0; i < int(dirs.Depth) - 2; i++ {
 			text += "  "
-		}
 	}
 	if icons == true {
 		var fold_var uint8
@@ -260,8 +258,8 @@ func i_host_panel_host(ui HardUI, icons bool,
 		style = style.Reverse(true)
 	}
 	text := ""
-	for i := 0; i < int(depth) - 2; i++ {
-		text += "    "
+	for i := 0; i < int(depth + 1) - 2; i++ {
+		text += "  "
 	}
 	if icons == true {
 		text += HOST_ICONS[int(host.Protocol)]
@@ -283,7 +281,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 		" Hosts ", false)
 	line := 1
 	ptr := litems.draw_start
-	for ptr = ptr; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
+	for ; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		// if ptr.folded_parents() == true {
 		// 	continue
 		// }
@@ -295,9 +293,9 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				litems.curr.Host,
 				line)
 		// FIX: === delete this after fix
-		i_draw_text(ui.s,
-			1, line, ui.dim[W] / 3, line,
-			ui.def_style, strconv.Itoa(ptr.ID))
+		// i_draw_text(ui.s,
+		// 	1, line, ui.dim[W] / 3, line,
+		// 	ui.def_style, strconv.Itoa(ptr.ID))
 		// FIX: ===
 			line++
 		} else if ptr.Dirs != nil {
@@ -306,9 +304,9 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				litems.curr.Dirs,
 				line)
 		// FIX: === delete this after fix
-		i_draw_text(ui.s,
-			1, line, ui.dim[W] / 3, line,
-			ui.def_style, strconv.Itoa(ptr.ID))
+		// i_draw_text(ui.s,
+		// 	1, line, ui.dim[W] / 3, line,
+		// 	ui.def_style, strconv.Itoa(ptr.ID))
 		// FIX: ===
 			line++
 		}

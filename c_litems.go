@@ -148,7 +148,7 @@ func (litems *ItemsList) inc(jump int) {
 
 	if new_item == nil || jump == 0 {
 		return
-	} else if jump == 1 {
+	} else if jump == +1 {
 		if new_item.next != nil {
 			new_item = new_item.next
 		}
