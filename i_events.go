@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 10 16:36:40 2024
+ * Wed Jan 10 17:38:06 2024
  * Joe
  *
  * events in the code
@@ -150,18 +150,31 @@ func i_reload_data(data *HardData) {
 	data.ui.sel_max = data.litems.last.ID
 }
 
-func i_delete_host(data *HardData) {
-	curr := data.litems.curr	
-	if curr.is_dir() == true {
+func i_delete_dir(data *HardData) {
+	dir := data.litems.curr.Dirs
+	if dir == nil {
 		return
 	}
-	host := curr.Host
+	dir_path := data.data_dir + dir.path()
+	if err := os.Remove(dir_path); err != nil {
+		data.ui.s.Fini()
+		c_die("can't remove " + dir_path, err)
+	}
+}
+
+func i_delete_host(data *HardData) {
+	if data.litems.curr.is_dir() == true {
+		i_delete_dir(data)
+		return
+	}
+	host := data.litems.curr.Host
 	if host == nil {
 		return
 	}
 	file_path := data.data_dir + host.Parent.path() + host.Filename
 
 	if err := os.Remove(file_path); err != nil {
+		data.ui.s.Fini()
 		c_die("can't remove " + file_path, err)
 	}
 	var tmp *ItemsNode
@@ -169,7 +182,7 @@ func i_delete_host(data *HardData) {
 	if data.litems.curr != nil {
 		tmp = data.litems.curr.prev
 	}
-	data.litems.del(curr)
+	data.litems.del(data.litems.curr)
 	if tmp == nil {
 		tmp = data.litems.head
 	}
