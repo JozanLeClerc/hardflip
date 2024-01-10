@@ -96,7 +96,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	if item == nil {
 		return
 	}
-	// litems := data.litems
+	litems := data.litems
 	folds := data.folds
 	folded_start := item.next
 	folded_start.prev = nil
@@ -113,9 +113,16 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		nil,
 	}
 	item.next = after
-	after.prev = item
+	if after == nil {
+		litems.last = item
+	} else {
+		after.prev = item
+	}
 
 	folds[item] = &tmp
+	for ptr := litems.head; ptr.next != nil; ptr = ptr.next {
+		ptr.next.ID = ptr.ID + 1
+	}
 }
 
 func i_reload_data(data *HardData) {
