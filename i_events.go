@@ -195,13 +195,16 @@ func i_events(data *HardData) {
 		switch ui.mode {
 		case NORMAL_MODE:
 			if event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'q' {
+			   event.Rune() == 'q' ||
+			   event.Rune() == 'Q' {
 				ui.s.Fini()
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
-				      event.Key() == tcell.KeyDown {
+					  event.Rune() == 'J' ||
+					  event.Key() == tcell.KeyDown {
 				data.litems.inc(+1)
 			} else if event.Rune() == 'k' ||
+					  event.Rune() == 'K' ||
 					  event.Key() == tcell.KeyUp {
 				data.litems.inc(-1)
 			} else if event.Key() == tcell.KeyCtrlD {
@@ -247,9 +250,9 @@ func i_events(data *HardData) {
 					break
 				}
 				if data.litems.curr.Dirs.Folded == false {
-					data.litems.curr.Dirs.Folded = true
+					i_fold_dir(data, data.litems.curr)
 				} else {
-					data.litems.curr.Dirs.Folded = false
+					i_unfold_dir(data, data.litems.curr)
 				}
 			} else if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)
@@ -259,9 +262,12 @@ func i_events(data *HardData) {
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC ||
 			   event.Rune() == 'q' ||
-			   event.Rune() == 'n' {
+			   event.Rune() == 'n' ||
+			   event.Rune() == 'Q' ||
+			   event.Rune() == 'N' {
 				ui.mode = NORMAL_MODE
-			} else if event.Rune() == 'y' {
+			} else if event.Rune() == 'y' ||
+					  event.Rune() == 'Y' {
 				i_delete_host(data)
 				ui.mode = NORMAL_MODE
 			}
