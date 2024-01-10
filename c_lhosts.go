@@ -133,7 +133,7 @@ func (lhost *HostList) del(host *HostNode) {
 	}
 }
 
-// return the list node with the according id
+// returns the list node with the according id
 func (lhost *HostList) sel(id int) *HostNode {
 	curr := lhost.head
 

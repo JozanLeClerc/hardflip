@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 10 12:04:16 2024
+ * Wed Jan 10 16:36:40 2024
  * Joe
  *
  * events in the code
@@ -58,20 +58,11 @@ import (
 	"golang.org/x/term"
 )
 
-// func i_update_folded_count(dir *DirsNode, ui *HardUI) {
-// 	delta := 0
-// 	delta += dir.count_elements()
-// 	if dir.Folded == false {
-// 		delta *= -1
-// 	}
-// 	ui.folded_count += delta
-// }
-
 func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw_start == nil || litems.curr == nil {
 		return
 	}
-	virt_id := litems.curr.ID - (ui.dim[H] - 4) // - ui.folded_count
+	virt_id := litems.curr.ID - (ui.dim[H] - 4)
 	for litems.draw_start.ID < virt_id &&
 		litems.draw_start.next != nil {
 		litems.draw_start = litems.draw_start.next
@@ -80,15 +71,6 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
 	}
-	// fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
-	// if litems.draw_start.prev != nil &&
-	//    litems.draw_start.prev.is_dir() == true &&
-	//    litems.draw_start.prev.Dirs.Folded == true {
-		// tmp := litems.draw_start.prev.Dirs.count_elements()
-		// for i := 0; i < tmp && litems.draw_start != nil; i++ {
-		// 	litems.draw_start = litems.draw_start.next
-		// }
-	// }
 }
 
 func i_unfold_dir(data *HardData, item *ItemsNode) {
@@ -112,6 +94,7 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
+	item.Dirs.Folded = false
 }
 
 func i_fold_dir(data *HardData, item *ItemsNode) {
@@ -144,6 +127,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
+	item.Dirs.Folded = true
 }
 
 func i_reload_data(data *HardData) {
@@ -216,10 +200,6 @@ func i_events(data *HardData) {
 				data.litems.draw_start = data.litems.head
 			} else if event.Rune() == 'G' {
 				data.litems.curr = data.litems.last
-				// for data.litems.curr.prev != nil &&
-					// data.litems.curr.folded_parents() == true {
-					// data.litems.curr = data.litems.curr.prev
-				// }
 			} else if event.Rune() == 'D' &&
 					  data.ldirs.head != nil &&
 					  ui.sel_max != 0 {
@@ -243,10 +223,8 @@ func i_events(data *HardData) {
 					}
 				} else {
 					if data.litems.curr.Dirs.Folded == false {
-						data.litems.curr.Dirs.Folded = true
 						i_fold_dir(data, data.litems.curr)
 					} else {
-						data.litems.curr.Dirs.Folded = false
 						i_unfold_dir(data, data.litems.curr)
 					}
 				}
@@ -260,7 +238,6 @@ func i_events(data *HardData) {
 				} else {
 					data.litems.curr.Dirs.Folded = false
 				}
-				// i_update_folded_count(data.litems.curr.Dirs, ui)
 			} else if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)
 			}

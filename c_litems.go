@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_litems.go
- * Wed Jan 10 11:30:12 2024
+ * Wed Jan 10 16:36:44 2024
  * Joe
  *
  * the dir and hosts linked list
@@ -164,34 +164,5 @@ func (litems *ItemsList) inc(jump int) {
 			new_item = new_item.prev
 		}
 	}
-	// for jump > 0 &&
-	// 	new_item.folded_parents() == true &&
-	// 	new_item.next != nil {
-	// 	new_item = new_item.next
-	// }
-	// for jump < 0 &&
-	// 	new_item.folded_parents() == true &&
-	// 	new_item.prev != nil {
-	// 	new_item = new_item.prev
-	// }
-	// if new_item == litems.last && new_item.folded_parents() == true {
-	// 	return
-	// }
 	litems.curr = new_item
 }
-
-// func (item *ItemsNode) folded_parents() bool {
-// 	var ptr *DirsNode
-//
-// 	if item.is_dir() == false {
-// 		ptr = item.Host.Parent
-// 	} else {
-// 		ptr = item.Dirs.Parent
-// 	}
-// 	for ; ptr.Parent != nil; ptr = ptr.Parent {
-// 		if ptr.Folded == true {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }

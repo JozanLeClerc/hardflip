@@ -43,15 +43,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Wed Jan 10 11:03:24 2024
+ * Wed Jan 10 16:36:35 2024
  * Joe
  *
  * the main
  */
 
 package main
-
-// import "fmt"
 
 // the main data structure, holds up everything important
 type HardData struct {
