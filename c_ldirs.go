@@ -57,6 +57,7 @@ type DirsNode struct {
 	Parent *DirsNode
 	Depth  uint16
 	lhost  *HostList
+	// HACK: remove Folded bool if maps work
 	Folded bool
 	next   *DirsNode
 }

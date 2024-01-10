@@ -180,18 +180,18 @@ func (litems *ItemsList) inc(jump int) {
 	litems.curr = new_item
 }
 
-func (item *ItemsNode) folded_parents() bool {
-	var ptr *DirsNode
-
-	if item.is_dir() == false {
-		ptr = item.Host.Parent
-	} else {
-		ptr = item.Dirs.Parent
-	}
-	for ; ptr.Parent != nil; ptr = ptr.Parent {
-		if ptr.Folded == true {
-			return true
-		}
-	}
-	return false
-}
+// func (item *ItemsNode) folded_parents() bool {
+// 	var ptr *DirsNode
+//
+// 	if item.is_dir() == false {
+// 		ptr = item.Host.Parent
+// 	} else {
+// 		ptr = item.Dirs.Parent
+// 	}
+// 	for ; ptr.Parent != nil; ptr = ptr.Parent {
+// 		if ptr.Folded == true {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

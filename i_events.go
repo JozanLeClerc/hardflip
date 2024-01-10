@@ -92,6 +92,17 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	// }
 }
 
+func i_fold_dir(data *HardData, item *ItemsNode) {
+	litems := data.litems
+	folds := data.folds
+
+	folds[item] = &ItemsList{
+		nil,
+		nil,
+		nil,
+	}
+}
+
 func i_reload_data(data *HardData) {
 	// TODO: remove this after debug
 	fmt.Println("remove me sometime")
@@ -164,10 +175,10 @@ func i_events(data *HardData) {
 				data.litems.draw_start = data.litems.head
 			} else if event.Rune() == 'G' {
 				data.litems.curr = data.litems.last
-				for data.litems.curr.prev != nil &&
-					data.litems.curr.folded_parents() == true {
-					data.litems.curr = data.litems.curr.prev
-				}
+				// for data.litems.curr.prev != nil &&
+					// data.litems.curr.folded_parents() == true {
+					// data.litems.curr = data.litems.curr.prev
+				// }
 			} else if event.Rune() == 'D' &&
 					  data.ldirs.head != nil &&
 					  ui.sel_max != 0 {
@@ -195,6 +206,7 @@ func i_events(data *HardData) {
 					} else {
 						data.litems.curr.Dirs.Folded = false
 					}
+					i_fold_dir(data, data.litems.curr)
 				}
 			} else if event.Rune() == ' ' {
 				if data.litems.curr == nil ||
