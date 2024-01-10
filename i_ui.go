@@ -60,6 +60,7 @@ import (
 type HardUI struct {
 	s            tcell.Screen
 	mode         uint8
+	// HACK: fuck sel_max
 	sel_max      int
 	def_style    tcell.Style
 	dir_style    tcell.Style
@@ -160,12 +161,16 @@ func i_draw_zhosts_box(ui HardUI) {
 }
 
 func i_draw_delete_box(ui HardUI, item *ItemsNode) {
+	var text string
+	var file string
 	if item.is_dir() == true {
-		return
+		text = "Really delete this directory and all subsequent files?"
+		file = item.Dirs.path()
+	} else {
+		host := item.Host
+		text = "Really delete this host?"
+		file = host.Parent.path() + host.Filename
 	}
-	host := item.Host
-	text := "Really delete this host?"
-	file := host.Parent.path() + host.Filename
 	max_len := len(text)
     
 	if max_len < len(file) {

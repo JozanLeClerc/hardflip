@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 10 17:38:06 2024
+ * Wed Jan 10 18:56:02 2024
  * Joe
  *
  * events in the code
@@ -156,10 +156,11 @@ func i_delete_dir(data *HardData) {
 		return
 	}
 	dir_path := data.data_dir + dir.path()
-	if err := os.Remove(dir_path); err != nil {
+	if err := os.RemoveAll(dir_path); err != nil {
 		data.ui.s.Fini()
 		c_die("can't remove " + dir_path, err)
 	}
+	// TODO: finish this
 }
 
 func i_delete_host(data *HardData) {
@@ -208,22 +209,19 @@ func i_events(data *HardData) {
 		switch ui.mode {
 		case NORMAL_MODE:
 			if event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'q' ||
-			   event.Rune() == 'Q' {
+			   event.Rune() == 'q' {
 				ui.s.Fini()
 				os.Exit(0)
 			} else if event.Rune() == 'j' ||
-					  event.Rune() == 'J' ||
 					  event.Key() == tcell.KeyDown {
 				data.litems.inc(+1)
 			} else if event.Rune() == 'k' ||
-					  event.Rune() == 'K' ||
 					  event.Key() == tcell.KeyUp {
 				data.litems.inc(-1)
 			} else if event.Key() == tcell.KeyCtrlD {
-				data.litems.inc(+1000 + (ui.dim[H] / 3))
+				data.litems.inc(+(ui.dim[H] / 3))
 			} else if event.Key() == tcell.KeyCtrlU {
-				data.litems.inc(-1000 - (ui.dim[H] / 3))
+				data.litems.inc(-(ui.dim[H] / 3))
 			} else if event.Rune() == 'g' {
 				data.litems.curr = data.litems.head
 				data.litems.draw_start = data.litems.head
@@ -250,12 +248,10 @@ func i_events(data *HardData) {
 						}
 						ui.s.SetStyle(ui.def_style)
 					}
+				} else if data.litems.curr.Dirs.Folded == false {
+					i_fold_dir(data, data.litems.curr)
 				} else {
-					if data.litems.curr.Dirs.Folded == false {
-						i_fold_dir(data, data.litems.curr)
-					} else {
-						i_unfold_dir(data, data.litems.curr)
-					}
+					i_unfold_dir(data, data.litems.curr)
 				}
 			} else if event.Rune() == ' ' {
 				if data.litems.curr == nil ||
@@ -275,12 +271,9 @@ func i_events(data *HardData) {
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC ||
 			   event.Rune() == 'q' ||
-			   event.Rune() == 'n' ||
-			   event.Rune() == 'Q' ||
-			   event.Rune() == 'N' {
+			   event.Rune() == 'n' {
 				ui.mode = NORMAL_MODE
-			} else if event.Rune() == 'y' ||
-					  event.Rune() == 'Y' {
+			} else if event.Rune() == 'y' {
 				i_delete_host(data)
 				ui.mode = NORMAL_MODE
 			}
