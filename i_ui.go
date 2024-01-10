@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue Jan 09 12:00:46 2024
+ * Wed Jan 10 11:30:15 2024
  * Joe
  *
  * interfacing with the user
@@ -64,7 +64,7 @@ type HardUI struct {
 	def_style    tcell.Style
 	dir_style    tcell.Style
 	title_style  tcell.Style
-	folded_count int
+	// folded_count int
 	dim          [2]int
 }
 
@@ -284,9 +284,9 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 	line := 1
 	ptr := litems.draw_start
 	for ptr = ptr; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
-		if ptr.folded_parents() == true {
-			continue
-		}
+		// if ptr.folded_parents() == true {
+		// 	continue
+		// }
 		if ptr.is_dir() == false && ptr.Host != nil  {
 			i_host_panel_host(ui,
 				icons,

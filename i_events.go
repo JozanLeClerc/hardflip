@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Tue Jan 09 15:14:14 2024
+ * Wed Jan 10 11:30:31 2024
  * Joe
  *
  * events in the code
@@ -59,20 +59,20 @@ import (
 	"golang.org/x/term"
 )
 
-func i_update_folded_count(dir *DirsNode, ui *HardUI) {
-	delta := 0
-	delta += dir.count_elements()
-	if dir.Folded == false {
-		delta *= -1
-	}
-	ui.folded_count += delta
-}
+// func i_update_folded_count(dir *DirsNode, ui *HardUI) {
+// 	delta := 0
+// 	delta += dir.count_elements()
+// 	if dir.Folded == false {
+// 		delta *= -1
+// 	}
+// 	ui.folded_count += delta
+// }
 
 func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw_start == nil || litems.curr == nil {
 		return
 	}
-	virt_id := litems.curr.ID - (ui.dim[H] - 4) - ui.folded_count
+	virt_id := litems.curr.ID - (ui.dim[H] - 4) // - ui.folded_count
 	for litems.draw_start.ID < virt_id &&
 		litems.draw_start.next != nil {
 		litems.draw_start = litems.draw_start.next
@@ -82,14 +82,14 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 		litems.draw_start = litems.draw_start.prev
 	}
 	// fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
-	if litems.draw_start.prev != nil &&
-	   litems.draw_start.prev.is_dir() == true &&
-	   litems.draw_start.prev.Dirs.Folded == true {
+	// if litems.draw_start.prev != nil &&
+	//    litems.draw_start.prev.is_dir() == true &&
+	//    litems.draw_start.prev.Dirs.Folded == true {
 		// tmp := litems.draw_start.prev.Dirs.count_elements()
 		// for i := 0; i < tmp && litems.draw_start != nil; i++ {
 		// 	litems.draw_start = litems.draw_start.next
 		// }
-	}
+	// }
 }
 
 func i_reload_data(data *HardData) {
@@ -206,7 +206,7 @@ func i_events(data *HardData) {
 				} else {
 					data.litems.curr.Dirs.Folded = false
 				}
-				i_update_folded_count(data.litems.curr.Dirs, ui)
+				// i_update_folded_count(data.litems.curr.Dirs, ui)
 			} else if event.Key() == tcell.KeyCtrlR {
 				i_reload_data(data)
 			}
