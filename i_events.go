@@ -81,7 +81,7 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
 	}
-	// fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
+	fmt.Println(">>>>> DRAW_START:", litems.draw_start.ID, "<<<<<<< >>>>>>>> VIRT_ID:", virt_id)
 	if litems.draw_start.prev != nil &&
 	   litems.draw_start.prev.is_dir() == true &&
 	   litems.draw_start.prev.Dirs.Folded == true {
@@ -93,8 +93,9 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 }
 
 func i_reload_data(data *HardData) {
-	// FIX: segv if data dir is removed
-	fmt.Println("remove me sometime")
+	// TODO: remove this after debug
+	// fmt.Println("remove me sometime")
+	data.data_dir = c_get_data_dir()
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
 	data.ui.sel_max = data.litems.last.ID
