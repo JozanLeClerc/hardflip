@@ -3,7 +3,7 @@
 ## v0.1
 
 - [x] folders
-- [ ] folding folders
+- [x] folding folders
 - [ ] delete folders
 
 ## v0.2
