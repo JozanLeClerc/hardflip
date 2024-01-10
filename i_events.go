@@ -92,16 +92,38 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	// }
 }
 
-func i_fold_dir(data *HardData, item *ItemsNode) {
+func i_unfold_dir(data *HardData, item *ItemsNode) {
 	if item == nil {
 		return
 	}
-	litems := data.litems
+	fold := data.folds[item]
+	if fold == nil {
+		return
+	}
+	after := item.next
+	item.next = fold.head
+	fold.head.prev = item
+	fold.last.next = after
+	if after != nil {
+		after.prev = fold.last
+	} else {
+		data.litems.last = fold.last
+	}
+	delete(data.folds, item)
+	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
+		ptr.next.ID = ptr.ID + 1
+	}
+}
+
+func i_fold_dir(data *HardData, item *ItemsNode) {
+	if item == nil || item.Dirs == nil {
+		return
+	}
 	folds := data.folds
 	folded_start := item.next
 	folded_start.prev = nil
 	folded_end := item
-	for i := 0; i < item.Dirs.count_elements() && folded_end != nil; i++ {
+	for i := 0; i < item.Dirs.count_elements(true) && folded_end != nil; i++ {
 		folded_end = folded_end.next
 	}
 	after := folded_end.next
@@ -113,14 +135,14 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		nil,
 	}
 	item.next = after
-	if after == nil {
-		litems.last = item
-	} else {
+	if after != nil {
 		after.prev = item
+	} else {
+		data.litems.last = item
 	}
 
 	folds[item] = &tmp
-	for ptr := litems.head; ptr.next != nil; ptr = ptr.next {
+	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
 }
@@ -225,10 +247,11 @@ func i_events(data *HardData) {
 				} else {
 					if data.litems.curr.Dirs.Folded == false {
 						data.litems.curr.Dirs.Folded = true
+						i_fold_dir(data, data.litems.curr)
 					} else {
 						data.litems.curr.Dirs.Folded = false
+						i_unfold_dir(data, data.litems.curr)
 					}
-					i_fold_dir(data, data.litems.curr)
 				}
 			} else if event.Rune() == ' ' {
 				if data.litems.curr == nil ||

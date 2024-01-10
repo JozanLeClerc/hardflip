@@ -120,12 +120,16 @@ func (dir *DirsNode) count_hosts() int {
 }
 
 // return the number of hosts and subfolders of the dir
-func (dir *DirsNode) count_elements() int {
+func (dir *DirsNode) count_elements(skip_folds bool) int {
 	items := 0
 
 	items += dir.count_hosts()
 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
-		items += ptr.count_hosts() + 1
+		if skip_folds == true && ptr.Folded == true {
+			items += 1
+		} else {
+			items += ptr.count_hosts() + 1
+		}
 	}
 	return items
 }

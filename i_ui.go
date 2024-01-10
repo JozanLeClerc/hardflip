@@ -52,8 +52,6 @@
 package main
 
 import (
-	// "fmt"
-	// "os"
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
