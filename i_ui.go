@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Jan 10 11:30:15 2024
+ * Wed Jan 10 12:04:11 2024
  * Joe
  *
  * interfacing with the user
@@ -52,8 +52,8 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	// "fmt"
+	// "os"
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"

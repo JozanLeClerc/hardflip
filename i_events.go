@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 10 11:30:31 2024
+ * Wed Jan 10 12:04:16 2024
  * Joe
  *
  * events in the code
@@ -93,14 +93,29 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 }
 
 func i_fold_dir(data *HardData, item *ItemsNode) {
-	litems := data.litems
+	if item == nil {
+		return
+	}
+	// litems := data.litems
 	folds := data.folds
-
-	folds[item] = &ItemsList{
-		nil,
+	folded_start := item.next
+	folded_start.prev = nil
+	folded_end := item
+	for i := 0; i < item.Dirs.count_elements() && folded_end != nil; i++ {
+		folded_end = folded_end.next
+	}
+	after := folded_end.next
+	folded_end.next = nil
+	tmp := ItemsList{
+		folded_start,
+		folded_end,
 		nil,
 		nil,
 	}
+	item.next = after
+	after.prev = item
+
+	folds[item] = &tmp
 }
 
 func i_reload_data(data *HardData) {
