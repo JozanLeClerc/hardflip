@@ -161,6 +161,7 @@ func i_delete_dir(data *HardData) {
 		c_die("can't remove " + dir_path, err)
 	}
 	// TODO: finish this
+	// TODO: litems ldirs and shit and lots of segv
 }
 
 func i_delete_host(data *HardData) {
