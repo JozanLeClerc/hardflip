@@ -81,10 +81,14 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	if fold == nil {
 		return
 	}
-	after := item.next
-	item.next = fold.head
-	fold.head.prev = item
-	fold.last.next = after
+	after := item.next // nil
+	item.next = fold.head // nil
+	if fold.head != nil {
+		fold.head.prev = item
+	}
+	if fold.last != nil {
+		fold.last.next = after
+	}
 	if after != nil {
 		after.prev = fold.last
 	} else {
@@ -95,21 +99,31 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 		ptr.next.ID = ptr.ID + 1
 	}
 	item.Dirs.Folded = false
+	// FIX: segv close last empty folder
 }
 
 func i_fold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
 	}
+	var folded_start, folded_end, after *ItemsNode
 	folds := data.folds
-	folded_start := item.next
-	folded_start.prev = nil
-	folded_end := item
-	for i := 0; i < item.Dirs.count_elements(true) && folded_end != nil; i++ {
+	folded_start = item.next
+	if folded_start != nil {
+		folded_start.prev = nil
+		folded_end = item
+	} else {
+		folded_end = nil
+	}
+	for i := 0; folded_end != nil && i < item.Dirs.count_elements(true); i++ {
 		folded_end = folded_end.next
 	}
-	after := folded_end.next
-	folded_end.next = nil
+	if folded_end != nil {
+		after = folded_end.next
+		folded_end.next = nil
+	} else {
+		after = nil
+	}
 	tmp := ItemsList{
 		folded_start,
 		folded_end,
