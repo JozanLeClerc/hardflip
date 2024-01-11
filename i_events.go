@@ -160,15 +160,23 @@ func i_delete_dir(data *HardData) {
 	// 	data.ui.s.Fini()
 	// 	c_die("can't remove " + dir_path, err)
 	// }
+	tmp := data.litems.curr.prev
+	data.ldirs.del(dir)
+	// TODO: delete folds map reference if folded
 	// TODO: finish this
 	// TODO: litems ldirs and shit and lots of segv
 	// TEST: single empty dir
 	// TEST: single non-empty dir
 	// TEST: first dir
 	// TEST: last dir
+	// TEST: last dir 4m+
+	// TEST: folded
 }
 
 func i_delete_host(data *HardData) {
+	if data.litems.curr == nil {
+		return
+	}
 	if data.litems.curr.is_dir() == true {
 		i_delete_dir(data)
 		return
@@ -183,11 +191,8 @@ func i_delete_host(data *HardData) {
 		data.ui.s.Fini()
 		c_die("can't remove " + file_path, err)
 	}
-	var tmp *ItemsNode
+	tmp := data.litems.curr.prev
 	host.Parent.lhost.del(host)
-	if data.litems.curr != nil {
-		tmp = data.litems.curr.prev
-	}
 	data.litems.del(data.litems.curr)
 	if tmp == nil {
 		tmp = data.litems.head

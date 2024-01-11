@@ -79,6 +79,43 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 	ldirs.last = last.next
 }
 
+// removes a dir node from the list
+func (ldirs *DirsList) del(dir *DirsNode) {
+	if ldirs.head == nil {
+		return
+	}
+	if ldirs.head == dir {
+		ldirs.head = ldirs.head.next
+		if ldirs.head == nil {
+			ldirs.last = nil
+			return
+		}
+		for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
+			ptr.ID -= 1
+		}
+		return
+	}
+	if ldirs.last == dir {
+		ptr := ldirs.head
+		for ptr.next != nil {
+			ptr = ptr.next
+		}
+		ldirs.last = ptr
+		ldirs.last.next = nil
+		return
+	}
+	ptr := ldirs.head
+	for ptr.next != nil && ptr.next != dir {
+		ptr = ptr.next
+	}
+	if ptr.next == dir {
+		ptr.next = ptr.next.next
+	}
+	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
+		ptr.ID -= 1
+	}
+}
+
 // return the list node with the according id
 func (ldirs *DirsList) sel(id int) *DirsNode {
 	curr := ldirs.head
