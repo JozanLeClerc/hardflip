@@ -74,10 +74,10 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 }
 
 func i_unfold_dir(data *HardData, item *ItemsNode) {
-	if item == nil {
+	if item == nil || item.Dirs == nil {
 		return
 	}
-	fold := data.folds[item]
+	fold := data.folds[item.Dirs]
 	if fold == nil {
 		return
 	}
@@ -94,7 +94,7 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	} else {
 		data.litems.last = fold.last
 	}
-	delete(data.folds, item)
+	delete(data.folds, item.Dirs)
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
@@ -136,7 +136,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		data.litems.last = item
 	}
 
-	folds[item] = &tmp
+	folds[item.Dirs] = &tmp
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}

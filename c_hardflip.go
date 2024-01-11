@@ -58,7 +58,7 @@ type HardData struct {
 	ui     HardUI
 	opts   HardOpts
 	data_dir string
-	folds  map[*ItemsNode]*ItemsList
+	folds  map[*DirsNode]*ItemsList
 }
 
 func main() {
@@ -72,7 +72,7 @@ func main() {
 		HardUI{},
 		opts,
 		data_dir,
-		make(map[*ItemsNode]*ItemsList),
+		make(map[*DirsNode]*ItemsList),
 	}
 	i_ui(&data)
 }
