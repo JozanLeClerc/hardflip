@@ -299,11 +299,6 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 				ptr.Dirs,
 				litems.curr.Dirs,
 				line)
-			// FIX: === delete this
-			i_draw_text(ui.s,
-				ui.dim[W] / 3 - 2, line, ui.dim[W] / 3, line,
-				ui.def_style, strconv.Itoa(ptr.Dirs.count_elements(true, data.folds)))
-			// FIX: ===
 			line++
 		}
 	}

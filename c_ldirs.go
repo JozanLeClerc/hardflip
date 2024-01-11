@@ -43,15 +43,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_ldirs.go
- * Tue Jan 09 12:06:44 2024
+ * Thu Jan 11 18:35:31 2024
  * Joe
  *
  * the directories linked list
  */
 
 package main
-
-import "fmt"
 
 type DirsNode struct {
 	ID     int
@@ -148,6 +146,18 @@ func (dir *DirsNode) path() string {
 	return path
 }
 
+// returns the next directory in line with the same or lower depth
+func (dir *DirsNode) get_next_level(folds map[*DirsNode]*ItemsList) *DirsNode {
+	if dir == nil {
+		return nil
+	}
+	ptr := dir.next
+	for ptr != nil && ptr.Depth > dir.Depth {
+		ptr = ptr.next
+	}
+	return ptr
+}
+
 // returns the number of hosts of the dir
 func (dir *DirsNode) count_hosts() int {
 	if dir.lhost.head == nil || dir.lhost.last == nil {
@@ -155,24 +165,28 @@ func (dir *DirsNode) count_hosts() int {
 	}
 	return dir.lhost.last.ID + 1
 }
-
 // return the number of hosts and subfolders of the dir
-func (dir *DirsNode) count_elements(skip_folds bool,
-	folds map[*DirsNode]*ItemsList) int {
-	items := 0
-
-	items += dir.count_hosts()
-	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
-		if lfold := folds[ptr]; skip_folds == true && lfold != nil {
-			count := lfold.last.ID - lfold.head.ID
-			fmt.Println(count)
-			// FIX: here
-			for i := 1; ptr != nil && i < count; i++ {
-				ptr = ptr.next
-			}
-		} else {
-			items += ptr.count_hosts() + 1
-		}
-	}
-	return items
-}
+// func (item *ItemsNode) count_elements(skip_folds bool,
+// 	folds map[*DirsNode]*ItemsList) (*ItemsNode, int) {
+// 	if item.is_dir() == false || item.Dirs == nil {
+// 		return nil, 0
+// 	}
+// 	items := 0
+//
+// 	items += item.Dirs.count_hosts()
+// 	for ptr := item; ptr != nil; ptr = ptr.next {
+// 		ptr.Dirs.Depth > item.Dirs.Depth
+// 	}
+// 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
+// 		if lfold := folds[ptr]; skip_folds == true && lfold != nil {
+// 			count := lfold.last.ID - lfold.head.ID
+// 			for i := 0; ptr != nil && i < count; i++ {
+// 				ptr = ptr.next
+// 			}
+// 		} else {
+// 			items += ptr.count_hosts() + 1
+// 		}
+// 	}
+// 	return items
+// 	// FIX: this needs fixin
+// }
