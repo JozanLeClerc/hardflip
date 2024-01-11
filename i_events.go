@@ -62,12 +62,12 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw_start == nil || litems.curr == nil {
 		return
 	}
-	virt_id := litems.curr.ID - (ui.dim[H] - 4)
+	virt_id := litems.curr.ID - (ui.dim[H] - 4) + 4
 	for litems.draw_start.ID < virt_id &&
 		litems.draw_start.next != nil {
 		litems.draw_start = litems.draw_start.next
 	}
-	for litems.draw_start.ID > litems.curr.ID &&
+	for litems.draw_start.ID > litems.curr.ID - 4 &&
 		litems.draw_start.prev != nil {
 		litems.draw_start = litems.draw_start.prev
 	}
@@ -274,6 +274,8 @@ func i_events(data *HardData) {
 				} else if data.litems.curr.Dirs != nil &&
 						  data.folds[data.litems.curr.Dirs] == nil {
 					i_fold_dir(data, data.litems.curr)
+					ui.s.Fini()
+					os.Exit(0)
 				} else {
 					i_unfold_dir(data, data.litems.curr)
 				}

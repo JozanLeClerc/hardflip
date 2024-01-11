@@ -51,6 +51,8 @@
 
 package main
 
+import "fmt"
+
 type DirsNode struct {
 	ID     int
 	Name   string
@@ -156,17 +158,18 @@ func (dir *DirsNode) count_hosts() int {
 
 // return the number of hosts and subfolders of the dir
 func (dir *DirsNode) count_elements(skip_folds bool,
-									folds map[*DirsNode]*ItemsList) int {
+	folds map[*DirsNode]*ItemsList) int {
 	items := 0
 
 	items += dir.count_hosts()
 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
-		if skip_folds == true && lfold := folds[ptr] != nil {
-			lfold.head
-			for i := 1; i < count; i++ {
+		if lfold := folds[ptr]; skip_folds == true && lfold != nil {
+			count := lfold.last.ID - lfold.head.ID
+			fmt.Println(count)
+			// FIX: here
+			for i := 1; ptr != nil && i < count; i++ {
 				ptr = ptr.next
 			}
-			// FIX: fix you shit
 		} else {
 			items += ptr.count_hosts() + 1
 		}
