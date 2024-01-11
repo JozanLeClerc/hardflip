@@ -125,14 +125,11 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	}
 	if ptr == item {
 		folded_end = nil
+		after = nil
 	} else {
 		folded_end = ptr.prev
-	}
-	if folded_end != nil {
 		after = folded_end.next
 		folded_end.next = nil
-	} else {
-		after = nil
 	}
 	tmp := ItemsList{
 		folded_start,
