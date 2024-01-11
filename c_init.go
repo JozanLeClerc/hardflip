@@ -59,7 +59,6 @@ import (
 type HardOpts struct {
 	Icon    bool
 	Loop    bool
-	FoldAll bool
 }
 
 // this function recurses into the specified root directory in order to load
@@ -77,7 +76,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		parent,
 		depth,
 		&HostList{},
-		opts.FoldAll,
+		false,
 		nil,
 	}
 	ldirs.add_back(&dir_node)

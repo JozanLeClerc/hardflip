@@ -155,13 +155,17 @@ func i_delete_dir(data *HardData) {
 	if dir == nil {
 		return
 	}
-	dir_path := data.data_dir + dir.path()
-	if err := os.RemoveAll(dir_path); err != nil {
-		data.ui.s.Fini()
-		c_die("can't remove " + dir_path, err)
-	}
+	// dir_path := data.data_dir + dir.path()
+	// if err := os.RemoveAll(dir_path); err != nil {
+	// 	data.ui.s.Fini()
+	// 	c_die("can't remove " + dir_path, err)
+	// }
 	// TODO: finish this
 	// TODO: litems ldirs and shit and lots of segv
+	// TEST: single empty dir
+	// TEST: single non-empty dir
+	// TEST: first dir
+	// TEST: last dir
 }
 
 func i_delete_host(data *HardData) {
