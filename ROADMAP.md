@@ -16,8 +16,10 @@
 
 ## v0.4
 
-- [ ] add
 - [ ] mkdir
+- [ ] clone
+- [ ] edit
+- [ ] add
 
 ## v0.5
 
