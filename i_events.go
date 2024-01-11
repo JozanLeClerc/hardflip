@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -124,10 +125,17 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		ptr = ptr.next
 	}
 	if ptr == item {
+		ptr = ptr.next
+		// FIX: fix your crap
+	}
+	if ptr == item {
 		folded_end = nil
 		after = nil
 	} else {
 		folded_end = ptr.prev
+		data.ui.s.Fini()
+		fmt.Println("qwe:", ptr.Dirs)
+		os.Exit(0)
 		after = folded_end.next
 		folded_end.next = nil
 	}
