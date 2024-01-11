@@ -227,7 +227,7 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	    ui.def_style, "o]")
 }
 
-func i_host_panel_dirs(ui HardUI, icons bool,
+func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.dir_style
 	if dir == curr {
@@ -238,11 +238,7 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 			text += "  "
 	}
 	if icons == true {
-		var fold_var uint8
-		if dir.Folded == true {
-			fold_var = 1
-		}
-		text += DIRS_ICONS[fold_var]
+		text += DIRS_ICONS[dir_icon]
 	}
 	text += dir.Name
 	spaces := ""
@@ -253,9 +249,6 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 	i_draw_text(ui.s,
 		1, line, ui.dim[W] / 3, line,
 		style, text)
-	i_draw_text(ui.s,
-		ui.dim[W] / 3 - 2, line, ui.dim[W] / 3, line,
-		ui.def_style, strconv.Itoa(dir.count_elements(true)))
 }
 
 func i_host_panel_host(ui HardUI, icons bool,
@@ -282,7 +275,7 @@ func i_host_panel_host(ui HardUI, icons bool,
 		style, text)
 }
 
-func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
+func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
@@ -298,10 +291,19 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList) {
 				line)
 			line++
 		} else if ptr.Dirs != nil {
-			i_host_panel_dirs(ui, icons,
+			var dir_icon uint8
+			if data.folds[ptr.Dirs] != nil {
+				dir_icon = 1
+			}
+			i_host_panel_dirs(ui, icons, dir_icon,
 				ptr.Dirs,
 				litems.curr.Dirs,
 				line)
+			// FIX: === delete this
+			i_draw_text(ui.s,
+				ui.dim[W] / 3 - 2, line, ui.dim[W] / 3, line,
+				ui.def_style, strconv.Itoa(ptr.Dirs.count_elements(true, data.folds)))
+			// FIX: ===
 			line++
 		}
 	}
@@ -549,7 +551,7 @@ func i_ui(data *HardData) {
 	for {
 		ui.s.Clear()
 		i_bottom_text(*ui)
-		i_host_panel(data.ui, data.opts.Icon, data.litems)
+		i_host_panel(data.ui, data.opts.Icon, data.litems, data)
 		i_info_panel(data.ui, data.litems)
 		if data.litems.head == nil {
 			i_draw_zhosts_box(*ui)

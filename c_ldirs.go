@@ -57,7 +57,6 @@ type DirsNode struct {
 	Parent *DirsNode
 	Depth  uint16
 	lhost  *HostList
-	Folded bool
 	next   *DirsNode
 }
 
@@ -156,12 +155,13 @@ func (dir *DirsNode) count_hosts() int {
 }
 
 // return the number of hosts and subfolders of the dir
-func (dir *DirsNode) count_elements(skip_folds bool) int {
+func (dir *DirsNode) count_elements(skip_folds bool,
+									folds map[*DirsNode]*ItemsList) int {
 	items := 0
 
 	items += dir.count_hosts()
 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
-		if skip_folds == true && ptr.Folded == true {
+		if skip_folds == true && folds[dir] != nil {
 			items += 1
 			// HACK: key to the map is the key
 			// TODO: fix you shit

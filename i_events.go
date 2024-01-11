@@ -98,7 +98,6 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
-	item.Dirs.Folded = false
 }
 
 func i_fold_dir(data *HardData, item *ItemsNode) {
@@ -114,7 +113,9 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	} else {
 		folded_end = nil
 	}
-	for i := 0; folded_end != nil && i < item.Dirs.count_elements(false); i++ {
+	for i := 0;
+		folded_end != nil && i < item.Dirs.count_elements(false, data.folds);
+		i++ {
 		folded_end = folded_end.next
 	}
 	if folded_end != nil {
@@ -140,7 +141,6 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
-	item.Dirs.Folded = true
 }
 
 func i_reload_data(data *HardData) {
@@ -162,7 +162,7 @@ func i_delete_dir(data *HardData) {
 	// 	c_die("can't remove " + dir_path, err)
 	// }
 	tmp := data.litems.curr.prev
-	count := data.litems.curr.Dirs.count_elements(false) + 1
+	count := data.litems.curr.Dirs.count_elements(false, data.folds) + 1
 	data.ldirs.del(data.litems.curr.Dirs)
 	for i := 0; data.litems.curr != nil && i < count; i++ {
 		data.litems.del(data.litems.curr)
@@ -271,7 +271,8 @@ func i_events(data *HardData) {
 						}
 						ui.s.SetStyle(ui.def_style)
 					}
-				} else if data.litems.curr.Dirs.Folded == false {
+				} else if data.litems.curr.Dirs != nil &&
+						  data.folds[data.litems.curr.Dirs] == nil {
 					i_fold_dir(data, data.litems.curr)
 				} else {
 					i_unfold_dir(data, data.litems.curr)
@@ -281,7 +282,8 @@ func i_events(data *HardData) {
 				   data.litems.curr.is_dir() == false {
 					break
 				}
-				if data.litems.curr.Dirs.Folded == false {
+				if data.litems.curr.Dirs != nil &&
+				   data.folds[data.litems.curr.Dirs] == nil {
 					i_fold_dir(data, data.litems.curr)
 				} else {
 					i_unfold_dir(data, data.litems.curr)

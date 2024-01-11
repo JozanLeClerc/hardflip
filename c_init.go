@@ -76,7 +76,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		parent,
 		depth,
 		&HostList{},
-		false,
 		nil,
 	}
 	ldirs.add_back(&dir_node)
@@ -111,9 +110,6 @@ func c_load_data_dir(dir string, opts HardOpts) *DirsList {
 func c_load_litems(ldirs *DirsList) *ItemsList {
 	litems := ItemsList{}
 
-	if ldirs.head != nil {
-		ldirs.head.Folded = false
-	}
 	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
 		item := ItemsNode{ Dirs: ptr, Host: nil }
 		litems.add_back(&item)
