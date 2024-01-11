@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Jan 10 12:04:11 2024
+ * Thu Jan 11 12:22:06 2024
  * Joe
  *
  * interfacing with the user
@@ -228,23 +228,23 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 }
 
 func i_host_panel_dirs(ui HardUI, icons bool,
-	dirs *DirsNode, curr *DirsNode, line int) {
+	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.dir_style
-	if dirs == curr {
+	if dir == curr {
 		style = style.Reverse(true)
 	}
 	text := ""
-	for i := 0; i < int(dirs.Depth) - 2; i++ {
+	for i := 0; i < int(dir.Depth) - 2; i++ {
 			text += "  "
 	}
 	if icons == true {
 		var fold_var uint8
-		if dirs.Folded == true {
+		if dir.Folded == true {
 			fold_var = 1
 		}
 		text += DIRS_ICONS[fold_var]
 	}
-	text += dirs.Name
+	text += dir.Name
 	spaces := ""
 	for i := 0; i < (ui.dim[W] / 3) - len(text) + 1; i++ {
 		spaces += " "
@@ -253,6 +253,9 @@ func i_host_panel_dirs(ui HardUI, icons bool,
 	i_draw_text(ui.s,
 		1, line, ui.dim[W] / 3, line,
 		style, text)
+	i_draw_text(ui.s,
+		ui.dim[W] / 3 - 2, line, ui.dim[W] / 3, line,
+		ui.def_style, strconv.Itoa(dir.count_elements(true)))
 }
 
 func i_host_panel_host(ui HardUI, icons bool,

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 10 18:56:02 2024
+ * Thu Jan 11 12:22:12 2024
  * Joe
  *
  * events in the code
@@ -114,7 +114,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	} else {
 		folded_end = nil
 	}
-	for i := 0; folded_end != nil && i < item.Dirs.count_elements(true); i++ {
+	for i := 0; folded_end != nil && i < item.Dirs.count_elements(false); i++ {
 		folded_end = folded_end.next
 	}
 	if folded_end != nil {
@@ -156,15 +156,28 @@ func i_delete_dir(data *HardData) {
 		return
 	}
 	// dir_path := data.data_dir + dir.path()
+
 	// if err := os.RemoveAll(dir_path); err != nil {
 	// 	data.ui.s.Fini()
 	// 	c_die("can't remove " + dir_path, err)
 	// }
 	tmp := data.litems.curr.prev
-	data.ldirs.del(dir)
+	count := data.litems.curr.Dirs.count_elements(false) + 1
+	data.ldirs.del(data.litems.curr.Dirs)
+	for i := 0; data.litems.curr != nil && i < count; i++ {
+		data.litems.del(data.litems.curr)
+		data.litems.curr = data.litems.curr.next
+	}
+	if tmp == nil {
+		tmp = data.litems.head
+	}
+	data.litems.curr = tmp
+	if data.litems.last != nil {
+		data.ui.sel_max = data.litems.last.ID
+	} else {
+		data.ui.sel_max = 0
+	}
 	// TODO: delete folds map reference if folded
-	// TODO: finish this
-	// TODO: litems ldirs and shit and lots of segv
 	// TEST: single empty dir
 	// TEST: single non-empty dir
 	// TEST: first dir

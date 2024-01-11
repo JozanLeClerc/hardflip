@@ -163,6 +163,8 @@ func (dir *DirsNode) count_elements(skip_folds bool) int {
 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
 		if skip_folds == true && ptr.Folded == true {
 			items += 1
+			// HACK: key to the map is the key
+			// TODO: fix you shit
 		} else {
 			items += ptr.count_hosts() + 1
 		}
