@@ -165,6 +165,7 @@ func (dir *DirsNode) count_hosts() int {
 	}
 	return dir.lhost.last.ID + 1
 }
+
 // return the number of hosts and subfolders of the dir
 // func (item *ItemsNode) count_elements(skip_folds bool,
 // 	folds map[*DirsNode]*ItemsList) (*ItemsNode, int) {
