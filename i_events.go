@@ -124,7 +124,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	for next_dir != nil && ptr != nil && ptr.Dirs != next_dir {
 		ptr = ptr.next
 	}
-	if ptr == item {
+	if ptr == item && ptr.next != nil {
 		ptr = ptr.next
 		// FIX: fix your crap
 	}
@@ -137,8 +137,14 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	} else if ptr == item {
 		folded_end = nil
 		after = nil
+		data.ui.s.Fini()
+		fmt.Println("this is the end")
+		os.Exit(0)
 	} else {
 		folded_end = ptr.prev
+		// data.ui.s.Fini()
+		// fmt.Println("ptr.Dirs.Name:", ptr.Host.Name, "\nfolded_end:", folded_end)
+		// os.Exit(0)
 		after = folded_end.next
 		folded_end.next = nil
 	}
