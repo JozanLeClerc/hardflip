@@ -496,28 +496,34 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
 	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
 		tcell.RuneBTee, nil, ui.def_style)
+	// number display
+	if litems.head != nil {
+		text := " " + strconv.Itoa(litems.curr.ID) + " of " +
+			strconv.Itoa(int(litems.last.ID)) + " "
+		i_draw_text(ui.s,
+			(ui.dim[W] - 1) - len(text) - 1,
+			ui.dim[H] - 2,
+			(ui.dim[W] - 1) - 1,
+			ui.dim[H] - 2,
+			ui.def_style,
+			text)
+	} else {
+		text := " 0 hosts "
+		i_draw_text(ui.s,
+			(ui.dim[W] - 1) - len(text) - 1,
+			ui.dim[H] - 2,
+			(ui.dim[W] - 1) - 1,
+			ui.dim[H] - 2,
+			ui.def_style,
+			text)
+	}
+	// panel
 	if litems.head == nil {
 		return
 	} else if litems.curr.is_dir() == true {
 		i_info_panel_dirs(ui, litems.curr.Dirs)
 	} else {
 		i_info_panel_host(ui, litems.curr.Host)
-	}
-	// number display
-	if litems.head != nil {
-		text := " " + strconv.Itoa(litems.curr.ID) + " of " +
-			strconv.Itoa(int(litems.last.ID)) + " "
-		i_draw_text(ui.s,
-			(ui.dim[W] - 1) - len(text),
-			ui.dim[H] - 2,
-			(ui.dim[W] - 1) - 1, ui.dim[H] - 2,
-			ui.def_style,
-			text)
-	} else {
-		i_draw_text(ui.s,
-			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
-			ui.def_style,
-			" 0 hosts ")
 	}
 }
 
