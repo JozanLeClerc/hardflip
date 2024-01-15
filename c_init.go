@@ -71,7 +71,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		c_die("could not read data directory", err)
 	}
 	dir_node := DirsNode{
-		0,
 		name,
 		parent,
 		depth,

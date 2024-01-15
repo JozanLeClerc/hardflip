@@ -54,7 +54,6 @@ package main
 // 0: ssh
 // 1: rdp
 type HostNode struct {
-	ID       int
 	Protocol int8   `yaml:"type"`
 	Name     string `yaml:"name"`
 	Host     string `yaml:"host"`
@@ -91,7 +90,6 @@ func (lhost *HostList) add_back(node *HostNode) {
 		return
 	}
 	last := lhost.last
-	node.ID = last.ID + 1
 	last.next = node
 	lhost.last = last.next
 }
@@ -106,9 +104,6 @@ func (lhost *HostList) del(host *HostNode) {
 		if lhost.head == nil {
 			lhost.last = nil
 			return
-		}
-		for ptr := lhost.head; ptr != nil; ptr = ptr.next {
-			ptr.ID -= 1
 		}
         return
     }
@@ -128,25 +123,6 @@ func (lhost *HostList) del(host *HostNode) {
     if ptr.next == host {
         ptr.next = ptr.next.next
     }
-	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
-		ptr.ID -= 1
-	}
-}
-
-// returns the list node with the according id
-func (lhost *HostList) sel(id int) *HostNode {
-	curr := lhost.head
-
-	if curr == nil {
-		return nil
-	}
-    for curr.next != nil && curr.ID != id {
-        curr = curr.next
-    }
-	if curr.ID != id {
-		return nil
-	}
-	return curr
 }
 
 func (lhost *HostList) count() int {

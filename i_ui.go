@@ -341,13 +341,6 @@ func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 		ui.def_style, dir.path())
-	curr_line += 1
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
-		ui.title_style, "Hosts: ")
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
-		ui.def_style, strconv.Itoa(dir.count_hosts()))
 }
 
 func i_info_panel(ui HardUI, litems *ItemsList) {

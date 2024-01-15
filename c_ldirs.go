@@ -52,7 +52,6 @@
 package main
 
 type DirsNode struct {
-	ID     int
 	Name   string
 	Parent *DirsNode
 	Depth  uint16
@@ -73,7 +72,6 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 		return
 	}
 	last := ldirs.last
-	node.ID = last.ID + 1
 	last.next = node
 	ldirs.last = last.next
 }
@@ -88,9 +86,6 @@ func (ldirs *DirsList) del(dir *DirsNode) {
 		if ldirs.head == nil {
 			ldirs.last = nil
 			return
-		}
-		for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
-			ptr.ID -= 1
 		}
 		return
 	}
@@ -110,25 +105,6 @@ func (ldirs *DirsList) del(dir *DirsNode) {
 	if ptr.next == dir {
 		ptr.next = ptr.next.next
 	}
-	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
-		ptr.ID -= 1
-	}
-}
-
-// return the list node with the according id
-func (ldirs *DirsList) sel(id int) *DirsNode {
-	curr := ldirs.head
-
-	if curr == nil {
-		return nil
-	}
-    for curr.next != nil && curr.ID != id {
-        curr = curr.next
-    }
-	if curr.ID != id {
-		return nil
-	}
-	return curr
 }
 
 // returns a string with the full path of the dir
@@ -146,14 +122,6 @@ func (dir *DirsNode) path() string {
 	return path
 }
 
-// returns the number of hosts of the dir
-func (dir *DirsNode) count_hosts() int {
-	if dir.lhost.head == nil || dir.lhost.last == nil {
-		return 0
-	}
-	return dir.lhost.last.ID + 1
-}
-
 func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
 	if ldirs.head == dir {
 		return dir
@@ -165,28 +133,3 @@ func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
 	}
 	return nil
 }
-// return the number of hosts and subfolders of the dir
-// func (item *ItemsNode) count_elements(skip_folds bool,
-// 	folds map[*DirsNode]*ItemsList) (*ItemsNode, int) {
-// 	if item.is_dir() == false || item.Dirs == nil {
-// 		return nil, 0
-// 	}
-// 	items := 0
-//
-// 	items += item.Dirs.count_hosts()
-// 	for ptr := item; ptr != nil; ptr = ptr.next {
-// 		ptr.Dirs.Depth > item.Dirs.Depth
-// 	}
-// 	for ptr := dir.next; ptr != nil && ptr.Depth > dir.Depth; ptr = ptr.next {
-// 		if lfold := folds[ptr]; skip_folds == true && lfold != nil {
-// 			count := lfold.last.ID - lfold.head.ID
-// 			for i := 0; ptr != nil && i < count; i++ {
-// 				ptr = ptr.next
-// 			}
-// 		} else {
-// 			items += ptr.count_hosts() + 1
-// 		}
-// 	}
-// 	return items
-// 	// FIX: this needs fixin
-// }
