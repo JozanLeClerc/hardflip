@@ -146,18 +146,6 @@ func (dir *DirsNode) path() string {
 	return path
 }
 
-// returns the next directory in line with the same or lower depth
-func (dir *DirsNode) get_next_level(folds map[*DirsNode]*ItemsList) *DirsNode {
-	if dir == nil {
-		return nil
-	}
-	ptr := dir.next
-	for ptr != nil && ptr.Depth > dir.Depth {
-		ptr = ptr.next
-	}
-	return ptr
-}
-
 // returns the number of hosts of the dir
 func (dir *DirsNode) count_hosts() int {
 	if dir.lhost.head == nil || dir.lhost.last == nil {

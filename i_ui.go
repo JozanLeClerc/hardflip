@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Jan 11 12:22:06 2024
+ * Mon Jan 15 11:40:18 2024
  * Joe
  *
  * interfacing with the user
@@ -235,7 +235,7 @@ func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	}
 	text := ""
 	for i := 0; i < int(dir.Depth) - 2; i++ {
-			text += "  "
+		text += "  "
 	}
 	if icons == true {
 		text += DIRS_ICONS[dir_icon]

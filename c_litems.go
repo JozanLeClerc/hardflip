@@ -166,3 +166,27 @@ func (litems *ItemsList) inc(jump int) {
 	}
 	litems.curr = new_item
 }
+
+// returns the next directory in line with the same or lower depth
+func (item *ItemsNode) get_next_level() *ItemsNode {
+	if item == nil || item.Dirs == nil {
+		return nil
+	}
+	dir := item.Dirs
+	ptr := dir.next
+	for ptr != nil && ptr.Depth > dir.Depth {
+		ptr = ptr.next
+	}
+	item_ptr := item
+	for item_ptr != nil {
+		if item_ptr.is_dir() == false {
+			continue
+		}
+		if item_ptr.Dirs == ptr {
+			break
+		}
+		item_ptr = item_ptr.next
+	}
+	return item_ptr
+}
+

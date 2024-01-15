@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Jan 11 12:22:12 2024
+ * Mon Jan 15 11:40:10 2024
  * Joe
  *
  * events in the code
@@ -52,6 +52,7 @@
 package main
 
 import (
+	// "fmt"
 	"fmt"
 	"os"
 
@@ -74,6 +75,13 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	}
 }
 
+func i_set_unfold(data *HardData, item *ItemsNode) {
+	delete(data.folds, item.Dirs)
+	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
+		ptr.next.ID = ptr.ID + 1
+	}
+}
+
 func i_unfold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
@@ -82,20 +90,42 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	if fold == nil {
 		return
 	}
-	after := item.next
-	item.next = fold.head
-	if fold.head != nil {
-		fold.head.prev = item
+	// after := item.next
+	start, end := fold.head, fold.last
+	// last empty dir
+	if start == nil && end == nil {
+		i_set_unfold(data, item)
+		return
 	}
-	if fold.last != nil {
-		fold.last.next = after
+	// single empty dir
+	if start == item && end == end {
+		i_set_unfold(data, item)
+		return
 	}
-	if after != nil {
-		after.prev = fold.last
-	} else {
-		data.litems.last = fold.last
+	// item.next = fold.head
+	// if fold.head != nil {
+	// 	fold.head.prev = item
+	// }
+	// if fold.last != nil {
+	// 	fold.last.next = after
+	// }
+	// if after != nil {
+	// 	after.prev = fold.last
+	// } else {
+	// 	data.litems.last = fold.last
+	// }
+}
+
+func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
+	folds := data.folds
+	tmp := ItemsList{
+		start,
+		end,
+		nil,
+		nil,
 	}
-	delete(data.folds, item.Dirs)
+
+	folds[curr.Dirs] = &tmp
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
@@ -105,66 +135,91 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
 	}
-	var folded_start, folded_end, after *ItemsNode
-	folds := data.folds
-	folded_start = item.next
-	if folded_start != nil {
-		folded_start.prev = nil
-		folded_end = item
-	} else {
-		folded_end = nil
+	// var start, end, after *ItemsNode
+	var start, end *ItemsNode
+	start = item.next
+	// last dir + empty
+	if start == nil {
+		i_set_fold(data, item, nil, nil)
+		return
 	}
-	// for i := 0;
-	// 	folded_end != nil && i < item.Dirs.count_elements(true, data.folds);
-	// 	i++ {
-	// 	folded_end = folded_end.next
-	// }
-	next_dir := item.Dirs.get_next_level(data.folds)
-	ptr := item
-	for next_dir != nil && ptr != nil && ptr.Dirs != next_dir {
-		ptr = ptr.next
+	// empty dir
+	if start.Dirs != nil && start.Dirs.Depth <= item.Dirs.Depth {
+		i_set_fold(data, item, item, item)
+		return
 	}
-	if ptr == item && ptr.next != nil {
-		ptr = ptr.next
-		// FIX: fix your crap
-	}
-	if ptr == nil {
-		folded_end = nil
-		after = nil
+	// non-empty dir
+	start.prev = nil
+	end = start
+	next_dir := item.get_next_level()
 		data.ui.s.Fini()
-		fmt.Println("ptr:", ptr)
+		fmt.Println("qwe")
 		os.Exit(0)
-	} else if ptr == item {
-		folded_end = nil
-		after = nil
-		data.ui.s.Fini()
-		fmt.Println("this is the end")
-		os.Exit(0)
-	} else {
-		folded_end = ptr.prev
-		// data.ui.s.Fini()
-		// fmt.Println("ptr.Dirs.Name:", ptr.Host.Name, "\nfolded_end:", folded_end)
-		// os.Exit(0)
-		after = folded_end.next
-		folded_end.next = nil
+	// this is the end
+	if next_dir == nil {
+		return
 	}
-	tmp := ItemsList{
-		folded_start,
-		folded_end,
-		nil,
-		nil,
-	}
-	item.next = after
-	if after != nil {
-		after.prev = item
-	} else {
-		data.litems.last = item
-	}
+	// this is not the end
+	end = next_dir.prev 
+	item.next = next_dir
+	i_set_fold(data, item, start, end)
 
-	folds[item.Dirs] = &tmp
-	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
-		ptr.next.ID = ptr.ID + 1
-	}
+
+	// item.next = after
+	// if after != nil {
+	// 	after.prev = item
+	// } else {
+	// 	data.litems.last = item
+	// }
+	// folds := data.folds
+	// folded_start = item.next
+	// if folded_start != nil {
+	// 	folded_start.prev = nil
+	// 	folded_end = item
+	// } else {
+	// 	folded_end = nil
+	// }
+	// next_dir := item.Dirs.get_next_level(data.folds)
+	// ptr := item
+	// for next_dir != nil && ptr != nil && ptr.Dirs != next_dir {
+	// 	ptr = ptr.next
+	// }
+	// if ptr == item && ptr.next != nil {
+	// 	ptr = ptr.next
+	// 	// FIX: fix your crap
+	// }
+	// if ptr == nil {
+	// 	folded_end = nil
+	// 	after = nil
+	// 	data.ui.s.Fini()
+	// 	fmt.Println("ptr:", ptr)
+	// 	os.Exit(0)
+	// } else if ptr == item {
+	// 	folded_end = nil
+	// 	after = nil
+	// 	data.ui.s.Fini()
+	// 	fmt.Println("this is the end")
+	// 	os.Exit(0)
+	// } else {
+	// 	folded_end = ptr.prev
+	// 	// data.ui.s.Fini()
+	// 	// fmt.Println("ptr.Dirs.Name:", ptr.Host.Name, "\nfolded_end:", folded_end)
+	// 	// os.Exit(0)
+	// 	after = folded_end.next
+	// 	folded_end.next = nil
+	// }
+	// tmp := ItemsList{
+	// 	folded_start,
+	// 	folded_end,
+	// 	nil,
+	// 	nil,
+	// }
+	// item.next = after
+	// if after != nil {
+	// 	after.prev = item
+	// } else {
+	// 	data.litems.last = item
+	// }
 }
 
 func i_reload_data(data *HardData) {
