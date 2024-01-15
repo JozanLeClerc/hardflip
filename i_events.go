@@ -273,10 +273,14 @@ func i_events(data *HardData) {
 				// TODO: maybe keymap these
 			} else if event.Rune() == '}' ||
 					  event.Rune() == ']' {
-				// TODO: next dir
+				if next := data.litems.curr.next_dir(); next != nil {
+					data.litems.curr = next
+				}
 			} else if event.Rune() == '{' ||
 					  event.Rune() == '[' {
-				// TODO: prev dir
+				if prev := data.litems.curr.prev_dir(); prev != nil {
+					data.litems.curr = prev
+				}
 			} else if event.Rune() == 'g' ||
 					  event.Key() == tcell.KeyHome {
 				data.litems.curr = data.litems.head
