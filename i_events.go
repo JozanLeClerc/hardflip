@@ -63,12 +63,17 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 		return
 	}
 	// HACK: find workaround to kill ids
-	virt_id := litems.curr.ID - (ui.dim[H] - 4) + 4
+	scrolloff := 4
+	if litems.last.ID - (ui.dim[H] - 4) <= litems.draw.ID {
+		scrolloff = 0
+	}
+	virt_id := litems.curr.ID - (ui.dim[H] - 4) + scrolloff
 	for litems.draw.ID < virt_id &&
 		litems.draw.next != nil {
 		litems.draw = litems.draw.next
 	}
-	for litems.draw.ID > litems.curr.ID - 4 &&
+	scrolloff = 4
+	for litems.draw.ID > litems.curr.ID - scrolloff &&
 		litems.draw.prev != nil {
 		litems.draw = litems.draw.prev
 	}

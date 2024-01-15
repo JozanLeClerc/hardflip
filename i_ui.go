@@ -527,6 +527,28 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 	}
 }
 
+func i_scrollhint(ui HardUI, litems *ItemsList) {
+	if litems.head == nil {
+		return
+	}
+	h := ui.dim[H] - 4
+	max := litems.last.ID
+	if max <= h {
+		return
+	}
+	if litems.draw.ID > 1 {
+		ui.s.SetContent(0, 0,
+			'▲',
+			nil, ui.def_style)
+	}
+	if max - litems.draw.ID > h {
+		ui.s.SetContent(0, ui.dim[H] - 2,
+			'▼',
+			nil, ui.def_style)
+		return
+	}
+}
+
 func i_ui(data *HardData) {
 	var err error
 	ui := &data.ui
@@ -553,6 +575,7 @@ func i_ui(data *HardData) {
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts.Icon, data.litems, data)
 		i_info_panel(data.ui, data.litems)
+		i_scrollhint(data.ui, data.litems)
 		if data.litems.head == nil {
 			i_draw_zhosts_box(*ui)
 		}
