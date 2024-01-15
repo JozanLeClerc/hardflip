@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Mon Jan 15 13:54:53 2024
+ * Mon Jan 15 17:00:43 2024
  * Joe
  *
  * interfacing with the user
@@ -302,18 +302,6 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 			line++
 		}
 	}
-	if litems.head != nil {
-		i_draw_text(ui.s,
-			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
-			ui.def_style,
-			" " + strconv.Itoa(litems.curr.ID) + "/" +
-			strconv.Itoa(int(litems.last.ID)) + " items ")
-	} else {
-		i_draw_text(ui.s,
-			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
-			ui.def_style,
-			" 0 hosts ")
-	}
 }
 
 func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
@@ -341,20 +329,7 @@ func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
 		ui.def_style, dir.path())
 }
 
-func i_info_panel(ui HardUI, litems *ItemsList) {
-	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
-		ui.dim[W] - 1, ui.dim[H] - 2,
-		" Infos ", false)
-	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
-	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
-		tcell.RuneBTee, nil, ui.def_style)
-	if litems.head == nil {
-		return
-	} else if litems.curr.is_dir() == true {
-		i_info_panel_dirs(ui, litems.curr.Dirs)
-		return
-	}
-	host := litems.curr.Host
+func i_info_panel_host(ui HardUI, host *HostNode) {
 	host_type := host.protocol_str()
 	curr_line := 2
 	// name, type
@@ -511,6 +486,38 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 			(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
 			ui.def_style, host.Note)
 		curr_line += 1
+	}
+}
+
+func i_info_panel(ui HardUI, litems *ItemsList) {
+	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
+		ui.dim[W] - 1, ui.dim[H] - 2,
+		" Infos ", false)
+	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
+	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
+		tcell.RuneBTee, nil, ui.def_style)
+	if litems.head == nil {
+		return
+	} else if litems.curr.is_dir() == true {
+		i_info_panel_dirs(ui, litems.curr.Dirs)
+	} else {
+		i_info_panel_host(ui, litems.curr.Host)
+	}
+	// number display
+	if litems.head != nil {
+		text := " " + strconv.Itoa(litems.curr.ID) + " of " +
+			strconv.Itoa(int(litems.last.ID)) + " "
+		i_draw_text(ui.s,
+			(ui.dim[W] - 1) - len(text),
+			ui.dim[H] - 2,
+			(ui.dim[W] - 1) - 1, ui.dim[H] - 2,
+			ui.def_style,
+			text)
+	} else {
+		i_draw_text(ui.s,
+			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
+			ui.def_style,
+			" 0 hosts ")
 	}
 }
 

@@ -169,7 +169,7 @@ func (litems *ItemsList) inc(jump int) {
 
 // returns the previous dir
 func (item *ItemsNode) prev_dir() *ItemsNode {
-	for ptr := item.prev; ptr != nil && ptr.prev != nil; ptr = ptr.prev {
+	for ptr := item.prev; ptr != nil; ptr = ptr.prev {
 		if ptr.is_dir() == true {
 			return ptr
 		}
@@ -179,7 +179,7 @@ func (item *ItemsNode) prev_dir() *ItemsNode {
 
 // returns the next dir
 func (item *ItemsNode) next_dir() *ItemsNode {
-	for ptr := item.next; ptr != nil && ptr.next != nil; ptr = ptr.next {
+	for ptr := item.next; ptr != nil; ptr = ptr.next {
 		if ptr.is_dir() == true {
 			return ptr
 		}
