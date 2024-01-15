@@ -210,3 +210,12 @@ func (item *ItemsNode) get_next_level() *ItemsNode {
 	}
 	return nil
 }
+
+func (litems *ItemsList) reset_id() {
+	if litems.head != nil {
+		litems.head.ID = 1
+	}
+	for ptr := litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
+		ptr.next.ID = ptr.ID + 1
+	}
+}

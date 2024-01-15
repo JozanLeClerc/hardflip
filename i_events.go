@@ -76,9 +76,7 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 
 func i_set_unfold(data *HardData, item *ItemsNode) {
 	delete(data.folds, item.Dirs)
-	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
-		ptr.next.ID = ptr.ID + 1
-	}
+	data.litems.reset_id()
 }
 
 func i_unfold_dir(data *HardData, item *ItemsNode) {
@@ -123,9 +121,7 @@ func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
 	}
 
 	folds[curr.Dirs] = &tmp
-	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
-		ptr.next.ID = ptr.ID + 1
-	}
+	data.litems.reset_id()
 }
 
 func i_fold_dir(data *HardData, item *ItemsNode) {
@@ -200,9 +196,7 @@ func i_delete_dir(data *HardData) {
 		data.litems.last = curr.prev
 		data.litems.curr = curr.prev
 	}
-	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
-		ptr.next.ID = ptr.ID + 1
-	}
+	data.litems.reset_id()
 	if err := os.RemoveAll(dir_path); err != nil {
 		data.ui.s.Fini()
 		c_die("can't remove " + dir_path, err)
