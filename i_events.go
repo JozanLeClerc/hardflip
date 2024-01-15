@@ -60,17 +60,17 @@ import (
 )
 
 func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
-	if litems.draw_start == nil || litems.curr == nil {
+	if litems.draw == nil || litems.curr == nil {
 		return
 	}
 	virt_id := litems.curr.ID - (ui.dim[H] - 4) + 4
-	for litems.draw_start.ID < virt_id &&
-		litems.draw_start.next != nil {
-		litems.draw_start = litems.draw_start.next
+	for litems.draw.ID < virt_id &&
+		litems.draw.next != nil {
+		litems.draw = litems.draw.next
 	}
-	for litems.draw_start.ID > litems.curr.ID - 4 &&
-		litems.draw_start.prev != nil {
-		litems.draw_start = litems.draw_start.prev
+	for litems.draw.ID > litems.curr.ID - 4 &&
+		litems.draw.prev != nil {
+		litems.draw = litems.draw.prev
 	}
 }
 
@@ -184,7 +184,15 @@ func i_delete_dir(data *HardData) {
 		i_fold_dir(data, curr)
 	}
 	delete(data.folds, curr.Dirs)
-	curr.prev.next = curr.next
+	if curr == data.litems.head {
+		data.litems.head = curr.next
+		curr.next.prev = nil
+		if data.litems.draw == curr {
+			data.litems.draw = curr.next
+		}
+	} else {
+		curr.prev.next = curr.next
+	}
 	if curr.next != nil {
 		curr.next.prev = curr.prev
 		data.litems.curr = curr.next
@@ -272,6 +280,10 @@ func i_events(data *HardData) {
 			} else if event.Key() == tcell.KeyCtrlU ||
 					  event.Key() == tcell.KeyPgUp {
 				data.litems.inc(-(ui.dim[H] / 3))
+			} else if event.Key() == tcell.KeyCtrlF {
+				// TODO: maybe keymap these
+			} else if event.Key() == tcell.KeyCtrlB {
+				// TODO: maybe keymap these
 			} else if event.Rune() == '}' ||
 					  event.Rune() == ']' {
 				// TODO: next dir
@@ -281,7 +293,7 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'g' ||
 					  event.Key() == tcell.KeyHome {
 				data.litems.curr = data.litems.head
-				data.litems.draw_start = data.litems.head
+				data.litems.draw = data.litems.head
 			} else if event.Rune() == 'G' ||
 					  event.Key() == tcell.KeyEnd {
 				data.litems.curr = data.litems.last

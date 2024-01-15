@@ -63,7 +63,7 @@ type ItemsList struct {
 	head *ItemsNode
 	last *ItemsNode
 	curr *ItemsNode
-	draw_start *ItemsNode
+	draw *ItemsNode
 }
 
 // adds an item node to the list
@@ -88,11 +88,11 @@ func (litems *ItemsList) del(item *ItemsNode) {
     if litems.head == item {
         litems.head = litems.head.next
 		if litems.head == nil {
-			litems.last, litems.curr, litems.draw_start = nil, nil, nil
+			litems.last, litems.curr, litems.draw = nil, nil, nil
 			return
 		}
 		litems.head.prev = nil
-		litems.curr, litems.draw_start = litems.head, litems.head
+		litems.curr, litems.draw = litems.head, litems.head
 		for ptr := litems.head; ptr != nil; ptr = ptr.next {
 			ptr.ID -= 1
 		}
@@ -102,8 +102,8 @@ func (litems *ItemsList) del(item *ItemsNode) {
 		litems.last = litems.last.prev
 		litems.last.next = nil
 		litems.curr = litems.last
-		if litems.draw_start == item {
-			litems.draw_start = litems.last
+		if litems.draw == item {
+			litems.draw = litems.last
 		}
 		return
 	}

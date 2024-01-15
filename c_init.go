@@ -123,6 +123,6 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 		litems.head.prev = nil
 	}
 	litems.curr = litems.head
-	litems.draw_start = litems.head
+	litems.draw = litems.head
 	return &litems
 }
