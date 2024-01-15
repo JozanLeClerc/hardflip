@@ -89,7 +89,6 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	if fold == nil {
 		return
 	}
-	// after := item.next
 	start, end := fold.head, fold.last
 	// last empty dir
 	if start == nil && end == nil {
@@ -133,7 +132,6 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
 	}
-	// var start, end, after *ItemsNode
 	var start, end *ItemsNode
 	start = item.next
 	// last dir + empty
