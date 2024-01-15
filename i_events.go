@@ -172,7 +172,6 @@ func i_reload_data(data *HardData) {
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
 	data.folds = make(map[*DirsNode]*ItemsList)
-	data.ui.sel_max = data.litems.last.ID
 }
 
 func i_delete_dir(data *HardData) {
@@ -237,11 +236,6 @@ func i_delete_host(data *HardData) {
 		tmp = data.litems.head
 	}
 	data.litems.curr = tmp
-	if data.litems.last != nil {
-		data.ui.sel_max = data.litems.last.ID
-	} else {
-		data.ui.sel_max = 0
-	}
 }
 
 // screen events such as keypresses

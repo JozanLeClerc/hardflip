@@ -62,7 +62,6 @@ type HardUI struct {
 	mode         uint8
 	// HACK: fuck sel_max
 	// HACK: lists ids might be shit too
-	sel_max      int
 	def_style    tcell.Style
 	dir_style    tcell.Style
 	title_style  tcell.Style
@@ -305,12 +304,12 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 			line++
 		}
 	}
-	if litems.head == nil {
+	if litems.head != nil {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
 			" " + strconv.Itoa(litems.curr.ID) + "/" +
-			strconv.Itoa(int(ui.sel_max)) + " items ")
+			strconv.Itoa(int(litems.last.ID)) + " items ")
 	} else {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
