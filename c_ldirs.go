@@ -154,6 +154,14 @@ func (dir *DirsNode) count_hosts() int {
 	return dir.lhost.last.ID + 1
 }
 
+func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
+	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
+		if ptr.next == dir {
+			return ptr
+		}
+	}
+	return nil
+}
 // return the number of hosts and subfolders of the dir
 // func (item *ItemsNode) count_elements(skip_folds bool,
 // 	folds map[*DirsNode]*ItemsList) (*ItemsNode, int) {

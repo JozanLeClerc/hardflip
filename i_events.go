@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Mon Jan 15 11:40:10 2024
+ * Mon Jan 15 13:54:57 2024
  * Joe
  *
  * events in the code
@@ -181,12 +181,17 @@ func i_delete_dir(data *HardData) {
 	if data.folds[data.litems.curr.Dirs] == nil {
 		i_fold_dir(data, data.litems.curr)
 	}
-	delete(data.folds, data.litems.curr.Dirs)
+	delete(data.folds,data.litems.curr.Dirs)
 	if data.litems.last == data.litems.curr {
 		data.litems.last = data.litems.curr.prev
 	}
-	data.litems.curr.prev = data.litems.curr.next
-	data.litems.curr.next = data.litems.curr.prev
+	data.litems.curr.prev.next = data.litems.curr.next
+	data.litems.curr.next.prev = data.litems.curr.prev
+	prev_dir := data.ldirs.prev(data.litems.curr.Dirs)
+	if data.ldirs.last == data.litems.curr.Dirs {
+		data.ldirs.last = prev_dir
+	}
+	prev_dir.next = data.litems.curr.Dirs.next
 	data.litems.curr = data.litems.curr.next
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
@@ -260,14 +265,24 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'k' ||
 					  event.Key() == tcell.KeyUp {
 				data.litems.inc(-1)
-			} else if event.Key() == tcell.KeyCtrlD {
+			} else if event.Key() == tcell.KeyCtrlD ||
+					  event.Key() == tcell.KeyPgDn {
 				data.litems.inc(+(ui.dim[H] / 3))
-			} else if event.Key() == tcell.KeyCtrlU {
+			} else if event.Key() == tcell.KeyCtrlU ||
+					  event.Key() == tcell.KeyPgUp {
 				data.litems.inc(-(ui.dim[H] / 3))
-			} else if event.Rune() == 'g' {
+			} else if event.Rune() == '}' ||
+					  event.Rune() == ']' {
+				// TODO: next dir
+			} else if event.Rune() == '{' ||
+					  event.Rune() == '[' {
+				// TODO: prev dir
+			} else if event.Rune() == 'g' ||
+					  event.Key() == tcell.KeyHome {
 				data.litems.curr = data.litems.head
 				data.litems.draw_start = data.litems.head
-			} else if event.Rune() == 'G' {
+			} else if event.Rune() == 'G' ||
+					  event.Key() == tcell.KeyEnd {
 				data.litems.curr = data.litems.last
 			} else if event.Rune() == 'D' &&
 					  data.ldirs.head != nil &&

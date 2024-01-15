@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Mon Jan 15 11:40:18 2024
+ * Mon Jan 15 13:54:53 2024
  * Joe
  *
  * interfacing with the user
@@ -61,6 +61,7 @@ type HardUI struct {
 	s            tcell.Screen
 	mode         uint8
 	// HACK: fuck sel_max
+	// HACK: lists ids might be shit too
 	sel_max      int
 	def_style    tcell.Style
 	dir_style    tcell.Style
