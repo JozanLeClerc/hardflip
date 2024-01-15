@@ -180,13 +180,14 @@ func (item *ItemsNode) get_next_level() *ItemsNode {
 	item_ptr := item
 	for item_ptr != nil {
 		if item_ptr.is_dir() == false {
+			item_ptr = item_ptr.next
 			continue
 		}
 		if item_ptr.Dirs == ptr {
-			break
+			return item_ptr
 		}
 		item_ptr = item_ptr.next
 	}
-	return item_ptr
+	return nil
 }
 

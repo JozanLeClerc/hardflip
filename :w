@@ -101,17 +101,23 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 		i_set_unfold(data, item)
 		return
 	}
-	if data.litems.last == item {
-		data.litems.last = end
-	}
-	// non-emtpy dir
 	start.prev = item
-	end.next = item.next
-	if item.next != nil {
-		item.next.prev = end
-	}
 	item.next = start
+
 	i_set_unfold(data, item)
+	// non-empty dir
+	// item.next = fold.head
+	// if fold.head != nil {
+	// 	fold.head.prev = item
+	// }
+	// if fold.last != nil {
+	// 	fold.last.next = after
+	// }
+	// if after != nil {
+	// 	after.prev = fold.last
+	// } else {
+	// 	data.litems.last = fold.last
+	// }
 }
 
 func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
@@ -165,6 +171,63 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	item.next = next_dir
 	next_dir.prev = item
 	i_set_fold(data, item, start, end)
+
+
+	// item.next = after
+	// if after != nil {
+	// 	after.prev = item
+	// } else {
+	// 	data.litems.last = item
+	// }
+	// folds := data.folds
+	// folded_start = item.next
+	// if folded_start != nil {
+	// 	folded_start.prev = nil
+	// 	folded_end = item
+	// } else {
+	// 	folded_end = nil
+	// }
+	// next_dir := item.Dirs.get_next_level(data.folds)
+	// ptr := item
+	// for next_dir != nil && ptr != nil && ptr.Dirs != next_dir {
+	// 	ptr = ptr.next
+	// }
+	// if ptr == item && ptr.next != nil {
+	// 	ptr = ptr.next
+	// 	// FIX: fix your crap
+	// }
+	// if ptr == nil {
+	// 	folded_end = nil
+	// 	after = nil
+	// 	data.ui.s.Fini()
+	// 	fmt.Println("ptr:", ptr)
+	// 	os.Exit(0)
+	// } else if ptr == item {
+	// 	folded_end = nil
+	// 	after = nil
+	// 	data.ui.s.Fini()
+	// 	fmt.Println("this is the end")
+	// 	os.Exit(0)
+	// } else {
+	// 	folded_end = ptr.prev
+	// 	// data.ui.s.Fini()
+	// 	// fmt.Println("ptr.Dirs.Name:", ptr.Host.Name, "\nfolded_end:", folded_end)
+	// 	// os.Exit(0)
+	// 	after = folded_end.next
+	// 	folded_end.next = nil
+	// }
+	// tmp := ItemsList{
+	// 	folded_start,
+	// 	folded_end,
+	// 	nil,
+	// 	nil,
+	// }
+	// item.next = after
+	// if after != nil {
+	// 	after.prev = item
+	// } else {
+	// 	data.litems.last = item
+	// }
 }
 
 func i_reload_data(data *HardData) {
