@@ -55,7 +55,7 @@ const (
     W = 0
     H = 1
 	DATA_DIR_NAME = "hardflip"
-	VERSION = "v0.0"
+	VERSION = "v0.1"
 )
 
 const (

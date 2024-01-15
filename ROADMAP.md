@@ -4,7 +4,7 @@
 
 - [x] folders
 - [x] folding folders
-- [ ] delete folders
+- [x] delete folders
 
 ## v0.2
 
