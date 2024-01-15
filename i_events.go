@@ -184,32 +184,29 @@ func i_delete_dir(data *HardData) {
 		i_fold_dir(data, curr)
 	}
 	delete(data.folds, curr.Dirs)
-	prev_dir := data.ldirs.prev(curr.Dirs)
 	curr.prev.next = curr.next
 	if curr.next != nil {
 		curr.next.prev = curr.prev
-		prev_dir.next = curr.Dirs.next
 		data.litems.curr = curr.next
 	} else {
 		data.litems.last = curr.prev
-		prev_dir.next = nil
-		data.ldirs.last = prev_dir
-		data.ldirs.last.next = nil
 		data.litems.curr = curr.prev
 	}
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
-	dir_path := data.data_dir + dir.path()
-	if err := os.RemoveAll(dir_path); err != nil {
-		data.ui.s.Fini()
-		c_die("can't remove " + dir_path, err)
-	}
+	// dir_path := data.data_dir + dir.path()
+	// if err := os.RemoveAll(dir_path); err != nil {
+	// 	data.ui.s.Fini()
+	// 	c_die("can't remove " + dir_path, err)
+	// }
 	// TODO: delete folds map reference if folded - OK
-	// TEST: single empty dir
-	// TEST: single non-empty dir
-	// TEST: first dir
+	// TEST: single empty dir OK
+	// TEST: single non-empty dir OK
+	// TEST: first dir OK
+	// TEST: first dir is also head
 	// TEST: last dir
+	// TEST: last dir is also last
 	// TEST: last dir 4m+
 	// TEST: folded
 }
