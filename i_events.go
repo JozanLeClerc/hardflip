@@ -52,7 +52,6 @@
 package main
 
 import (
-	// "fmt"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -63,6 +62,7 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw == nil || litems.curr == nil {
 		return
 	}
+	// HACK: find workaround to kill ids
 	virt_id := litems.curr.ID - (ui.dim[H] - 4) + 4
 	for litems.draw.ID < virt_id &&
 		litems.draw.next != nil {
@@ -334,14 +334,6 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'y' {
 				i_delete_host(data)
 				ui.mode = NORMAL_MODE
-	// data.ui.s.Fini()
-	// fmt.Println(
-	// 	  "head:", data.litems.head,
-	// 	"\nlast:", data.litems.last,
-	// 	"\ncurr:", data.litems.curr,
-	// 	"\ndraw:", data.litems.draw,
-	// )
-	// os.Exit(0)
 			}
 		}	
 	}

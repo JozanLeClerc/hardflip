@@ -60,8 +60,6 @@ import (
 type HardUI struct {
 	s            tcell.Screen
 	mode         uint8
-	// HACK: fuck sel_max
-	// HACK: lists ids might be shit too
 	def_style    tcell.Style
 	dir_style    tcell.Style
 	title_style  tcell.Style
