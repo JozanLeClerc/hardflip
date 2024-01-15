@@ -76,7 +76,7 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 
 func i_set_unfold(data *HardData, item *ItemsNode) {
 	delete(data.folds, item.Dirs)
-	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
+	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
 }
@@ -124,7 +124,7 @@ func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
 	}
 
 	folds[curr.Dirs] = &tmp
-	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
+	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
 }
@@ -180,13 +180,16 @@ func i_delete_dir(data *HardData) {
 		return
 	}
 	curr := data.litems.curr
+	dir_path := data.data_dir + data.litems.curr.Dirs.path()
 	if data.folds[curr.Dirs] == nil {
 		i_fold_dir(data, curr)
 	}
 	delete(data.folds, curr.Dirs)
 	if curr == data.litems.head {
 		data.litems.head = curr.next
-		curr.next.prev = nil
+		if curr.next != nil {
+			curr.next.prev = nil
+		}
 		if data.litems.draw == curr {
 			data.litems.draw = curr.next
 		}
@@ -200,23 +203,13 @@ func i_delete_dir(data *HardData) {
 		data.litems.last = curr.prev
 		data.litems.curr = curr.prev
 	}
-	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
+	for ptr := data.litems.head; ptr != nil && ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
-	// dir_path := data.data_dir + dir.path()
-	// if err := os.RemoveAll(dir_path); err != nil {
-	// 	data.ui.s.Fini()
-	// 	c_die("can't remove " + dir_path, err)
-	// }
-	// TODO: delete folds map reference if folded - OK
-	// TEST: single empty dir OK
-	// TEST: single non-empty dir OK
-	// TEST: first dir OK
-	// TEST: first dir is also head
-	// TEST: last dir
-	// TEST: last dir is also last
-	// TEST: last dir 4m+
-	// TEST: folded
+	if err := os.RemoveAll(dir_path); err != nil {
+		data.ui.s.Fini()
+		c_die("can't remove " + dir_path, err)
+	}
 }
 
 func i_delete_host(data *HardData) {
@@ -298,8 +291,7 @@ func i_events(data *HardData) {
 					  event.Key() == tcell.KeyEnd {
 				data.litems.curr = data.litems.last
 			} else if event.Rune() == 'D' &&
-					  data.ldirs.head != nil &&
-					  ui.sel_max != 0 {
+					  data.ldirs.head != nil {
 				ui.mode = DELETE_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				if data.litems.curr == nil {
@@ -348,6 +340,14 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'y' {
 				i_delete_host(data)
 				ui.mode = NORMAL_MODE
+	// data.ui.s.Fini()
+	// fmt.Println(
+	// 	  "head:", data.litems.head,
+	// 	"\nlast:", data.litems.last,
+	// 	"\ncurr:", data.litems.curr,
+	// 	"\ndraw:", data.litems.draw,
+	// )
+	// os.Exit(0)
 			}
 		}	
 	}

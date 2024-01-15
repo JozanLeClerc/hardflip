@@ -281,8 +281,10 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
-	ptr := litems.draw
-	for ; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
+	if litems.head == nil {
+		return
+	}
+	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false && ptr.Host != nil  {
 			i_host_panel_host(ui,
 				icons,
@@ -303,7 +305,7 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 			line++
 		}
 	}
-	if ui.sel_max != 0 {
+	if litems.head == nil {
 		i_draw_text(ui.s,
 			1, ui.dim[H] - 2, (ui.dim[W] / 3) - 1, ui.dim[H] - 2,
 			ui.def_style,
@@ -525,7 +527,6 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 func i_ui(data *HardData) {
 	var err error
 	ui := &data.ui
-	ui.sel_max = data.litems.last.ID
 
 	ui.s, err = tcell.NewScreen()
 	if err != nil {
