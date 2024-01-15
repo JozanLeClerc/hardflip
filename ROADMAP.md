@@ -23,9 +23,13 @@
 
 ## v0.5
 
-- [ ] .config/hardflip
+- [ ] help
 
 ## v0.6
+
+- [ ] .config/hardflip
+
+## v0.7
 
 - [ ] theming
 
