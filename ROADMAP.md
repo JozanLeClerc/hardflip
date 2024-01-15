@@ -23,13 +23,9 @@
 
 ## v0.5
 
-- [ ] mkdir
-
-## v0.6
-
 - [ ] .config/hardflip
 
-## v0.7
+## v0.6
 
 - [ ] theming
 
