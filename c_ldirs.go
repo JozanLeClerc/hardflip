@@ -155,6 +155,9 @@ func (dir *DirsNode) count_hosts() int {
 }
 
 func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
+	if ldirs.head == dir {
+		return dir
+	}
 	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
 		if ptr.next == dir {
 			return ptr

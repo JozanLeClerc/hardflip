@@ -165,7 +165,7 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	var text string
 	var file string
 	if item.is_dir() == true {
-		text = "Really delete this directory and all subsequent files?"
+		text = "Really delete this directory and all of its content?"
 		file = item.Dirs.path()
 	} else {
 		host := item.Host

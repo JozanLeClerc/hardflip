@@ -171,6 +171,7 @@ func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir()
 	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
 	data.litems = c_load_litems(data.ldirs)
+	data.folds = make(map[*DirsNode]*ItemsList)
 	data.ui.sel_max = data.litems.last.ID
 }
 
@@ -178,29 +179,32 @@ func i_delete_dir(data *HardData) {
 	if data.litems.curr == nil || data.litems.curr.Dirs == nil {
 		return
 	}
-	if data.folds[data.litems.curr.Dirs] == nil {
-		i_fold_dir(data, data.litems.curr)
+	curr := data.litems.curr
+	if data.folds[curr.Dirs] == nil {
+		i_fold_dir(data, curr)
 	}
-	delete(data.folds,data.litems.curr.Dirs)
-	if data.litems.last == data.litems.curr {
-		data.litems.last = data.litems.curr.prev
-	}
-	data.litems.curr.prev.next = data.litems.curr.next
-	data.litems.curr.next.prev = data.litems.curr.prev
-	prev_dir := data.ldirs.prev(data.litems.curr.Dirs)
-	if data.ldirs.last == data.litems.curr.Dirs {
+	delete(data.folds, curr.Dirs)
+	prev_dir := data.ldirs.prev(curr.Dirs)
+	curr.prev.next = curr.next
+	if curr.next != nil {
+		curr.next.prev = curr.prev
+		prev_dir.next = curr.Dirs.next
+		data.litems.curr = curr.next
+	} else {
+		data.litems.last = curr.prev
+		prev_dir.next = nil
 		data.ldirs.last = prev_dir
+		data.ldirs.last.next = nil
+		data.litems.curr = curr.prev
 	}
-	prev_dir.next = data.litems.curr.Dirs.next
-	data.litems.curr = data.litems.curr.next
 	for ptr := data.litems.head; ptr.next != nil; ptr = ptr.next {
 		ptr.next.ID = ptr.ID + 1
 	}
-	// dir_path := data.data_dir + dir.path()
-	// if err := os.RemoveAll(dir_path); err != nil {
-	//  data.ui.s.Fini()
-	//  c_die("can't remove " + dir_path, err)
-	// }
+	dir_path := data.data_dir + dir.path()
+	if err := os.RemoveAll(dir_path); err != nil {
+		data.ui.s.Fini()
+		c_die("can't remove " + dir_path, err)
+	}
 	// TODO: delete folds map reference if folded - OK
 	// TEST: single empty dir
 	// TEST: single non-empty dir
