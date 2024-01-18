@@ -1,0 +1,13 @@
+# straight forward
+icons: true
+
+# keeps going after a successful login
+loop: true
+
+# displays the percentage in the bottom right
+percent: false
+
+# if set, will open your command in the specified terminal emulator.
+# will handle the env variable $TERMINAL if set to this. if commented or unset,
+# the command will replace hardflip
+#terminal: alacritty

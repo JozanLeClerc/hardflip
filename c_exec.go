@@ -147,6 +147,9 @@ func c_format_cmd(host *HostNode, term string) {
 		c_die("type not found", nil)
 	}
 	if len(term) > 0 {
+		if term == "$TERMINAL" {
+			term = os.Getenv("TERMINAL")
+		}
 		cmd_fmt = append([]string{term, "-e"}, cmd_fmt...)
 	}
 	c_exec_cmd(cmd_fmt)
