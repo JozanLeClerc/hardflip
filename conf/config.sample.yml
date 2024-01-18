@@ -7,7 +7,8 @@ loop: true
 # displays the percentage in the bottom right
 percent: false
 
-# if set, will open your command in the specified terminal emulator.
-# will handle the env variable $TERMINAL if set to this. if commented or unset,
+# if set, will open your command in the specified terminal emulator. works great
+# with loop set to true. will handle the env variable $TERMINAL if set as such.
+# if commented or unset,
 # the command will replace hardflip
 #terminal: alacritty
