@@ -63,7 +63,7 @@ type HardData struct {
 
 func main() {
 	data_dir := c_get_data_dir()
-	opts := HardOpts{true, true, false, "$TERMINAL"}
+	opts := HardOpts{true, true, false, ""}
 	ldirs := c_load_data_dir(data_dir, opts)
 	litems := c_load_litems(ldirs)
 	data := HardData{
