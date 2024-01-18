@@ -63,9 +63,6 @@ type HardOpts struct {
 	Term	string
 }
 
-// HACK: fuck global vars
-var g_load_count int = -1
-
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,

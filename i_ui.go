@@ -612,6 +612,9 @@ func i_scrollhint(ui HardUI, litems *ItemsList) {
 	}
 }
 
+// HACK: fuck global vars but do we have the choice really
+var g_load_count int = -1
+
 func i_display_load_ui(ui *HardUI) {
 	g_load_count += 1
 	if g_load_count % 1000 != 0 {
