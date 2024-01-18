@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Wed Jan 10 16:36:49 2024
+ * Thu Jan 18 16:23:10 2024
  * Joe
  *
  * init functions
@@ -52,7 +52,6 @@
 package main
 
 import (
-	"strconv"
 	"os"
 	"path/filepath"
 )
@@ -65,7 +64,7 @@ type HardOpts struct {
 }
 
 // HACK: fuck global vars
-var count int = 0
+var g_load_count int = -1
 
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
@@ -85,6 +84,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		nil,
 	}
 	ldirs.add_back(&dir_node)
+	i_display_load_ui(ui)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
@@ -98,22 +98,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node.Filename = filename
 			host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
-			ui.s.Clear()
-			count += 1
-			text := "Loading " + strconv.Itoa(count) + " hosts"
-			text_len := len(text) / 2
-			i_draw_box(ui.s,
-				(ui.dim[W] / 2) - (text_len + 2),
-				(ui.dim[H] / 2) - 2,
-				(ui.dim[W] / 2) + (text_len + 2),
-				(ui.dim[H] / 2) + 2, " Loading hosts ", false)
-			i_draw_text(ui.s,
-				(ui.dim[W] / 2) - text_len,
-				(ui.dim[H] / 2),
-				(ui.dim[W] / 2) + text_len,
-				(ui.dim[H] / 2),
-				ui.def_style, text)
-			ui.s.Show()
+			i_display_load_ui(ui)
 		}
 	}
 }

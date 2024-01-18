@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Jan 18 12:33:22 2024
+ * Thu Jan 18 18:01:23 2024
  * Joe
  *
  * events in the code
@@ -168,8 +168,8 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 
 func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir()
-	data.ldirs = c_load_data_dir(data.data_dir, data.opts, &data.ui)
-	data.litems = c_load_litems(data.ldirs)
+	g_load_count = 0
+	data.ldirs, data.litems = i_load_ui(data.data_dir, data.opts, &data.ui)
 	data.folds = make(map[*DirsNode]*ItemsList)
 }
 

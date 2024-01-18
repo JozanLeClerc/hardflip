@@ -8,7 +8,7 @@
 
 ## v0.2
 
-- [ ] load scr
+- [x] load scr
 - [ ] err msg
 
 ## v0.3

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Mon Jan 15 17:59:26 2024
+ * Thu Jan 18 17:51:03 2024
  * Joe
  *
  * interfacing with the user
@@ -52,6 +52,7 @@
 package main
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
@@ -556,13 +557,48 @@ func i_scrollhint(ui HardUI, litems *ItemsList) {
 	}
 }
 
+func i_display_load_ui(ui *HardUI) {
+	g_load_count += 1
+	if g_load_count % 1000 != 0 {
+		return
+	}
+	ui.s.Clear()
+	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
+	text_len := len(text) / 2
+	// TODO: max len
+	i_draw_box(ui.s,
+		(ui.dim[W] / 2) - (text_len + 2) - 1,
+		(ui.dim[H] / 2) - 2,
+		(ui.dim[W] / 2) + (text_len + 2),
+		(ui.dim[H] / 2) + 2, " Loading hosts ", false)
+	i_draw_text(ui.s,
+		(ui.dim[W] / 2) - text_len,
+		(ui.dim[H] / 2),
+		(ui.dim[W] / 2) + text_len + 1,
+		(ui.dim[H] / 2),
+		ui.def_style, text)
+	ui.s.Show()
+	event := ui.s.PollEvent()
+	ui.s.PostEvent(event)
+	switch event := event.(type) {
+	case *tcell.EventResize:
+		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
+		ui.s.Sync()
+	case *tcell.EventKey:
+		if event.Key() == tcell.KeyCtrlC ||
+		event.Rune() == 'q' {
+			ui.s.Fini()
+			os.Exit(0)
+		}
+	}
+}
+
 func i_load_ui(data_dir string,
 			   opts HardOpts,
 			   ui *HardUI) (*DirsList, *ItemsList) {
-	ui.s.Clear()
+	ui.mode = LOAD_MODE
 	ldirs := c_load_data_dir(data_dir, opts, ui)
 	litems := c_load_litems(ldirs)
-	ui.s.Show()
 	ui.mode = NORMAL_MODE
 	return ldirs, litems
 }
@@ -589,7 +625,6 @@ func i_ui(data_dir string, opts HardOpts) {
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.s.SetStyle(ui.def_style)
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-	ui.mode = LOAD_MODE
 	ldirs, litems := i_load_ui(data_dir, opts, &ui)
 	data := HardData{
 		litems,
