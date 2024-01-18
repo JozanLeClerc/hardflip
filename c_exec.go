@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Tue Dec 19 19:39:54 2023
+ * Thu Jan 18 18:57:42 2024
  * Joe
  *
  * exec the command at some point
@@ -151,7 +151,7 @@ func c_format_cmd(host *HostNode, term string) {
 		if term == "$TERMINAL" {
 			term = os.Getenv("TERMINAL")
 		}
-		cmd_fmt = append([]string{term, "-e"}, cmd_fmt...)
+		cmd_fmt = append([]string{"setsid", term, "-e"}, cmd_fmt...)
 	}
 	c_exec_cmd(cmd_fmt)
 }

@@ -308,187 +308,242 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 }
 
 func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
-	curr_line := 2
+	line := 2
+	if line > ui.dim[H] - 3 {
+		return
+	}
 
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Name: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, dir.Name)
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Type: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, "Directory")
-	curr_line += 2
+	if line += 2; line > ui.dim[H] - 3 {
+		return
+	}
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Path: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, dir.path())
 }
 
 func i_info_panel_host(ui HardUI, host *HostNode) {
 	host_type := host.protocol_str()
-	curr_line := 2
+	line := 2
+	if line > ui.dim[H] - 3 {
+		return
+	}
 	// name, type
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Name: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, host.Name)
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Type: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, host_type)
-	curr_line += 2
+	if line += 2; line > ui.dim[H] - 3 {
+		return
+	}
+	if line > ui.dim[H] - 3 {
+		return
+	}
 	// host, port
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Host: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, host.Host)
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "Port: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, strconv.Itoa(int(host.Port)))
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	// RDP shit
 	if host.Protocol == 1 {
 		if len(host.Domain) > 0 {
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 				ui.title_style, "Domain: ")
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 12, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 				ui.def_style, host.Domain)
-			curr_line += 1
+			if line += 1; line > ui.dim[H] - 3 {
+				return
+			}
 		}
 	}
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	// user infos
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 		ui.title_style, "User: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 		ui.def_style, host.User)
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	if len(host.Pass) > 0 {
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Pass: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.def_style, "***")
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 	}
 	if host.Protocol == 0 && len(host.Priv) > 0 {
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Privkey: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 13, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 			ui.def_style, host.Priv)
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 	}
-	curr_line += 1
+	if line += 1; line > ui.dim[H] - 3 {
+		return
+	}
 	// jump
 	if host.Protocol == 0 && len(host.Jump) > 0 {
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Jump settings: ")
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 5, line, ui.dim[W] - 2, line,
 			ui.title_style, "Host: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 			ui.def_style, host.Jump)
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 5, line, ui.dim[W] - 2, line,
 			ui.title_style, "Port: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 			ui.def_style, strconv.Itoa(int(host.JumpPort)))
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 5, line, ui.dim[W] - 2, line,
 			ui.title_style, "User: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 			ui.def_style, host.JumpUser)
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		if len(host.JumpPass) > 0 {
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 5, line, ui.dim[W] - 2, line,
 				ui.title_style, "Pass: ")
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 11, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 				ui.def_style, "***")
-			curr_line += 1
+			if line += 1; line > ui.dim[H] - 3 {
+				return
+			}
 		}
 		if host.Protocol == 0 && len(host.JumpPriv) > 0 {
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 5, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 5, line, ui.dim[W] - 2, line,
 				ui.title_style, "Privkey: ")
 			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 14, curr_line, ui.dim[W] - 2, curr_line,
+				(ui.dim[W] / 3) + 14, line, ui.dim[W] - 2, line,
 				ui.def_style, host.JumpPriv)
-			curr_line += 1
+			if line += 1; line > ui.dim[H] - 3 {
+				return
+			}
 		}
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 	}
 	// RDP shit
 	if host.Protocol == 1 {
 		qual := [3]string{"Low", "Medium", "High"}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Screen size: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 17, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 17, line, ui.dim[W] - 2, line,
 			ui.def_style,
 			strconv.Itoa(int(host.Width)) + "x" +
 			strconv.Itoa(int(host.Height)))
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Dynamic window: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 20, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 20, line, ui.dim[W] - 2, line,
 			ui.def_style, strconv.FormatBool(host.Dynamic))
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Quality: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 13, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 			ui.def_style, qual[host.Quality])
-		curr_line += 1
-		curr_line += 1
+		line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 	}
 	// note
 	if len(host.Note) > 0 {
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 4, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.title_style, "Note: ")
 		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 10, curr_line, ui.dim[W] - 2, curr_line,
+			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.def_style, host.Note)
-		curr_line += 1
+		if line += 1; line > ui.dim[H] - 3 {
+			return
+		}
 	}
 }
 
