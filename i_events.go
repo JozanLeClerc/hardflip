@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Mon Jan 15 17:59:15 2024
+ * Thu Jan 18 12:33:22 2024
  * Joe
  *
  * events in the code
@@ -293,7 +293,7 @@ func i_events(data *HardData) {
 					break
 				} else if data.litems.curr.is_dir() == false {
 					ui.s.Fini()
-					c_exec(data.litems.curr.Host)
+					c_exec(data.litems.curr.Host, data.opts.Term)
 					if data.opts.Loop == false {
 						os.Exit(0)
 					} else {

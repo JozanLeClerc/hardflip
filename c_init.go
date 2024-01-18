@@ -59,6 +59,8 @@ import (
 type HardOpts struct {
 	Icon    bool
 	Loop    bool
+	Perc    bool
+	Term	string
 }
 
 // this function recurses into the specified root directory in order to load

@@ -135,7 +135,7 @@ func c_format_rdp(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_cmd(host *HostNode) {
+func c_format_cmd(host *HostNode, term string) {
 	var cmd_fmt []string
 
 	switch host.Protocol {
@@ -146,12 +146,15 @@ func c_format_cmd(host *HostNode) {
 	default:
 		c_die("type not found", nil)
 	}
+	if len(term) > 0 {
+		cmd_fmt = append([]string{term, "-e"}, cmd_fmt...)
+	}
 	c_exec_cmd(cmd_fmt)
 }
 
-func c_exec(host *HostNode) {
+func c_exec(host *HostNode, term string) {
 	if host == nil {
 		return
 	}
-	c_format_cmd(host)
+	c_format_cmd(host, term)
 }

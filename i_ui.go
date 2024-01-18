@@ -489,7 +489,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 	}
 }
 
-func i_info_panel(ui HardUI, litems *ItemsList) {
+func i_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		" Infos ", false)
@@ -500,6 +500,10 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 	if litems.head != nil {
 		text := " " + strconv.Itoa(litems.curr.ID) + " of " +
 			strconv.Itoa(int(litems.last.ID)) + " "
+		if percent == true {
+			text += "- " +
+				strconv.Itoa(litems.curr.ID * 100 / litems.last.ID) + "% "
+		}
 		i_draw_text(ui.s,
 			(ui.dim[W] - 1) - len(text) - 1,
 			ui.dim[H] - 2,
@@ -507,6 +511,7 @@ func i_info_panel(ui HardUI, litems *ItemsList) {
 			ui.dim[H] - 2,
 			ui.def_style,
 			text)
+	i_draw_text(ui.s, 0, ui.dim[H] - 2, len(text), ui.dim[H] - 2, ui.def_style, text)
 	} else {
 		text := " 0 hosts "
 		i_draw_text(ui.s,
@@ -536,13 +541,14 @@ func i_scrollhint(ui HardUI, litems *ItemsList) {
 	if max <= h {
 		return
 	}
-	if litems.draw.ID > 1 {
-		ui.s.SetContent(0, 0,
+	draw_id := litems.draw.ID
+	if draw_id > 1 {
+		ui.s.SetContent(0, 1,
 			'▲',
 			nil, ui.def_style)
 	}
-	if max - litems.draw.ID > h {
-		ui.s.SetContent(0, ui.dim[H] - 2,
+	if max - draw_id > h {
+		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
 			nil, ui.def_style)
 		return
@@ -574,7 +580,7 @@ func i_ui(data *HardData) {
 		ui.s.Clear()
 		i_bottom_text(*ui)
 		i_host_panel(data.ui, data.opts.Icon, data.litems, data)
-		i_info_panel(data.ui, data.litems)
+		i_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_scrollhint(data.ui, data.litems)
 		if data.litems.head == nil {
 			i_draw_zhosts_box(*ui)
