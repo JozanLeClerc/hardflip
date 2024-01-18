@@ -64,15 +64,5 @@ type HardData struct {
 func main() {
 	data_dir := c_get_data_dir()
 	opts := HardOpts{true, true, false, ""}
-	ldirs := c_load_data_dir(data_dir, opts)
-	litems := c_load_litems(ldirs)
-	data := HardData{
-		litems,
-		ldirs,
-		HardUI{},
-		opts,
-		data_dir,
-		make(map[*DirsNode]*ItemsList),
-	}
-	i_ui(&data)
+	i_ui(data_dir, opts)
 }

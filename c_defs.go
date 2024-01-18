@@ -63,8 +63,7 @@ const (
 [x](m)kdir -
 [x](s)earch -
 [x](?) help`
-	DELETE_KEYS_HINTS = `
-(q)uit -
+	DELETE_KEYS_HINTS = `(q)uit -
 (y)es -
 (n)o`
 )
@@ -72,6 +71,7 @@ const (
 const (
 	NORMAL_MODE = 0
 	DELETE_MODE = 1
+	LOAD_MODE   = 2
 )
 
 var (

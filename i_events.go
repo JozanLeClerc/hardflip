@@ -168,7 +168,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 
 func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir()
-	data.ldirs = c_load_data_dir(data.data_dir, data.opts)
+	data.ldirs = c_load_data_dir(data.data_dir, data.opts, &data.ui)
 	data.litems = c_load_litems(data.ldirs)
 	data.folds = make(map[*DirsNode]*ItemsList)
 }

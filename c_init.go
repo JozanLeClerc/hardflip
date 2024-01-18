@@ -52,6 +52,7 @@
 package main
 
 import (
+	"strconv"
 	"os"
 	"path/filepath"
 )
@@ -63,11 +64,15 @@ type HardOpts struct {
 	Term	string
 }
 
+// HACK: fuck global vars
+var count int = 0
+
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
 		ldirs *DirsList,
-		name string, parent *DirsNode, depth uint16) {
+		name string, parent *DirsNode, depth uint16,
+		ui *HardUI) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		c_die("could not read data directory", err)
@@ -84,7 +89,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		filename := file.Name()
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
-				file.Name(), &dir_node, depth + 1)
+				file.Name(), &dir_node, depth + 1, ui)
 		} else if filepath.Ext(filename) == ".yml" {
 			host_node := c_read_yaml_file(root + dir + filename)
 			if host_node == nil {
@@ -93,14 +98,30 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node.Filename = filename
 			host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
+			ui.s.Clear()
+			count += 1
+			text := "Loading " + strconv.Itoa(count) + " hosts"
+			text_len := len(text) / 2
+			i_draw_box(ui.s,
+				(ui.dim[W] / 2) - (text_len + 2),
+				(ui.dim[H] / 2) - 2,
+				(ui.dim[W] / 2) + (text_len + 2),
+				(ui.dim[H] / 2) + 2, " Loading hosts ", false)
+			i_draw_text(ui.s,
+				(ui.dim[W] / 2) - text_len,
+				(ui.dim[H] / 2),
+				(ui.dim[W] / 2) + text_len,
+				(ui.dim[H] / 2),
+				ui.def_style, text)
+			ui.s.Show()
 		}
 	}
 }
 
-func c_load_data_dir(dir string, opts HardOpts) *DirsList {
+func c_load_data_dir(dir string, opts HardOpts, ui *HardUI) *DirsList {
 	ldirs  := DirsList{}
 
-	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1)
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui)
 	return &ldirs
 }
 

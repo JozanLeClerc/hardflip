@@ -55,6 +55,7 @@ import (
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
+	"golang.org/x/term"
 )
 
 type HardUI struct {
@@ -118,7 +119,7 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 			}
 		}
 	}
-	i_draw_text(s, x1 + 1, y1, x2 - 1, y2 - 1, style, title)
+	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, style, title)
 }
 
 func i_bottom_text(ui HardUI) {
@@ -161,6 +162,7 @@ func i_draw_zhosts_box(ui HardUI) {
 func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	var text string
 	var file string
+
 	if item.is_dir() == true {
 		text = "Really delete this directory and all of its content?"
 		file = item.Dirs.path()
@@ -511,7 +513,6 @@ func i_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 			ui.dim[H] - 2,
 			ui.def_style,
 			text)
-	i_draw_text(ui.s, 0, ui.dim[H] - 2, len(text), ui.dim[H] - 2, ui.def_style, text)
 	} else {
 		text := " 0 hosts "
 		i_draw_text(ui.s,
@@ -555,9 +556,20 @@ func i_scrollhint(ui HardUI, litems *ItemsList) {
 	}
 }
 
-func i_ui(data *HardData) {
+func i_load_ui(data_dir string,
+			   opts HardOpts,
+			   ui *HardUI) (*DirsList, *ItemsList) {
+	ui.s.Clear()
+	ldirs := c_load_data_dir(data_dir, opts, ui)
+	litems := c_load_litems(ldirs)
+	ui.s.Show()
+	ui.mode = NORMAL_MODE
+	return ldirs, litems
+}
+
+func i_ui(data_dir string, opts HardOpts) {
+	ui := HardUI{}
 	var err error
-	ui := &data.ui
 
 	ui.s, err = tcell.NewScreen()
 	if err != nil {
@@ -576,19 +588,30 @@ func i_ui(data *HardData) {
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 	ui.s.SetStyle(ui.def_style)
+	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
+	ui.mode = LOAD_MODE
+	ldirs, litems := i_load_ui(data_dir, opts, &ui)
+	data := HardData{
+		litems,
+		ldirs,
+		ui,
+		opts,
+		data_dir,
+		make(map[*DirsNode]*ItemsList),
+	}
 	for {
-		ui.s.Clear()
-		i_bottom_text(*ui)
-		i_host_panel(data.ui, data.opts.Icon, data.litems, data)
+		data.ui.s.Clear()
+		i_bottom_text(data.ui)
+		i_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_scrollhint(data.ui, data.litems)
 		if data.litems.head == nil {
-			i_draw_zhosts_box(*ui)
+			i_draw_zhosts_box(data.ui)
 		}
-		if ui.mode == DELETE_MODE {
-			i_draw_delete_box(*ui, data.litems.curr)
+		if data.ui.mode == DELETE_MODE {
+			i_draw_delete_box(data.ui, data.litems.curr)
 		}
-		ui.s.Show()
-		i_events(data)
+		data.ui.s.Show()
+		i_events(&data)
 	}
 }
