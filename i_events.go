@@ -170,6 +170,7 @@ func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir()
 	g_load_count = -1
 	data.ldirs, data.litems = i_load_ui(data.data_dir, data.opts, &data.ui)
+	// FIX: must input to start reloading for some reason
 	data.folds = make(map[*DirsNode]*ItemsList)
 }
 
