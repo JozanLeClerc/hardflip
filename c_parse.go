@@ -62,6 +62,7 @@ func c_read_yaml_file(file string) *HostNode {
 	yaml_file, err := os.ReadFile(file)
 
 	if err != nil {
+		// TODO: remove all c_dies with c_err_mode
 		c_die("error reading file " + file, err)
 	}
 	if err = yaml.Unmarshal(yaml_file, &host); err != nil {

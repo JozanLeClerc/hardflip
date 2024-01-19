@@ -54,7 +54,7 @@
 
 ## v1.3 - ghetto bird
 
-- [ ] sorting options
+- [ ] sorting options (yea like never)
 
 ## v1.4
 
