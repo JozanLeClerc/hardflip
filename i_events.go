@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Jan 18 18:01:23 2024
+ * Fri Jan 19 19:25:52 2024
  * Joe
  *
  * events in the code
@@ -62,7 +62,6 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw == nil || litems.curr == nil {
 		return
 	}
-	// HACK: find workaround to kill ids
 	scrolloff := 4
 	if litems.last.ID - (ui.dim[H] - 4) <= litems.draw.ID {
 		scrolloff = 0
@@ -174,12 +173,16 @@ func i_reload_data(data *HardData) {
 	data.folds = make(map[*DirsNode]*ItemsList)
 }
 
-func i_delete_dir(data *HardData) {
+func i_delete_dir(data *HardData) error {
 	if data.litems.curr == nil || data.litems.curr.Dirs == nil {
-		return
+		return nil
 	}
 	curr := data.litems.curr
 	dir_path := data.data_dir + data.litems.curr.Dirs.path()
+	if err := os.RemoveAll(dir_path); err != nil {
+		c_error_mode("can't remove " + dir_path, err, &data.ui)
+		return err
+	}
 	if data.folds[curr.Dirs] == nil {
 		i_fold_dir(data, curr)
 	}
@@ -203,29 +206,25 @@ func i_delete_dir(data *HardData) {
 		data.litems.curr = curr.prev
 	}
 	data.litems.reset_id()
-	if err := os.RemoveAll(dir_path); err != nil {
-		data.ui.s.Fini()
-		c_die("can't remove " + dir_path, err)
-	}
+	return nil
 }
 
-func i_delete_host(data *HardData) {
+func i_delete_host(data *HardData) error {
 	if data.litems.curr == nil {
-		return
+		return nil
 	}
 	if data.litems.curr.is_dir() == true {
-		i_delete_dir(data)
-		return
+		return i_delete_dir(data)
 	}
 	host := data.litems.curr.Host
 	if host == nil {
-		return
+		return nil
 	}
 	file_path := data.data_dir + host.Parent.path() + host.Filename
 
 	if err := os.Remove(file_path); err != nil {
-		data.ui.s.Fini()
-		c_die("can't remove " + file_path, err)
+		c_error_mode("can't remove " + file_path, err, &data.ui)
+		return err
 	}
 	tmp := data.litems.curr.prev
 	host.Parent.lhost.del(host)
@@ -234,6 +233,7 @@ func i_delete_host(data *HardData) {
 		tmp = data.litems.head
 	}
 	data.litems.curr = tmp
+	return nil
 }
 
 // screen events such as keypresses
@@ -333,8 +333,14 @@ func i_events(data *HardData) {
 			   event.Rune() == 'q' ||
 			   event.Rune() == 'n' {
 				ui.mode = NORMAL_MODE
-			} else if event.Rune() == 'y' {
-				i_delete_host(data)
+			} else if event.Key() == tcell.KeyEnter ||
+					  event.Rune() == 'y' {
+				if err := i_delete_host(data); err == nil {
+					ui.mode = NORMAL_MODE
+				}
+			}
+		case ERROR_MODE:
+			if event.Key() == tcell.KeyEnter {
 				ui.mode = NORMAL_MODE
 			}
 		}	

@@ -54,6 +54,8 @@ package main
 const (
     W = 0
     H = 1
+	ERROR_MSG = 0
+	ERROR_ERR = 1
 	DATA_DIR_NAME = "hardflip"
 	VERSION = "v0.1"
 )
@@ -66,12 +68,14 @@ const (
 	DELETE_KEYS_HINTS = `(q)uit -
 (y)es -
 (n)o`
+	ERROR_KEYS_HINTS = "[Enter] Ok"
 )
 
 const (
 	NORMAL_MODE = 0
 	DELETE_MODE = 1
 	LOAD_MODE   = 2
+	ERROR_MODE  = 3
 )
 
 var (

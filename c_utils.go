@@ -95,3 +95,13 @@ func c_die(str string, err error) {
 	fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)
 }
+
+func c_error_mode(msg string, err error, ui *HardUI) {
+	ui.mode = ERROR_MODE
+	err_str := ""
+	if err != nil {
+		err_str = fmt.Sprintf("%v", err)
+	}
+	ui.err[ERROR_MSG] = msg
+	ui.err[ERROR_ERR] = err_str
+}

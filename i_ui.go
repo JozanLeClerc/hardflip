@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Jan 19 18:45:35 2024
+ * Fri Jan 19 19:23:24 2024
  * Joe
  *
  * interfacing with the user
@@ -66,6 +66,7 @@ type HardUI struct {
 	dir_style    tcell.Style
 	title_style  tcell.Style
 	dim          [2]int
+	err          [2]string
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {
@@ -179,6 +180,10 @@ func i_draw_bottom_text(ui HardUI) {
 		text = NORMAL_KEYS_HINTS
 	case DELETE_MODE:
 		text = DELETE_KEYS_HINTS
+	case LOAD_MODE:
+		text = ""
+	case ERROR_MODE:
+		text = ERROR_KEYS_HINTS
 	}
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
@@ -220,7 +225,24 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	    ui.def_style.Bold(true), file)
 }
 
-func i_draw_err_box() {
+func i_draw_error_msg(ui HardUI) {
+	lines := 2
+	if len(ui.err[ERROR_ERR]) == 0 {
+		lines = 1
+	}
+	i_draw_msg(ui.s, lines, ui.dim, " Delete ")
+	left, right := i_left_right(len(ui.err[ERROR_MSG]), &ui)
+	line := ui.dim[H] - 2 - 2
+	if len(ui.err[ERROR_ERR]) == 0 {
+		line += 1
+	}
+	i_draw_text(ui.s, left, line, right, line, ui.def_style, ui.err[ERROR_MSG])
+	if len(ui.err[ERROR_ERR]) > 0 {
+		left, right = i_left_right(len(ui.err[ERROR_ERR]), &ui)
+		line += 1
+		i_draw_text(ui.s, left, line, right, line,
+			ui.def_style, ui.err[ERROR_ERR])
+	}
 }
 
 func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
@@ -333,6 +355,9 @@ func i_ui(data_dir string, opts HardOpts) {
 		}
 		if data.ui.mode == DELETE_MODE {
 			i_draw_delete_msg(data.ui, data.litems.curr)
+		}
+		if data.ui.mode == ERROR_MODE {
+			i_draw_error_msg(data.ui)
 		}
 		data.ui.s.Show()
 		i_events(&data)
