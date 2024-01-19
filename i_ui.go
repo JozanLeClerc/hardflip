@@ -189,22 +189,10 @@ func i_draw_bottom_text(ui HardUI) {
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	// TODO: msg mode
+	i_draw_msg(ui.s, 1, ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
-	left, right :=
-		(ui.dim[W] / 2) - (len(text) / 2) - 5,
-		(ui.dim[W] / 2) + (len(text) / 2) + 5
-	top, bot :=
-		(ui.dim[H] / 2) - 3,
-		(ui.dim[H] / 2) + 3
-	i_draw_box(ui.s, left, top, right, bot, "", false)
-	if left < ui.dim[W] / 3 {
-		for y := top + 1; y < bot; y++ {
-		    ui.s.SetContent(ui.dim[W] / 3, y, ' ', nil, ui.def_style)
-		}
-	}
-	i_draw_text(ui.s,
-		(ui.dim[W] / 2) - (len(text) / 2), ui.dim[H] / 2, right, ui.dim[H] / 2,
+	left, right := i_left_right(len(text), &ui)
+	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
 		ui.def_style, text)
 }
 
@@ -269,35 +257,11 @@ func i_draw_load_ui(ui *HardUI) {
 	ui.s.Clear()
 	i_draw_host_panel(*ui, false, nil, nil)
 	i_draw_info_panel(*ui, false, nil)
-	// TODO: msg mode
+	i_draw_msg(ui.s, 1, ui.dim, " Loading ")
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
-	text_len := len(text) / 2
-	// i_draw_box(ui.s, 0, 0, ui.dim[W] - 1, ui.dim[H] - 2, " hardflip ", false)
-	left, right :=
-		(ui.dim[W] / 2) - (text_len + 2),
-		(ui.dim[W] / 2) + (text_len + 2)
-	if left < 1 {
-	    left = 1
-	}
-	if right > ui.dim[W] - 2 {
-	    right = ui.dim[W] - 2
-	}
-	top, bot :=
-		(ui.dim[H] / 2) - 2,
-		(ui.dim[H] / 2) + 2
-	i_draw_box(ui.s, left, top, right, bot, " Loading hosts ", false)
-	left, right = 
-		(ui.dim[W] / 2) - (text_len - 1),
-		(ui.dim[W] / 2) + (text_len + 1)
-	if left < 2 {
-	    left = 2
-	}
-	if right > ui.dim[W] - 2 {
-	    right = ui.dim[W] - 2
-	}
+	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
-		left, (ui.dim[H] / 2), right, (ui.dim[H] / 2),
-		ui.def_style, text)
+		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1, ui.def_style, text)
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.def_style.Dim(true), " " + VERSION)
