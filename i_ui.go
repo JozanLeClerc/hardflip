@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Jan 18 17:51:03 2024
+ * Fri Jan 19 17:09:15 2024
  * Joe
  *
  * interfacing with the user
@@ -66,6 +66,18 @@ type HardUI struct {
 	dir_style    tcell.Style
 	title_style  tcell.Style
 	dim          [2]int
+}
+
+func i_left_right(text_len int, ui *HardUI) (int, int) {
+	left  := (ui.dim[W] / 2) - text_len / 2
+	right := ui.dim[W] - 1
+	if left < 1 {
+		left = 1
+	}
+	if right >= ui.dim[W] - 1 {
+		right = ui.dim[W] - 1
+	}
+	return left, right
 }
 
 func i_draw_text(s tcell.Screen,
@@ -123,6 +135,42 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, style, title)
 }
 
+func i_draw_msg(s tcell.Screen, lines int, dim [2]int, title string) {
+	style := tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorReset)
+
+	lines += 1
+	if lines < 0 {
+		return
+	}
+	if lines > dim[H] - 2 {
+		lines = dim[H] - 2
+	}
+	for row := dim[H] - 2 - lines; row < dim[H] - 2; row++ {
+		s.SetContent(0, row, tcell.RuneVLine, nil, style)
+		s.SetContent(dim[W] - 1, row, tcell.RuneVLine, nil, style)
+	}
+	for col := 1; col < dim[W] - 1; col++ {
+		s.SetContent(col, dim[H] - 2 - lines, tcell.RuneHLine, nil, style)
+		s.SetContent(col, dim[H] - 2, tcell.RuneHLine, nil, style)
+	}
+	s.SetContent(0, dim[H] - 2 - lines, tcell.RuneULCorner, nil, style)
+	s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneURCorner, nil, style)
+	s.SetContent(0, dim[H] - 2, tcell.RuneLLCorner, nil, style)
+	s.SetContent(dim[W] - 1, dim[H] - 2, tcell.RuneLRCorner, nil, style)
+	// s.SetContent(dim[W] / 3, dim[H] - 2 - lines, tcell.RuneBTee, nil, style)
+	// s.SetContent(0, dim[H] - 2 - lines, tcell.RuneLTee, nil, style)
+	// s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneRTee, nil, style)
+	for y := dim[H] - 2 - lines + 1; y < dim[H] - 2; y++ {
+		for x := 1; x < dim[W] - 1; x++ {
+			s.SetContent(x, y, ' ', nil, style)
+		}
+	}
+	i_draw_text(s, 1, dim[H] - 2 - lines, len(title) + 2, dim[H] - 2 - lines,
+		style, title)
+}
+
 func i_draw_bottom_text(ui HardUI) {
 	text := ""
 
@@ -141,6 +189,7 @@ func i_draw_bottom_text(ui HardUI) {
 }
 
 func i_draw_zhosts_box(ui HardUI) {
+	// TODO: msg mode
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
 	left, right :=
 		(ui.dim[W] / 2) - (len(text) / 2) - 5,
@@ -159,7 +208,7 @@ func i_draw_zhosts_box(ui HardUI) {
 		ui.def_style, text)
 }
 
-func i_draw_delete_box(ui HardUI, item *ItemsNode) {
+func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	var text string
 	var file string
 
@@ -171,39 +220,15 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 		text = "Really delete this host?"
 		file = host.Parent.path() + host.Filename
 	}
-	max_len := len(text)
-    
-	if max_len < len(file) {
-	    max_len = len(file)
-	}
-	left, right :=
-	    (ui.dim[W] / 2) - (max_len / 2) - 5,
-	    (ui.dim[W] / 2) + (max_len / 2) + 5
-	if left < 1 {
-	    left = 1
-	}
-	if right > ui.dim[W] - 2  {
-	    right = ui.dim[W] - 2
-	}
-	top, bot :=
-	    (ui.dim[H] / 2) - 2,
-	    (ui.dim[H] / 2) + 2
-	i_draw_box(ui.s, left, top, right, bot, " Delete ", true)
-	left = (ui.dim[W] / 2) - (len(text) / 2)
-	if left < (ui.dim[W] / 8) + 1 {
-	    left = (ui.dim[W] / 8) + 1
-	}
-	top = ui.dim[H] / 2 - 1
+	file = file[1:]
+	i_draw_msg(ui.s, 2, ui.dim, " Delete ")
+	left, right := i_left_right(len(text), &ui)
+	line := ui.dim[H] - 2 - 2
+	i_draw_text(ui.s, left, line, right, line, ui.def_style, text)
+	left, right = i_left_right(len(file), &ui)
+	line += 1
 	i_draw_text(ui.s,
-	    left, top, right, top,
-	    ui.def_style, text)
-	left = (ui.dim[W] / 2) - (len(file) / 2)
-	if left < (ui.dim[W] / 8) + 1 {
-	    left = (ui.dim[W] / 8) + 1
-	}
-	top += 1
-	i_draw_text(ui.s,
-	    left, top, right, top,
+	    left, line, right, line,
 	    ui.def_style.Bold(true), file)
 }
 
@@ -242,9 +267,10 @@ func i_draw_load_ui(ui *HardUI) {
 		return
 	}
 	ui.s.Clear()
+	// TODO: msg mode
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	text_len := len(text) / 2
-	i_draw_box(ui.s, 0, 0, ui.dim[W] - 1, ui.dim[H] - 2, " hardflip ", false)
+	// i_draw_box(ui.s, 0, 0, ui.dim[W] - 1, ui.dim[H] - 2, " hardflip ", false)
 	left, right :=
 		(ui.dim[W] / 2) - (text_len + 2),
 		(ui.dim[W] / 2) + (text_len + 2)
@@ -261,8 +287,8 @@ func i_draw_load_ui(ui *HardUI) {
 	left, right = 
 		(ui.dim[W] / 2) - (text_len - 1),
 		(ui.dim[W] / 2) + (text_len + 1)
-	if left < 1 {
-	    left = 1
+	if left < 2 {
+	    left = 2
 	}
 	if right > ui.dim[W] - 2 {
 	    right = ui.dim[W] - 2
@@ -340,7 +366,7 @@ func i_ui(data_dir string, opts HardOpts) {
 			i_draw_zhosts_box(data.ui)
 		}
 		if data.ui.mode == DELETE_MODE {
-			i_draw_delete_box(data.ui, data.litems.curr)
+			i_draw_delete_msg(data.ui, data.litems.curr)
 		}
 		data.ui.s.Show()
 		i_events(&data)
