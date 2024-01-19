@@ -135,10 +135,9 @@ func i_draw_bottom_text(ui HardUI) {
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.def_style.Dim(true), text)
-	text = " " + VERSION
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), text)
+		ui.def_style.Dim(true), " " + VERSION)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -236,8 +235,8 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 		return
 	}
 	h := ui.dim[H] - 4
-	max := litems.last.ID
-	if max <= h {
+	last := litems.last.ID
+	if last <= h {
 		return
 	}
 	draw_id := litems.draw.ID
@@ -246,7 +245,7 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 			'▲',
 			nil, ui.def_style)
 	}
-	if max - draw_id > h {
+	if last - draw_id > h {
 		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
 			nil, ui.def_style)
@@ -266,17 +265,35 @@ func i_draw_load_ui(ui *HardUI) {
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	text_len := len(text) / 2
 	// TODO: max len
-	i_draw_box(ui.s,
-		(ui.dim[W] / 2) - (text_len + 2) - 1,
+	i_draw_box(ui.s, 0, 0, ui.dim[W] - 1, ui.dim[H] - 2, " hardflip ", false)
+	left, right :=
+		(ui.dim[W] / 2) - (text_len + 2),
+		(ui.dim[W] / 2) + (text_len + 2)
+	if left < ui.dim[W] / 8 {
+	    left = ui.dim[W] / 8
+	}
+	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
+	    right = ui.dim[W] - ui.dim[W] / 8 - 1
+	}
+	top, bot :=
 		(ui.dim[H] / 2) - 2,
-		(ui.dim[W] / 2) + (text_len + 2),
-		(ui.dim[H] / 2) + 2, " Loading hosts ", false)
+		(ui.dim[H] / 2) + 2
+	i_draw_box(ui.s, left, top, right, bot, " Loading hosts ", false)
+	left, right = 
+		(ui.dim[W] / 2) - (text_len - 1),
+		(ui.dim[W] / 2) + (text_len + 1)
+	if left < ui.dim[W] / 8 + 1 {
+	    left = ui.dim[W] / 8 + 1
+	}
+	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
+	    right = ui.dim[W] - ui.dim[W] / 8 - 1
+	}
 	i_draw_text(ui.s,
-		(ui.dim[W] / 2) - text_len,
-		(ui.dim[H] / 2),
-		(ui.dim[W] / 2) + text_len + 1,
-		(ui.dim[H] / 2),
+		left, (ui.dim[H] / 2), right, (ui.dim[H] / 2),
 		ui.def_style, text)
+	i_draw_text(ui.s,
+		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
+		ui.def_style.Dim(true), " " + VERSION)
 	ui.s.Show()
 	event := ui.s.PollEvent()
 	ui.s.PostEvent(event)
