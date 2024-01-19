@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_host.go
- * Fri Jan 19 12:52:11 2024
+ * Fri Jan 19 18:44:09 2024
  * Joe
  *
  * interfacing hosts
@@ -104,7 +104,7 @@ func i_draw_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData)
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
 	line := 1
-	if litems.head == nil {
+	if litems == nil || litems.head == nil {
 		return
 	}
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {

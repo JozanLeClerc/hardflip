@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_info.go
- * Fri Jan 19 12:48:40 2024
+ * Fri Jan 19 18:44:13 2024
  * Joe
  *
  * interfacing informations about items
@@ -304,6 +304,9 @@ func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.def_style)
 	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
 		tcell.RuneBTee, nil, ui.def_style)
+	if litems == nil {
+		return
+	}
 	// number display
 	if litems.head != nil {
 		text := " " + strconv.Itoa(litems.curr.ID) + " of " +

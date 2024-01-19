@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Jan 19 17:09:15 2024
+ * Fri Jan 19 18:45:35 2024
  * Joe
  *
  * interfacing with the user
@@ -267,6 +267,8 @@ func i_draw_load_ui(ui *HardUI) {
 		return
 	}
 	ui.s.Clear()
+	i_draw_host_panel(*ui, false, nil, nil)
+	i_draw_info_panel(*ui, false, nil)
 	// TODO: msg mode
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	text_len := len(text) / 2
