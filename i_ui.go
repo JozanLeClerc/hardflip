@@ -179,21 +179,21 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	left, right :=
 	    (ui.dim[W] / 2) - (max_len / 2) - 5,
 	    (ui.dim[W] / 2) + (max_len / 2) + 5
-	if left < ui.dim[W] / 8 {
-	    left = ui.dim[W] / 8
+	if left < 1 {
+	    left = 1
 	}
-	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
-	    right = ui.dim[W] - ui.dim[W] / 8 - 1
+	if right > ui.dim[W] - 2  {
+	    right = ui.dim[W] - 2
 	}
 	top, bot :=
-	    (ui.dim[H] / 2) - 4,
-	    (ui.dim[H] / 2) + 3
-	i_draw_box(ui.s, left, top, right, bot, "", true)
+	    (ui.dim[H] / 2) - 2,
+	    (ui.dim[H] / 2) + 2
+	i_draw_box(ui.s, left, top, right, bot, " Delete ", true)
 	left = (ui.dim[W] / 2) - (len(text) / 2)
 	if left < (ui.dim[W] / 8) + 1 {
 	    left = (ui.dim[W] / 8) + 1
 	}
-	top = ui.dim[H] / 2 - 2
+	top = ui.dim[H] / 2 - 1
 	i_draw_text(ui.s,
 	    left, top, right, top,
 	    ui.def_style, text)
@@ -205,26 +205,6 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	i_draw_text(ui.s,
 	    left, top, right, top,
 	    ui.def_style.Bold(true), file)
-	left = right - 11
-	if left < (ui.dim[W] / 8) + 1 {
-	    left = (ui.dim[W] / 8) + 1
-	}
-	top = ui.dim[H] / 2 + 1
-	i_draw_text(ui.s,
-	    left - 1, top, right, top,
-	    ui.def_style, "[")
-	i_draw_text(ui.s,
-	    left, top, right, top,
-	    ui.def_style.Bold(true).Underline(true), "y")
-	i_draw_text(ui.s,
-	    left + 1, top, right, top,
-	    ui.def_style, "es] [")
-	i_draw_text(ui.s,
-	    left + 6, top, right, top,
-	    ui.def_style.Bold(true).Underline(true), "n")
-	i_draw_text(ui.s,
-	    left + 7, top, right, top,
-	    ui.def_style, "o]")
 }
 
 func i_draw_err_box() {
@@ -264,16 +244,15 @@ func i_draw_load_ui(ui *HardUI) {
 	ui.s.Clear()
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	text_len := len(text) / 2
-	// TODO: max len
 	i_draw_box(ui.s, 0, 0, ui.dim[W] - 1, ui.dim[H] - 2, " hardflip ", false)
 	left, right :=
 		(ui.dim[W] / 2) - (text_len + 2),
 		(ui.dim[W] / 2) + (text_len + 2)
-	if left < ui.dim[W] / 8 {
-	    left = ui.dim[W] / 8
+	if left < 1 {
+	    left = 1
 	}
-	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
-	    right = ui.dim[W] - ui.dim[W] / 8 - 1
+	if right > ui.dim[W] - 2 {
+	    right = ui.dim[W] - 2
 	}
 	top, bot :=
 		(ui.dim[H] / 2) - 2,
@@ -282,11 +261,11 @@ func i_draw_load_ui(ui *HardUI) {
 	left, right = 
 		(ui.dim[W] / 2) - (text_len - 1),
 		(ui.dim[W] / 2) + (text_len + 1)
-	if left < ui.dim[W] / 8 + 1 {
-	    left = ui.dim[W] / 8 + 1
+	if left < 1 {
+	    left = 1
 	}
-	if right > ui.dim[W] - ui.dim[W] / 8 - 1 {
-	    right = ui.dim[W] - ui.dim[W] / 8 - 1
+	if right > ui.dim[W] - 2 {
+	    right = ui.dim[W] - 2
 	}
 	i_draw_text(ui.s,
 		left, (ui.dim[H] / 2), right, (ui.dim[H] / 2),
