@@ -99,7 +99,7 @@ func i_host_panel_host(ui HardUI, icons bool,
 		style, text)
 }
 
-func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
+func i_draw_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		" Hosts ", false)
@@ -127,28 +127,5 @@ func i_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
 				line)
 			line++
 		}
-	}
-}
-
-func i_scrollhint(ui HardUI, litems *ItemsList) {
-	if litems.head == nil {
-		return
-	}
-	h := ui.dim[H] - 4
-	max := litems.last.ID
-	if max <= h {
-		return
-	}
-	draw_id := litems.draw.ID
-	if draw_id > 1 {
-		ui.s.SetContent(0, 1,
-			'▲',
-			nil, ui.def_style)
-	}
-	if max - draw_id > h {
-		ui.s.SetContent(0, ui.dim[H] - 3,
-			'▼',
-			nil, ui.def_style)
-		return
 	}
 }

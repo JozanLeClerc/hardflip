@@ -81,7 +81,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		nil,
 	}
 	ldirs.add_back(&dir_node)
-	i_display_load_ui(ui)
+	i_draw_load_ui(ui)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
@@ -95,7 +95,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node.Filename = filename
 			host_node.Parent = &dir_node
 			dir_node.lhost.add_back(host_node)
-			i_display_load_ui(ui)
+			i_draw_load_ui(ui)
 		}
 	}
 }

@@ -123,7 +123,7 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, style, title)
 }
 
-func i_bottom_text(ui HardUI) {
+func i_draw_bottom_text(ui HardUI) {
 	text := ""
 
 	switch ui.mode {
@@ -228,10 +228,36 @@ func i_draw_delete_box(ui HardUI, item *ItemsNode) {
 	    ui.def_style, "o]")
 }
 
+func i_draw_err_box() {
+}
+
+func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
+	if litems.head == nil {
+		return
+	}
+	h := ui.dim[H] - 4
+	max := litems.last.ID
+	if max <= h {
+		return
+	}
+	draw_id := litems.draw.ID
+	if draw_id > 1 {
+		ui.s.SetContent(0, 1,
+			'▲',
+			nil, ui.def_style)
+	}
+	if max - draw_id > h {
+		ui.s.SetContent(0, ui.dim[H] - 3,
+			'▼',
+			nil, ui.def_style)
+		return
+	}
+}
+
 // HACK: fuck global vars but do we have the choice really
 var g_load_count int = -1
 
-func i_display_load_ui(ui *HardUI) {
+func i_draw_load_ui(ui *HardUI) {
 	g_load_count += 1
 	if g_load_count % 1000 != 0 {
 		return
@@ -310,10 +336,10 @@ func i_ui(data_dir string, opts HardOpts) {
 	}
 	for {
 		data.ui.s.Clear()
-		i_bottom_text(data.ui)
-		i_host_panel(data.ui, data.opts.Icon, data.litems, &data)
-		i_info_panel(data.ui, data.opts.Perc, data.litems)
-		i_scrollhint(data.ui, data.litems)
+		i_draw_bottom_text(data.ui)
+		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
+		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
+		i_draw_scrollhint(data.ui, data.litems)
 		if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
 		}

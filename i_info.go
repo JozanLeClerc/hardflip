@@ -297,7 +297,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 	}
 }
 
-func i_info_panel(ui HardUI, percent bool, litems *ItemsList) {
+func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		" Infos ", false)

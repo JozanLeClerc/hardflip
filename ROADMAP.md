@@ -34,6 +34,10 @@
 
 - [ ] theming
 
+## v0.8
+
+- [ ] single commands
+
 ## v1.0 - wheelbite
 
 - [ ] README.md
