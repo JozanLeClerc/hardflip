@@ -170,7 +170,6 @@ func i_reload_data(data *HardData) {
 	g_load_count = -1
 	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
 		&data.ui)
-	// FIX: must input to start reloading for some reason
 	data.folds = make(map[*DirsNode]*ItemsList)
 }
 
@@ -344,6 +343,7 @@ func i_events(data *HardData) {
 			}
 		case ERROR_MODE:
 			if event.Rune() != 0 ||
+			   event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyEnter {
 				ui.mode = NORMAL_MODE
 				data.load_err = nil

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue Jan 23 14:21:09 2024
+ * Tue Jan 23 16:32:01 2024
  * Joe
  *
  * interfacing with the user
@@ -292,20 +292,20 @@ func i_draw_load_ui(ui *HardUI) {
 	if g_load_count % 1000 != 0 {
 		return
 	}
-	ui.s.Clear()
 	i_draw_host_panel(*ui, false, nil, nil)
 	i_draw_info_panel(*ui, false, nil)
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
-		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1, ui.style[DEF_STYLE], text)
+		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
+		ui.style[DEF_STYLE], text)
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.style[DEF_STYLE].Dim(true), " " + VERSION)
 	ui.s.Show()
+	ui.s.PostEvent(nil)
 	event := ui.s.PollEvent()
-	ui.s.PostEvent(event)
 	switch event := event.(type) {
 	case *tcell.EventResize:
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
