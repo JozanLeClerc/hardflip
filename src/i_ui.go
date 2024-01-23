@@ -328,7 +328,9 @@ func i_load_ui(data_dir string,
 	ui.mode = LOAD_MODE
 	ldirs, load_err := c_load_data_dir(data_dir, opts, ui)
 	litems := c_load_litems(ldirs)
-	ui.mode = NORMAL_MODE
+	if ui.mode != ERROR_MODE {
+		ui.mode = NORMAL_MODE
+	}
 	if len(load_err) == 0 {
 		load_err = nil
 	}

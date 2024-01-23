@@ -63,7 +63,7 @@ type HardData struct {
 }
 
 func main() {
-	data_dir := c_get_data_dir()
+	data_dir := c_get_data_dir(nil)
 	opts := HardOpts{true, true, false, ""}
 	i_ui(data_dir, opts)
 }

@@ -60,8 +60,8 @@ import (
 // not exist
 // the first path being checked is $XDG_DATA_HOME then $HOME/.local/share
 // it returns the full data directory path
-func c_get_data_dir() string {
-	var ptr *string
+func c_get_data_dir(ui *HardUI) string {
+	var ptr string
 	var home string
 	if home = os.Getenv("HOME"); len(home) == 0 {
 		c_die("env variable HOME not defined", nil)
@@ -69,18 +69,26 @@ func c_get_data_dir() string {
 	xdg_home := os.Getenv("XDG_DATA_HOME")
 
 	if len(xdg_home) > 0 {
-		ptr = &xdg_home
+		ptr = xdg_home + "/qwe"
 	} else {
-		ptr = &home
-		*ptr += "/.local/share"
+		ptr = home + "/.local/share"
 	}
-	*ptr += "/" + DATA_DIR_NAME
-	if _, err := os.Stat(*ptr); os.IsNotExist(err) {
-	    if err := os.MkdirAll(*ptr, os.ModePerm); err != nil {
-	        c_die("could not create path " + *ptr, err)
+	ptr += "/" + DATA_DIR_NAME
+	if _, err := os.Stat(ptr); os.IsNotExist(err) {
+	    if err := os.MkdirAll(ptr, os.ModePerm); err != nil {
+			if ui == nil {
+				c_die("could not create path " + ptr, err)
+			}
+			c_error_mode("could not create path" + ptr, err, ui)
 	    }
+	} else if err != nil {
+		if ui == nil {
+			c_die("could read path " + ptr, err)
+		}
+		c_error_mode("could read path" + ptr, err, ui)
+		// FIX: segv
 	}
-	return *ptr
+	return ptr
 }
 
 // c_die displays an error string to the stderr fd and exits the program
