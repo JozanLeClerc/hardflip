@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue Jan 23 16:32:01 2024
+ * Tue Jan 23 18:11:28 2024
  * Joe
  *
  * interfacing with the user
@@ -177,16 +177,16 @@ func i_draw_bottom_text(ui HardUI) {
 	case DELETE_MODE:
 		text = DELETE_KEYS_HINTS
 	case LOAD_MODE:
-		text = ""
+		text = "Loading..."
 	case ERROR_MODE:
 		text = ERROR_KEYS_HINTS
 	}
 	i_draw_text(ui.s,
-		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[BOT_STYLE], text)
 	i_draw_text(ui.s,
-		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[BOT_STYLE], " " + VERSION)
+		ui.dim[W] - len(VERSION) - 2, ui.dim[H] - 1,
+		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[BOT_STYLE], " " + VERSION)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -255,7 +255,6 @@ func i_draw_error_msg(ui HardUI, load_err []error) {
 	i_draw_text(ui.s, left, line, right, line,
 		ui.style[ERR_STYLE], ui.err[ERROR_MSG])
 	if len(ui.err[ERROR_ERR]) > 0 {
-		left, right = i_left_right(len(ui.err[ERROR_ERR]), &ui)
 		line += 1
 		i_draw_text(ui.s, left, line, right, line,
 			ui.style[ERR_STYLE], ui.err[ERROR_ERR])
@@ -294,15 +293,19 @@ func i_draw_load_ui(ui *HardUI) {
 	}
 	i_draw_host_panel(*ui, false, nil, nil)
 	i_draw_info_panel(*ui, false, nil)
+	text := ""
+	for i := 0; i < ui.dim[W] - 1; i++ {
+		text += " "
+	}
+	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
+		ui.style[BOT_STYLE], text)
+	i_draw_bottom_text(*ui)
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
-	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
+	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
 		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
 		ui.style[DEF_STYLE], text)
-	i_draw_text(ui.s,
-		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Dim(true), " " + VERSION)
 	ui.s.Show()
 	ui.s.PostEvent(nil)
 	event := ui.s.PollEvent()

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_host.go
- * Fri Jan 19 18:44:09 2024
+ * Tue Jan 23 18:11:24 2024
  * Joe
  *
  * interfacing hosts
@@ -51,13 +51,11 @@
 
 package main
 
-import "github.com/gdamore/tcell/v2"
-
 func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
 	if dir == curr {
-		style = style.Background(tcell.ColorBlack)
+		// style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
 	text := ""
