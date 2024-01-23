@@ -183,10 +183,10 @@ func i_draw_bottom_text(ui HardUI) {
 	}
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Dim(true), text)
+		ui.style[BOT_STYLE], text)
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Dim(true), " " + VERSION)
+		ui.style[BOT_STYLE], " " + VERSION)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -229,11 +229,11 @@ func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	if line < 0 {
 		line = 0
 	}
-	for i, err := range load_err {
+	for _, err := range load_err {
 		line += 1
 		err_str := fmt.Sprintf("%v", err)
 		i_draw_text(ui.s, left, line, right, line,
-			ui.style[ERR_STYLE], strconv.Itoa(i + 1) + " " + err_str)
+			ui.style[ERR_STYLE], err_str)
 	}
 }
 
@@ -361,8 +361,9 @@ func i_ui(data_dir string, opts HardOpts) {
 	ui.style[TITLE_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[SEL_STYLE] = tcell.StyleDefault.Background(tcell.ColorBlack)
-	// TODO: sel_style
+	ui.style[BOT_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorBlue).Dim(true)
 	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui)

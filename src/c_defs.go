@@ -85,7 +85,7 @@ const (
 	HEAD_STYLE  = 3
 	ERR_STYLE   = 4
 	TITLE_STYLE = 5
-	SEL_STYLE   = 6
+	BOT_STYLE   = 6
 )
 
 var (

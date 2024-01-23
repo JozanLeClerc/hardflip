@@ -51,10 +51,13 @@
 
 package main
 
+import "github.com/gdamore/tcell/v2"
+
 func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
 	if dir == curr {
+		style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -79,6 +82,7 @@ func i_host_panel_host(ui HardUI, icons bool,
 		depth uint16, host *HostNode, curr *HostNode, line int) {
 	style := ui.style[DEF_STYLE]
 	if host == curr {
+		// style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
 	text := ""
@@ -99,7 +103,8 @@ func i_host_panel_host(ui HardUI, icons bool,
 		style, text)
 }
 
-func i_draw_host_panel(ui HardUI, icons bool, litems *ItemsList, data *HardData) {
+func i_draw_host_panel(ui HardUI, icons bool,
+					   litems *ItemsList, data *HardData) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " Hosts ", false)
