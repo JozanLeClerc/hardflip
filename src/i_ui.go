@@ -361,9 +361,7 @@ func i_ui(data_dir string, opts HardOpts) {
 	ui.style[TITLE_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[SEL_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	ui.style[SEL_STYLE] = tcell.StyleDefault.Background(tcell.ColorBlack)
 	// TODO: sel_style
 	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
