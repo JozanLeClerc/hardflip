@@ -57,8 +57,9 @@ type HardData struct {
 	ldirs  *DirsList
 	ui     HardUI
 	opts   HardOpts
-	data_dir string
 	folds  map[*DirsNode]*ItemsList
+	data_dir string
+	load_err *[]error
 }
 
 func main() {

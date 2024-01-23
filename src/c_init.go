@@ -68,10 +68,11 @@ type HardOpts struct {
 func c_recurse_data_dir(dir, root string, opts HardOpts,
 		ldirs *DirsList,
 		name string, parent *DirsNode, depth uint16,
-		ui *HardUI) {
+		ui *HardUI, load_err *[]error) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
-		c_die("could not read data directory", err)
+		*load_err = append(*load_err, err)
+		return
 	}
 	dir_node := DirsNode{
 		name,
@@ -86,10 +87,13 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		filename := file.Name()
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
-				file.Name(), &dir_node, depth + 1, ui)
+				file.Name(), &dir_node, depth + 1, ui, load_err)
 		} else if filepath.Ext(filename) == ".yml" {
-			host_node := c_read_yaml_file(root + dir + filename)
-			if host_node == nil {
+			host_node, err := c_read_yaml_file(root + dir + filename, ui)
+			if err != nil {
+				*load_err = append(*load_err, err)
+				return
+			} else if host_node == nil {
 				return
 			}
 			host_node.Filename = filename
@@ -100,11 +104,12 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 	}
 }
 
-func c_load_data_dir(dir string, opts HardOpts, ui *HardUI) *DirsList {
-	ldirs  := DirsList{}
+func c_load_data_dir(dir string, opts HardOpts, ui *HardUI) (*DirsList, *[]error) {
+	ldirs := DirsList{}
+	var load_err []error
 
-	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui)
-	return &ldirs
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui, &load_err)
+	return &ldirs, &load_err
 }
 
 // fills litems sorting with dirs last

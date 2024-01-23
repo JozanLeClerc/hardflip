@@ -57,22 +57,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func c_read_yaml_file(file string) *HostNode {
+func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)
 
 	if err != nil {
-		// TODO: remove all c_dies with c_err_mode
-		c_die("error reading file " + file, err)
+		return nil, err
 	}
-	if err = yaml.Unmarshal(yaml_file, &host); err != nil {
-		c_die("error reading yaml file " + file, err)
+	if err := yaml.Unmarshal(yaml_file, &host); err != nil {
+		return nil, err
 	}
 	if len(host.Name) == 0 {
-		return nil
+		return nil, nil
 	}
 	if len(host.Host) == 0 {
-		return nil
+		return nil, nil
 	}
 	if host.Protocol == 0 {
 		if host.Port == 0 {
@@ -103,10 +102,10 @@ func c_read_yaml_file(file string) *HostNode {
 			host.Height = 1200
 		}
 	} else if host.Protocol > 1 {
-		return nil
+		return nil, nil
 	}
 	if host.Quality > 2 {
 		host.Quality = 2
 	}
-	return &host
+	return &host, nil
 }

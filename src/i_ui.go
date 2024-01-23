@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Jan 19 19:23:24 2024
+ * Tue Jan 23 14:21:09 2024
  * Joe
  *
  * interfacing with the user
@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 
@@ -220,13 +221,28 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	    ui.style[DEF_STYLE].Bold(true), file)
 }
 
-func i_draw_error_msg(ui HardUI) {
+func i_draw_load_error_msg(ui HardUI, load_err *[]error) {
+	lines := len(*load_err)
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
+	left, right := 1, ui.dim[W] - 2
+	for i, err := range *load_err {
+		err_str := fmt.Sprintf("%v", err)
+		i_draw_text(ui.s, left, i, right, i,
+			ui.style[ERR_STYLE], strconv.Itoa(i) + err_str)
+	}
+}
+
+func i_draw_error_msg(ui HardUI, load_err *[]error) {
+	if len(*load_err) > 0 {
+		i_draw_load_error_msg(ui, load_err)
+		return
+	}
 	lines := 2
 	if len(ui.err[ERROR_ERR]) == 0 {
 		lines = 1
 	}
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Delete ")
-	left, right := i_left_right(len(ui.err[ERROR_MSG]), &ui)
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Error ")
+	left, right := 1, ui.dim[W] - 2
 	line := ui.dim[H] - 2 - 2
 	if len(ui.err[ERROR_ERR]) == 0 {
 		line += 1
@@ -254,17 +270,16 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 	if draw_id > 1 {
 		ui.s.SetContent(0, 1,
 			'▲',
-			nil, ui.style[DEF_STYLE])
+			nil, ui.style[BOX_STYLE])
 	}
 	if last - draw_id > h {
 		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
-			nil, ui.style[DEF_STYLE])
+			nil, ui.style[BOX_STYLE])
 		return
 	}
 }
 
-// HACK: fuck global vars but do we have the choice really
 var g_load_count int = -1
 
 func i_draw_load_ui(ui *HardUI) {
@@ -301,12 +316,15 @@ func i_draw_load_ui(ui *HardUI) {
 
 func i_load_ui(data_dir string,
 			   opts HardOpts,
-			   ui *HardUI) (*DirsList, *ItemsList) {
+			   ui *HardUI) (*DirsList, *ItemsList, *[]error) {
 	ui.mode = LOAD_MODE
-	ldirs := c_load_data_dir(data_dir, opts, ui)
+	ldirs, load_err := c_load_data_dir(data_dir, opts, ui)
 	litems := c_load_litems(ldirs)
 	ui.mode = NORMAL_MODE
-	return ldirs, litems
+	if len(*load_err) == 0 {
+		load_err = nil
+	}
+	return ldirs, litems, load_err
 }
 
 func i_ui(data_dir string, opts HardOpts) {
@@ -341,16 +359,18 @@ func i_ui(data_dir string, opts HardOpts) {
 	ui.style[SEL_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	// TODO: sel_style
 	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-	ldirs, litems := i_load_ui(data_dir, opts, &ui)
+	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui)
 	data := HardData{
 		litems,
 		ldirs,
 		ui,
 		opts,
-		data_dir,
 		make(map[*DirsNode]*ItemsList),
+		data_dir,
+		load_err,
 	}
 	for {
 		data.ui.s.Clear()
@@ -358,6 +378,9 @@ func i_ui(data_dir string, opts HardOpts) {
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
+		if data.load_err != nil && len(*data.load_err) > 0 {
+			data.ui.mode = ERROR_MODE
+		}
 		if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
 		}
@@ -365,7 +388,7 @@ func i_ui(data_dir string, opts HardOpts) {
 			i_draw_delete_msg(data.ui, data.litems.curr)
 		}
 		if data.ui.mode == ERROR_MODE {
-			i_draw_error_msg(data.ui)
+			i_draw_error_msg(data.ui, data.load_err)
 		}
 		data.ui.s.Show()
 		i_events(&data)

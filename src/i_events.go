@@ -168,7 +168,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir()
 	g_load_count = -1
-	data.ldirs, data.litems = i_load_ui(data.data_dir, data.opts, &data.ui)
+	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts, &data.ui)
 	// FIX: must input to start reloading for some reason
 	data.folds = make(map[*DirsNode]*ItemsList)
 }
@@ -344,6 +344,7 @@ func i_events(data *HardData) {
 			if event.Rune() == 'q' ||
 			   event.Key() == tcell.KeyEnter {
 				ui.mode = NORMAL_MODE
+				data.load_err = nil
 			}
 		}	
 	}
