@@ -92,24 +92,23 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			host_node, err := c_read_yaml_file(root + dir + filename, ui)
 			if err != nil {
 				*load_err = append(*load_err, err)
-				return
-			} else if host_node == nil {
-				return
+			} else if host_node != nil {
+				host_node.Filename = filename
+				host_node.Parent = &dir_node
+				dir_node.lhost.add_back(host_node)
 			}
-			host_node.Filename = filename
-			host_node.Parent = &dir_node
-			dir_node.lhost.add_back(host_node)
 			i_draw_load_ui(ui)
 		}
 	}
 }
 
-func c_load_data_dir(dir string, opts HardOpts, ui *HardUI) (*DirsList, *[]error) {
+func c_load_data_dir(dir string, opts HardOpts,
+		ui *HardUI) (*DirsList, []error) {
 	ldirs := DirsList{}
 	var load_err []error
 
 	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui, &load_err)
-	return &ldirs, &load_err
+	return &ldirs, load_err
 }
 
 // fills litems sorting with dirs last

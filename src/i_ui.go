@@ -221,19 +221,24 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	    ui.style[DEF_STYLE].Bold(true), file)
 }
 
-func i_draw_load_error_msg(ui HardUI, load_err *[]error) {
-	lines := len(*load_err)
+func i_draw_load_error_msg(ui HardUI, load_err []error) {
+	lines := len(load_err)
 	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
-	left, right := 1, ui.dim[W] - 2
-	for i, err := range *load_err {
+	left, right := 1, ui.dim[W] - 1
+	line := ui.dim[H] - 2 - 1 - len(load_err)
+	if line < 0 {
+		line = 0
+	}
+	for i, err := range load_err {
+		line += 1
 		err_str := fmt.Sprintf("%v", err)
-		i_draw_text(ui.s, left, i, right, i,
-			ui.style[ERR_STYLE], strconv.Itoa(i) + err_str)
+		i_draw_text(ui.s, left, line, right, line,
+			ui.style[ERR_STYLE], strconv.Itoa(i + 1) + " " + err_str)
 	}
 }
 
-func i_draw_error_msg(ui HardUI, load_err *[]error) {
-	if len(*load_err) > 0 {
+func i_draw_error_msg(ui HardUI, load_err []error) {
+	if len(load_err) > 0 {
 		i_draw_load_error_msg(ui, load_err)
 		return
 	}
@@ -316,12 +321,12 @@ func i_draw_load_ui(ui *HardUI) {
 
 func i_load_ui(data_dir string,
 			   opts HardOpts,
-			   ui *HardUI) (*DirsList, *ItemsList, *[]error) {
+			   ui *HardUI) (*DirsList, *ItemsList, []error) {
 	ui.mode = LOAD_MODE
 	ldirs, load_err := c_load_data_dir(data_dir, opts, ui)
 	litems := c_load_litems(ldirs)
 	ui.mode = NORMAL_MODE
-	if len(*load_err) == 0 {
+	if len(load_err) == 0 {
 		load_err = nil
 	}
 	return ldirs, litems, load_err
@@ -378,7 +383,7 @@ func i_ui(data_dir string, opts HardOpts) {
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
-		if data.load_err != nil && len(*data.load_err) > 0 {
+		if data.load_err != nil && len(data.load_err) > 0 {
 			data.ui.mode = ERROR_MODE
 		}
 		if data.litems.head == nil {

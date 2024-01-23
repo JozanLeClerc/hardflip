@@ -59,7 +59,7 @@ type HardData struct {
 	opts   HardOpts
 	folds  map[*DirsNode]*ItemsList
 	data_dir string
-	load_err *[]error
+	load_err []error
 }
 
 func main() {
