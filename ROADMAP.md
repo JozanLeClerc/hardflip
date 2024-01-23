@@ -37,6 +37,7 @@
 ## v0.8
 
 - [ ] single commands
+- [ ] openstack
 
 ## v1.0 - wheelbite
 

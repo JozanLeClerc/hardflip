@@ -11,20 +11,26 @@
 # ========================
 #
 # hardflip: Makefile
-# Thu, 14 Dec 2023 15:33:28 +0100
+# Tue Jan 23 11:16:43 2024
 # Joe
 #
 # GNU Makefile
 
-.DEFAULT_GOAL	:= hf
+TARGET			:= hf
 SHELL			:= /bin/sh
-SRC				:= *.go
+SRC_DIR			:= ./src/
+SRC_NAME		:= *.go
+SRC				 = $(addprefix ${SRC_DIR}, ${SRC_NAME})
+.DEFAULT_GOAL	:= ${TARGET}
 
 run: ${SRC}
-	@go run ${SRC}
+	go run ${SRC_DIR}
 
-hf: ${SRC}
-	@go build
+${TARGET}: ${SRC}
+	go build -o ${TARGET} ${SRC_DIR}
 
 clean:
-	@go clean
+	go clean
+	rm -f ${TARGET}
+
+.PHONY: hf run clean

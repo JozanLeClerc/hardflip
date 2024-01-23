@@ -289,7 +289,8 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'D' &&
 					  data.ldirs.head != nil {
 				ui.mode = DELETE_MODE
-			} else if event.Key() == tcell.KeyEnter {
+			} else if event.Rune() == 'l' ||
+					  event.Key() == tcell.KeyEnter {
 				if data.litems.curr == nil {
 					break
 				} else if data.litems.curr.is_dir() == false {
