@@ -60,13 +60,11 @@ import (
 )
 
 type HardUI struct {
-	s            tcell.Screen
-	mode         uint8
-	def_style    tcell.Style
-	dir_style    tcell.Style
-	title_style  tcell.Style
-	dim          [2]int
-	err          [2]string
+	s           tcell.Screen
+	mode        uint8
+	style		[7]tcell.Style
+	dim         [2]int
+	err         [2]string
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {
@@ -99,10 +97,8 @@ func i_draw_text(s tcell.Screen,
 	}
 }
 
-func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
-	style := tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorReset)
+func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int,
+		box_style, head_style tcell.Style, title string, fill bool) {
 
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -112,34 +108,32 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int, title string, fill bool) {
 	}
 	// Draw borders
 	for col := x1; col <= x2; col++ {
-		s.SetContent(col, y1, tcell.RuneHLine, nil, style)
-		s.SetContent(col, y2, tcell.RuneHLine, nil, style)
+		s.SetContent(col, y1, tcell.RuneHLine, nil, box_style)
+		s.SetContent(col, y2, tcell.RuneHLine, nil, box_style)
 	}
 	for row := y1 + 1; row < y2; row++ {
-		s.SetContent(x1, row, tcell.RuneVLine, nil, style)
-		s.SetContent(x2, row, tcell.RuneVLine, nil, style)
+		s.SetContent(x1, row, tcell.RuneVLine, nil, box_style)
+		s.SetContent(x2, row, tcell.RuneVLine, nil, box_style)
 	}
 	// Only draw corners if necessary
 	if y1 != y2 && x1 != x2 {
-		s.SetContent(x1, y1, tcell.RuneULCorner, nil, style)
-		s.SetContent(x2, y1, tcell.RuneURCorner, nil, style)
-		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, style)
-		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
+		s.SetContent(x1, y1, tcell.RuneULCorner, nil, box_style)
+		s.SetContent(x2, y1, tcell.RuneURCorner, nil, box_style)
+		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, box_style)
+		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, box_style)
 	}
 	if fill == true {
 		for y := y1 + 1; y < y2; y++ {
 			for x := x1 + 1; x < x2; x++ {
-				s.SetContent(x, y, ' ', nil, style)
+				s.SetContent(x, y, ' ', nil, box_style)
 			}
 		}
 	}
-	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, style, title)
+	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, head_style, title)
 }
 
-func i_draw_msg(s tcell.Screen, lines int, dim [2]int, title string) {
-	style := tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorReset)
+func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
+	dim [2]int, title string) {
 
 	lines += 1
 	if lines < 0 {
@@ -149,27 +143,28 @@ func i_draw_msg(s tcell.Screen, lines int, dim [2]int, title string) {
 		lines = dim[H] - 2
 	}
 	for row := dim[H] - 2 - lines; row < dim[H] - 2; row++ {
-		s.SetContent(0, row, tcell.RuneVLine, nil, style)
-		s.SetContent(dim[W] - 1, row, tcell.RuneVLine, nil, style)
+		s.SetContent(0, row, tcell.RuneVLine, nil, box_style)
+		s.SetContent(dim[W] - 1, row, tcell.RuneVLine, nil, box_style)
 	}
 	for col := 1; col < dim[W] - 1; col++ {
-		s.SetContent(col, dim[H] - 2 - lines, tcell.RuneHLine, nil, style)
-		s.SetContent(col, dim[H] - 2, tcell.RuneHLine, nil, style)
+		s.SetContent(col, dim[H] - 2 - lines, tcell.RuneHLine, nil, box_style)
+		s.SetContent(col, dim[H] - 2, tcell.RuneHLine, nil, box_style)
 	}
-	s.SetContent(0, dim[H] - 2 - lines, tcell.RuneULCorner, nil, style)
-	s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneURCorner, nil, style)
-	s.SetContent(0, dim[H] - 2, tcell.RuneLLCorner, nil, style)
-	s.SetContent(dim[W] - 1, dim[H] - 2, tcell.RuneLRCorner, nil, style)
-	// s.SetContent(dim[W] / 3, dim[H] - 2 - lines, tcell.RuneBTee, nil, style)
-	// s.SetContent(0, dim[H] - 2 - lines, tcell.RuneLTee, nil, style)
-	// s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneRTee, nil, style)
+	s.SetContent(0, dim[H] - 2 - lines, tcell.RuneULCorner, nil, box_style)
+	s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneURCorner, nil,
+		box_style)
+	s.SetContent(0, dim[H] - 2, tcell.RuneLLCorner, nil, box_style)
+	s.SetContent(dim[W] - 1, dim[H] - 2, tcell.RuneLRCorner, nil, box_style)
+	// s.SetContent(dim[W] / 3, dim[H] - 2 - lines, tcell.RuneBTee, nil, )
+	// s.SetContent(0, dim[H] - 2 - lines, tcell.RuneLTee, nil, )
+	// s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneRTee, nil, )
 	for y := dim[H] - 2 - lines + 1; y < dim[H] - 2; y++ {
 		for x := 1; x < dim[W] - 1; x++ {
-			s.SetContent(x, y, ' ', nil, style)
+			s.SetContent(x, y, ' ', nil, box_style)
 		}
 	}
 	i_draw_text(s, 1, dim[H] - 2 - lines, len(title) + 2, dim[H] - 2 - lines,
-		style, title)
+		box_style, title)
 }
 
 func i_draw_bottom_text(ui HardUI) {
@@ -187,18 +182,18 @@ func i_draw_bottom_text(ui HardUI) {
 	}
 	i_draw_text(ui.s,
 		0, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), text)
+		ui.style[DEF_STYLE].Dim(true), text)
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), " " + VERSION)
+		ui.style[DEF_STYLE].Dim(true), " " + VERSION)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	i_draw_msg(ui.s, 1, ui.dim, " No hosts ")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
 	left, right := i_left_right(len(text), &ui)
 	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.def_style, text)
+		ui.style[DEF_STYLE], text)
 }
 
 func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
@@ -214,15 +209,15 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 		file = host.Parent.path() + host.Filename
 	}
 	file = file[1:]
-	i_draw_msg(ui.s, 2, ui.dim, " Delete ")
+	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")
 	left, right := i_left_right(len(text), &ui)
 	line := ui.dim[H] - 2 - 2
-	i_draw_text(ui.s, left, line, right, line, ui.def_style, text)
+	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
 	left, right = i_left_right(len(file), &ui)
 	line += 1
 	i_draw_text(ui.s,
 	    left, line, right, line,
-	    ui.def_style.Bold(true), file)
+	    ui.style[DEF_STYLE].Bold(true), file)
 }
 
 func i_draw_error_msg(ui HardUI) {
@@ -230,18 +225,19 @@ func i_draw_error_msg(ui HardUI) {
 	if len(ui.err[ERROR_ERR]) == 0 {
 		lines = 1
 	}
-	i_draw_msg(ui.s, lines, ui.dim, " Delete ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Delete ")
 	left, right := i_left_right(len(ui.err[ERROR_MSG]), &ui)
 	line := ui.dim[H] - 2 - 2
 	if len(ui.err[ERROR_ERR]) == 0 {
 		line += 1
 	}
-	i_draw_text(ui.s, left, line, right, line, ui.def_style, ui.err[ERROR_MSG])
+	i_draw_text(ui.s, left, line, right, line,
+		ui.style[ERR_STYLE], ui.err[ERROR_MSG])
 	if len(ui.err[ERROR_ERR]) > 0 {
 		left, right = i_left_right(len(ui.err[ERROR_ERR]), &ui)
 		line += 1
 		i_draw_text(ui.s, left, line, right, line,
-			ui.def_style, ui.err[ERROR_ERR])
+			ui.style[ERR_STYLE], ui.err[ERROR_ERR])
 	}
 }
 
@@ -258,12 +254,12 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 	if draw_id > 1 {
 		ui.s.SetContent(0, 1,
 			'▲',
-			nil, ui.def_style)
+			nil, ui.style[DEF_STYLE])
 	}
 	if last - draw_id > h {
 		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
-			nil, ui.def_style)
+			nil, ui.style[DEF_STYLE])
 		return
 	}
 }
@@ -279,14 +275,14 @@ func i_draw_load_ui(ui *HardUI) {
 	ui.s.Clear()
 	i_draw_host_panel(*ui, false, nil, nil)
 	i_draw_info_panel(*ui, false, nil)
-	i_draw_msg(ui.s, 1, ui.dim, " Loading ")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
 	text := "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
-		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1, ui.def_style, text)
+		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1, ui.style[DEF_STYLE], text)
 	i_draw_text(ui.s,
 		ui.dim[W] - 5, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.def_style.Dim(true), " " + VERSION)
+		ui.style[DEF_STYLE].Dim(true), " " + VERSION)
 	ui.s.Show()
 	event := ui.s.PollEvent()
 	ui.s.PostEvent(event)
@@ -324,16 +320,28 @@ func i_ui(data_dir string, opts HardOpts) {
 	if err := ui.s.Init(); err != nil {
 		c_die("view", err)
 	}
-	ui.def_style = tcell.StyleDefault.
+	ui.style[DEF_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.dir_style = tcell.StyleDefault.
+	ui.style[DIR_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.title_style = tcell.StyleDefault.
+	ui.style[BOX_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorReset)
+	ui.style[HEAD_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorReset)
+	ui.style[ERR_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorRed).Dim(true)
+	ui.style[TITLE_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.s.SetStyle(ui.def_style)
+	ui.style[SEL_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	ldirs, litems := i_load_ui(data_dir, opts, &ui)
 	data := HardData{

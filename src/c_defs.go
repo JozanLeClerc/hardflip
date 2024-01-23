@@ -78,6 +78,16 @@ const (
 	ERROR_MODE  = 3
 )
 
+const (
+	DEF_STYLE   = 0
+	DIR_STYLE   = 1
+	BOX_STYLE   = 2
+	HEAD_STYLE  = 3
+	ERR_STYLE   = 4
+	TITLE_STYLE = 5
+	SEL_STYLE   = 6
+)
+
 var (
 	HOST_ICONS = [2]string{" ", " "}
 	DIRS_ICONS = [2]string{" ", " "}

@@ -305,7 +305,7 @@ func i_events(data *HardData) {
 						if err := ui.s.Init(); err != nil {
 							c_die("view", err)
 						}
-						ui.s.SetStyle(ui.def_style)
+						ui.s.SetStyle(ui.style[DEF_STYLE])
 					}
 				} else if data.litems.curr.Dirs != nil &&
 						  data.folds[data.litems.curr.Dirs] == nil {
@@ -341,7 +341,8 @@ func i_events(data *HardData) {
 				}
 			}
 		case ERROR_MODE:
-			if event.Key() == tcell.KeyEnter {
+			if event.Rune() == 'q' ||
+			   event.Key() == tcell.KeyEnter {
 				ui.mode = NORMAL_MODE
 			}
 		}	
