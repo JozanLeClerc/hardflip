@@ -64,7 +64,11 @@ func c_get_data_dir(ui *HardUI) string {
 	var ptr string
 	var home string
 	if home = os.Getenv("HOME"); len(home) == 0 {
-		c_die("env variable HOME not defined", nil)
+		if ui == nil {
+			c_die("env variable HOME not defined", nil)
+		}
+		c_error_mode("env variable HOME not defined", nil, ui)
+		return ""
 	}
 	xdg_home := os.Getenv("XDG_DATA_HOME")
 
