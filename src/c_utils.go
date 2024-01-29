@@ -69,7 +69,7 @@ func c_get_data_dir(ui *HardUI) string {
 	xdg_home := os.Getenv("XDG_DATA_HOME")
 
 	if len(xdg_home) > 0 {
-		ptr = xdg_home + "/qwe"
+		ptr = xdg_home
 	} else {
 		ptr = home + "/.local/share"
 	}
