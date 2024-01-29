@@ -87,7 +87,6 @@ func c_get_data_dir(ui *HardUI) string {
 		}
 		c_error_mode("could read path" + ptr, err, ui)
 		return ""
-		// FIX: segv
 	}
 	return ptr
 }

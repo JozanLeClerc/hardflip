@@ -156,9 +156,6 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style)
 	s.SetContent(0, dim[H] - 2, tcell.RuneLLCorner, nil, box_style)
 	s.SetContent(dim[W] - 1, dim[H] - 2, tcell.RuneLRCorner, nil, box_style)
-	// s.SetContent(dim[W] / 3, dim[H] - 2 - lines, tcell.RuneBTee, nil, )
-	// s.SetContent(0, dim[H] - 2 - lines, tcell.RuneLTee, nil, )
-	// s.SetContent(dim[W] - 1, dim[H] - 2 - lines, tcell.RuneRTee, nil, )
 	for y := dim[H] - 2 - lines + 1; y < dim[H] - 2; y++ {
 		for x := 1; x < dim[W] - 1; x++ {
 			s.SetContent(x, y, ' ', nil, box_style)
