@@ -9,7 +9,7 @@
 ## v0.2
 
 - [x] load scr
-- [ ] err msg
+- [x] err msg
 
 ## v0.3
 

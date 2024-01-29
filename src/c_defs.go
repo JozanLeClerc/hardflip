@@ -57,7 +57,7 @@ const (
 	ERROR_MSG = 0
 	ERROR_ERR = 1
 	DATA_DIR_NAME = "hardflip"
-	VERSION = "v0.1"
+	VERSION = "v0.2"
 )
 
 const (
