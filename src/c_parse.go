@@ -53,6 +53,7 @@ package main
 
 import (
 	"os"
+	"errors"
 
 	"gopkg.in/yaml.v3"
 )
@@ -102,7 +103,7 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 			host.Height = 1200
 		}
 	} else if host.Protocol > 1 {
-		return nil, nil
+		return nil, errors.New(file + ": unknown protocol")
 	}
 	if host.Quality > 2 {
 		host.Quality = 2

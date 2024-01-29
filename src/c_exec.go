@@ -144,7 +144,7 @@ func c_format_cmd(host *HostNode, term string) {
 	case 1:
 		cmd_fmt = c_format_rdp(host)
 	default:
-		c_die("type not found", nil)
+		c_die("you fucked up joe, users cant see this", nil)
 	}
 	if len(term) > 0 {
 		// TODO: setsid
