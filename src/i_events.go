@@ -167,6 +167,9 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 
 func i_reload_data(data *HardData) {
 	data.data_dir = c_get_data_dir(&data.ui)
+	if data.data_dir == "" {
+		return
+	}
 	g_load_count = -1
 	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
 		&data.ui)

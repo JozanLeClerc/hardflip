@@ -61,11 +61,11 @@ import (
 )
 
 type HardUI struct {
-	s           tcell.Screen
-	mode        uint8
-	style		[7]tcell.Style
-	dim         [2]int
-	err         [2]string
+	s       tcell.Screen
+	mode    uint8
+	style	[7]tcell.Style
+	dim     [2]int
+	err     [2]string
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {

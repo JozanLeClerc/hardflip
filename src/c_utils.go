@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_utils.go
- * Wed Dec 20 10:50:12 2023
+ * Mon Jan 29 08:56:55 2024
  * Joe
  *
  * core funcs
@@ -86,6 +86,7 @@ func c_get_data_dir(ui *HardUI) string {
 			c_die("could read path " + ptr, err)
 		}
 		c_error_mode("could read path" + ptr, err, ui)
+		return ""
 		// FIX: segv
 	}
 	return ptr
