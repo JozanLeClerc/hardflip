@@ -17,27 +17,28 @@
 
 ## v0.4
 
-- [ ] mkdir
-- [ ] clone
-- [ ] edit
-- [ ] add
+- [ ] .config/hardflip
 
 ## v0.5
 
-- [ ] help
+- [ ] single commands
+- [ ] openstack
 
 ## v0.6
 
-- [ ] .config/hardflip
+- [ ] mkdir
+- [ ] add
+- [ ] clone
+- [ ] edit
+- [ ] rename
 
 ## v0.7
 
-- [ ] theming
+- [ ] help
 
 ## v0.8
 
-- [ ] single commands
-- [ ] openstack
+- [ ] theming
 
 ## v1.0 - wheelbite
 
