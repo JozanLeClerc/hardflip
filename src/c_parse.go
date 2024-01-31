@@ -69,9 +69,6 @@ func c_read_yaml_file(file string,
 	if err := yaml.Unmarshal(yaml_file, &host); err != nil {
 		return nil, err
 	}
-	if len(opts.GPG) == 0 {
-		host.Pass = ""
-	}
 	if len(host.Name) == 0 {
 		return nil, nil
 	}

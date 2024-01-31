@@ -52,6 +52,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -96,6 +98,16 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			} else if host_node != nil {
 				host_node.Filename = filename
 				host_node.Parent = &dir_node
+				if len(opts.GPG) == 0 {
+					host_node.Pass = ""
+				} else if opts.GPG != "plain" && len(host_node.Pass) > 0 {
+					host_node.Pass, err = c_decrypt_str(host_node.Pass)
+					if err != nil {
+						str := fmt.Sprintf("%s%s: password decryption: %v\n",
+							dir, filename, err)
+						*load_err = append(*load_err, errors.New(str))
+					}
+				}
 				dir_node.lhost.add_back(host_node)
 			}
 			i_draw_load_ui(ui)

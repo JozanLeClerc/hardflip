@@ -54,6 +54,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 // this function will go get the data folder and try to create it if it does
@@ -116,4 +118,20 @@ func c_error_mode(msg string, err error, ui *HardUI) {
 	}
 	ui.err[ERROR_MSG] = msg
 	ui.err[ERROR_ERR] = err_str
+}
+
+// c_encrypt_str encrypts a string with the given gpgkey
+func c_encrypt_str(str string, gpg string) (string, error) {
+	cmd := exec.Command("gpg", "-r", gpg, "-a", "-e")
+	cmd.Stdin = strings.NewReader(str)
+	out, err := cmd.Output()
+	return string(out), err
+}
+
+// c_decrypt_str will try to decrypt the given str
+func c_decrypt_str(str string) (string, error) {
+	cmd := exec.Command("gpg", "-q", "-d")
+	cmd.Stdin = strings.NewReader(str)
+	out, err := cmd.Output()
+	return string(out), err
 }
