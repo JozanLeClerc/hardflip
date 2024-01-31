@@ -84,8 +84,12 @@ func c_format_ssh_jump(host *HostNode) string {
 }
 
 func c_format_ssh(host *HostNode) []string {
-	cmd_fmt := []string{"ssh"}
+	cmd_fmt := []string{}
+	if len(host.Pass) > 0 {
+		cmd_fmt = append(cmd_fmt, "sshpass", "-p", host.Pass)
+	}
 
+	cmd_fmt = append(cmd_fmt, "ssh")
 	if len(host.Priv) > 0 {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}

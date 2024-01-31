@@ -58,7 +58,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
+func c_read_yaml_file(file string,
+					  opts HardOpts, ui *HardUI) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)
 
@@ -67,6 +68,9 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 	}
 	if err := yaml.Unmarshal(yaml_file, &host); err != nil {
 		return nil, err
+	}
+	if len(opts.GPG) == 0 {
+		host.Pass = ""
 	}
 	if len(host.Name) == 0 {
 		return nil, nil

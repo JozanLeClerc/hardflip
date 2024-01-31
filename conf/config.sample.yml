@@ -4,6 +4,13 @@ icons: true
 # keeps going after a successful login
 loop: true
 
+# gnupg public key id used for encrypting/decrypting passwords.
+# if not set, passwords will be disabled. session programs will most likely
+# prompt you then.
+# set it to 'plain' for saving passwords in plain text (not recommended
+# but still)
+gpg: plain
+
 # displays the percentage in the bottom right
 percent: false
 

@@ -59,6 +59,7 @@ import (
 type HardOpts struct {
 	Icon    bool
 	Loop    bool
+	GPG		string
 	Perc    bool
 	Term	string
 }
@@ -89,7 +90,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
 				file.Name(), &dir_node, depth + 1, ui, load_err)
 		} else if filepath.Ext(filename) == ".yml" {
-			host_node, err := c_read_yaml_file(root + dir + filename, ui)
+			host_node, err := c_read_yaml_file(root + dir + filename, opts, ui)
 			if err != nil {
 				*load_err = append(*load_err, err)
 			} else if host_node != nil {
