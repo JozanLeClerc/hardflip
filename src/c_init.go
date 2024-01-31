@@ -56,6 +56,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type HardOpts struct {
@@ -107,6 +108,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 							dir, filename, err)
 						*load_err = append(*load_err, errors.New(str))
 					}
+					host_node.Pass = strings.TrimSuffix(host_node.Pass, "\n")
 				}
 				dir_node.lhost.add_back(host_node)
 			}
