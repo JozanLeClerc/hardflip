@@ -58,8 +58,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func c_read_yaml_file(file string,
-					  opts HardOpts, ui *HardUI) (*HostNode, error) {
+func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)
 

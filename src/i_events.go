@@ -241,7 +241,6 @@ func i_delete_host(data *HardData) error {
 
 // screen events such as keypresses
 func i_events(data *HardData) {
-	var err error
 	ui := &data.ui
 	event := ui.s.PollEvent()
 	switch event := event.(type) {
@@ -297,19 +296,7 @@ func i_events(data *HardData) {
 				if data.litems.curr == nil {
 					break
 				} else if data.litems.curr.is_dir() == false {
-					ui.s.Fini()
-					c_exec(data.litems.curr.Host, data.opts.Term)
-					if data.opts.Loop == false {
-						os.Exit(0)
-					} else {
-						if ui.s, err = tcell.NewScreen(); err != nil {
-							c_die("view", err)
-						}
-						if err := ui.s.Init(); err != nil {
-							c_die("view", err)
-						}
-						ui.s.SetStyle(ui.style[DEF_STYLE])
-					}
+					c_exec(data.litems.curr.Host, data.opts, ui)
 				} else if data.litems.curr.Dirs != nil &&
 						  data.folds[data.litems.curr.Dirs] == nil {
 					i_fold_dir(data, data.litems.curr)

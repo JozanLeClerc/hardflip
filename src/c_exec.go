@@ -55,6 +55,9 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 func c_exec_cmd(cmd_fmt []string) {
@@ -83,10 +86,10 @@ func c_format_ssh_jump(host *HostNode) string {
 		return jump_fmt
 }
 
-func c_format_ssh(host *HostNode) []string {
+func c_format_ssh(host *HostNode, pass string) []string {
 	cmd_fmt := []string{}
-	if len(host.Pass) > 0 {
-		cmd_fmt = append(cmd_fmt, "sshpass", "-p", host.Pass)
+	if len(pass) > 0 {
+		cmd_fmt = append(cmd_fmt, "sshpass", "-p", pass)
 	}
 
 	cmd_fmt = append(cmd_fmt, "ssh")
@@ -103,7 +106,7 @@ func c_format_ssh(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_rdp(host *HostNode) []string {
+func c_format_rdp(host *HostNode, pass string) []string {
 	cmd_fmt := []string{"xfreerdp"}
 
 	cmd_fmt = append(cmd_fmt,
@@ -112,8 +115,8 @@ func c_format_rdp(host *HostNode) []string {
 	if len(host.Domain) > 0 {
 		cmd_fmt = append(cmd_fmt, "/d:" + host.Domain)
 	}
-	if len(host.Pass) > 0 {
-		cmd_fmt = append(cmd_fmt, "/p:" + host.Pass)
+	if len(pass) > 0 {
+		cmd_fmt = append(cmd_fmt, "/p:" + pass)
 	}
 	if host.Port != 0 {
 		cmd_fmt = append(cmd_fmt, "/port:" + strconv.Itoa(int(host.Port)))
@@ -139,14 +142,26 @@ func c_format_rdp(host *HostNode) []string {
 	return cmd_fmt
 }
 
-func c_format_cmd(host *HostNode, term string) {
+func c_format_cmd(host *HostNode, opts HardOpts, ui *HardUI) []string {
 	var cmd_fmt []string
+	var pass string
+	gpg, term := opts.GPG, opts.Term
 
+	if len(gpg) > 0 && gpg != "plain" && len(host.Pass) > 0 {
+		var err error
+		pass, err = c_decrypt_str(host.Pass)
+		if err != nil {
+			c_error_mode(host.Parent.path() + host.Filename +
+				": password decryption failed", err, ui)
+			return nil
+		}
+		pass = strings.TrimSuffix(pass, "\n")
+	}
 	switch host.Protocol {
 	case 0:
-		cmd_fmt = c_format_ssh(host)
+		cmd_fmt = c_format_ssh(host, pass)
 	case 1:
-		cmd_fmt = c_format_rdp(host)
+		cmd_fmt = c_format_rdp(host, pass)
 	default:
 		c_die("you fucked up joe, users cant see this", nil)
 	}
@@ -157,12 +172,30 @@ func c_format_cmd(host *HostNode, term string) {
 		}
 		cmd_fmt = append([]string{"setsid", term, "-e"}, cmd_fmt...)
 	}
-	c_exec_cmd(cmd_fmt)
+	return cmd_fmt
 }
 
-func c_exec(host *HostNode, term string) {
+func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
+	var err error
+
 	if host == nil {
 		return
 	}
-	c_format_cmd(host, term)
+	cmd_fmt := c_format_cmd(host, opts, ui)
+	if cmd_fmt == nil {
+		return
+	}
+	ui.s.Fini()
+	c_exec_cmd(cmd_fmt)
+	if opts.Loop == false {
+		os.Exit(0)
+	} else {
+		if ui.s, err = tcell.NewScreen(); err != nil {
+			c_die("view", err)
+		}
+		if err := ui.s.Init(); err != nil {
+			c_die("view", err)
+		}
+		ui.s.SetStyle(ui.style[DEF_STYLE])
+	}
 }

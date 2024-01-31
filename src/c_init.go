@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_init.go
- * Thu Jan 18 16:23:10 2024
+ * Wed Jan 31 14:10:00 2024
  * Joe
  *
  * init functions
@@ -52,11 +52,8 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type HardOpts struct {
@@ -93,7 +90,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
 				file.Name(), &dir_node, depth + 1, ui, load_err)
 		} else if filepath.Ext(filename) == ".yml" {
-			host_node, err := c_read_yaml_file(root + dir + filename, opts, ui)
+			host_node, err := c_read_yaml_file(root + dir + filename, ui)
 			if err != nil {
 				*load_err = append(*load_err, err)
 			} else if host_node != nil {
@@ -101,14 +98,6 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 				host_node.Parent = &dir_node
 				if len(opts.GPG) == 0 {
 					host_node.Pass = ""
-				} else if opts.GPG != "plain" && len(host_node.Pass) > 0 {
-					host_node.Pass, err = c_decrypt_str(host_node.Pass)
-					if err != nil {
-						str := fmt.Sprintf("%s%s: password decryption: %v\n",
-							dir, filename, err)
-						*load_err = append(*load_err, errors.New(str))
-					}
-					host_node.Pass = strings.TrimSuffix(host_node.Pass, "\n")
 				}
 				dir_node.lhost.add_back(host_node)
 			}
