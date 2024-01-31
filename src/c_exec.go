@@ -196,6 +196,6 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		if err := ui.s.Init(); err != nil {
 			c_die("view", err)
 		}
-		ui.s.SetStyle(ui.style[DEF_STYLE])
+		ui.s.SetStyle(ui.style[STYLE_DEF])
 	}
 }

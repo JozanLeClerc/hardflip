@@ -180,18 +180,18 @@ func i_draw_bottom_text(ui HardUI) {
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[BOT_STYLE], text)
+		ui.style[STYLE_BOT], text)
 	i_draw_text(ui.s,
 		ui.dim[W] - len(VERSION) - 2, ui.dim[H] - 1,
-		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[BOT_STYLE], " " + VERSION)
+		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[STYLE_BOT], " " + VERSION)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
+	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
 	left, right := i_left_right(len(text), &ui)
 	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.style[DEF_STYLE], text)
+		ui.style[STYLE_DEF], text)
 }
 
 func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
@@ -207,20 +207,20 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 		file = host.Parent.path() + host.Filename
 	}
 	file = file[1:]
-	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")
+	i_draw_msg(ui.s, 2, ui.style[STYLE_BOX], ui.dim, " Delete ")
 	left, right := i_left_right(len(text), &ui)
 	line := ui.dim[H] - 2 - 2
-	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
+	i_draw_text(ui.s, left, line, right, line, ui.style[STYLE_DEF], text)
 	left, right = i_left_right(len(file), &ui)
 	line += 1
 	i_draw_text(ui.s,
 	    left, line, right, line,
-	    ui.style[DEF_STYLE].Bold(true), file)
+	    ui.style[STYLE_DEF].Bold(true), file)
 }
 
 func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	lines := len(load_err)
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
+	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " Load time errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(load_err)
 	if line < 0 {
@@ -230,7 +230,7 @@ func i_draw_load_error_msg(ui HardUI, load_err []error) {
 		line += 1
 		err_str := fmt.Sprintf("%v", err)
 		i_draw_text(ui.s, left, line, right, line,
-			ui.style[ERR_STYLE], err_str)
+			ui.style[STYLE_ERR], err_str)
 	}
 }
 
@@ -243,18 +243,18 @@ func i_draw_error_msg(ui HardUI, load_err []error) {
 	if len(ui.err[ERROR_ERR]) == 0 {
 		lines = 1
 	}
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Error ")
+	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " Error ")
 	left, right := 1, ui.dim[W] - 2
 	line := ui.dim[H] - 2 - 2
 	if len(ui.err[ERROR_ERR]) == 0 {
 		line += 1
 	}
 	i_draw_text(ui.s, left, line, right, line,
-		ui.style[ERR_STYLE], ui.err[ERROR_MSG])
+		ui.style[STYLE_ERR], ui.err[ERROR_MSG])
 	if len(ui.err[ERROR_ERR]) > 0 {
 		line += 1
 		i_draw_text(ui.s, left, line, right, line,
-			ui.style[ERR_STYLE], ui.err[ERROR_ERR])
+			ui.style[STYLE_ERR], ui.err[ERROR_ERR])
 	}
 }
 
@@ -271,12 +271,12 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 	if draw_id > 1 {
 		ui.s.SetContent(0, 1,
 			'▲',
-			nil, ui.style[BOX_STYLE])
+			nil, ui.style[STYLE_BOX])
 	}
 	if last - draw_id > h {
 		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
-			nil, ui.style[BOX_STYLE])
+			nil, ui.style[STYLE_BOX])
 		return
 	}
 }
@@ -295,14 +295,14 @@ func i_draw_load_ui(ui *HardUI) {
 		text += " "
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[BOT_STYLE], text)
+		ui.style[STYLE_BOT], text)
 	i_draw_bottom_text(*ui)
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
+	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
 		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.style[DEF_STYLE], text)
+		ui.style[STYLE_DEF], text)
 	ui.s.Show()
 	ui.s.PostEvent(nil)
 	event := ui.s.PollEvent()
@@ -345,28 +345,28 @@ func i_ui(data_dir string, opts HardOpts) {
 	if err := ui.s.Init(); err != nil {
 		c_die("view", err)
 	}
-	ui.style[DEF_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_DEF] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[DIR_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_DIR] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[BOX_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_BOX] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[HEAD_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_HEAD] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[ERR_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_ERR] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorRed).Dim(true)
-	ui.style[TITLE_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_TITLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[BOT_STYLE] = tcell.StyleDefault.
+	ui.style[STYLE_BOT] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true)
-	ui.s.SetStyle(ui.style[DEF_STYLE])
+	ui.s.SetStyle(ui.style[STYLE_DEF])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui)
 	data := HardData{

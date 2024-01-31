@@ -4,18 +4,17 @@ icons: true
 # keeps going after a successful login
 loop: true
 
-# gnupg public key id used for encrypting/decrypting passwords.
-# if not set, passwords will be disabled. session programs will most likely
-# prompt you then.
+# gnupg public key id used for encrypting/decrypting passwords
 # set it to 'plain' for saving passwords in plain text (not recommended
 # but still)
+# if not set, the program will prompt your for a key or plain
 gpg: plain
 
 # displays the percentage in the bottom right
 percent: false
 
 # if set, will open your command in the specified terminal emulator. works great
-# with loop set to true. will handle the env variable $TERMINAL if set as such.
+# with loop set to true. will handle the env variable $TERMINAL if set as such
 # if commented or unset,
 # the command will replace hardflip
 #terminal: alacritty

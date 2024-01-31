@@ -138,3 +138,23 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 	litems.draw = litems.head
 	return &litems
 }
+
+func c_write_options(dir string) {
+	// TODO: this
+}
+
+func c_get_options(dir string) HardOpts {
+	opts := HardOpts{}
+	file := dir + "/" + CONF_FILE_NAME
+
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		c_write_options(file)
+		return DEFAULT_OPS
+	}
+	opts, err := c_parse_opts(file)
+	if err != nil {
+		// TODO: this
+	}
+	return opts
+}
+

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Wed Jan 10 17:11:42 2024
+ * Wed Jan 31 16:40:52 2024
  * Joe
  *
  * constants
@@ -52,12 +52,10 @@
 package main
 
 const (
-    W = 0
-    H = 1
-	ERROR_MSG = 0
-	ERROR_ERR = 1
-	DATA_DIR_NAME = "hardflip"
-	VERSION = "v0.2"
+	CONF_FILE_NAME = "hf.yml"
+	CONF_DIR_NAME  = "hf"
+	DATA_DIR_NAME  = "hf"
+	VERSION        = "v0.2"
 )
 
 const (
@@ -79,16 +77,29 @@ const (
 )
 
 const (
-	DEF_STYLE   = 0
-	DIR_STYLE   = 1
-	BOX_STYLE   = 2
-	HEAD_STYLE  = 3
-	ERR_STYLE   = 4
-	TITLE_STYLE = 5
-	BOT_STYLE   = 6
+	W           = 0
+	H           = 1
+	ERROR_MSG   = 0
+	ERROR_ERR   = 1
+	STYLE_DEF   = 0
+	STYLE_DIR   = 1
+	STYLE_BOX   = 2
+	STYLE_HEAD  = 3
+	STYLE_ERR   = 4
+	STYLE_TITLE = 5
+	STYLE_BOT   = 6
 )
 
 var (
 	HOST_ICONS = [2]string{" ", " "}
 	DIRS_ICONS = [2]string{" ", " "}
 )
+
+var DEFAULT_OPS = HardOpts{
+	true,
+	true,
+	"",
+	false,
+	"",
+}
+

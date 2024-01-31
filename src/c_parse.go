@@ -58,6 +58,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func c_parse_opts(file string) (HardOpts, error) {
+	var opts HardOpts
+
+	yaml_file, err := os.ReadFile(file)
+	if err != nil {
+		return opts, err
+	}
+	err = yaml.Unmarshal(yaml_file, opts)
+	return opts, err
+}
+
 func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)

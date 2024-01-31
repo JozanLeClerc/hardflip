@@ -63,6 +63,7 @@ type HardData struct {
 }
 
 func main() {
+	c_get_options(c_get_conf_dir(nil))
 	data_dir := c_get_data_dir(nil)
 	opts := HardOpts{
 		true,
