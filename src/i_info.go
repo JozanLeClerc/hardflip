@@ -278,9 +278,30 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], qual[host.Quality])
-		line += 1
-		if line += 1; line > ui.dim[H] - 3 {
+		if line += 2; line > ui.dim[H] - 3 {
 			return
+		}
+		if host.Drive != nil {
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+				ui.style[STYLE_TITLE], "Drives: ")
+			if line += 1; line > ui.dim[H] - 3 {
+				return
+			}
+			for share, path := range host.Drive {
+				i_draw_text(ui.s,
+					(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+					ui.style[STYLE_TITLE], share + ":")
+				i_draw_text(ui.s,
+					(ui.dim[W] / 3) + 4 + len(share) + 2, line, ui.dim[W] - 2, line,
+					ui.style[STYLE_DEF], path)
+				if line += 1; line > ui.dim[H] - 3 {
+					return
+				}
+			}
+			if line += 1; line > ui.dim[H] - 3 {
+				return
+			}
 		}
 	}
 	// note
