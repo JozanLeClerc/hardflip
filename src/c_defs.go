@@ -59,13 +59,14 @@ const (
 )
 
 const (
-	NORMAL_KEYS_HINTS = `[x](a)dd/(i)nsert host -
-[x](m)kdir -
-[x](s)earch -
-[x](?) help`
-	DELETE_KEYS_HINTS = `(q)uit -
-(y)es -
-(n)o`
+	NORMAL_KEYS_HINTS = `!a/i: insert host -
+!m: mkdir -
+!s: search -
+[C-r]: reload
+!?: help`
+	DELETE_KEYS_HINTS = `q: quit -
+y: yes -
+n: no`
 	ERROR_KEYS_HINTS = "[Enter] Ok"
 )
 
