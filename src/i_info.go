@@ -293,7 +293,8 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 					(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 					ui.style[STYLE_TITLE], share + ":")
 				i_draw_text(ui.s,
-					(ui.dim[W] / 3) + 4 + len(share) + 2, line, ui.dim[W] - 2, line,
+					(ui.dim[W] / 3) + 4 + len(share) + 2, line,
+					ui.dim[W] - 2, line,
 					ui.style[STYLE_DEF], path)
 				if line += 1; line > ui.dim[H] - 3 {
 					return
