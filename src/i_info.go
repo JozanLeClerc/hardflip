@@ -189,7 +189,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		return
 	}
 	// jump
-	if host.Protocol == 0 && len(host.Jump) > 0 {
+	if host.Protocol == 0 && len(host.Jump.Host) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Jump settings: ")
@@ -201,7 +201,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			ui.style[STYLE_TITLE], "Host: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], host.Jump)
+			ui.style[STYLE_DEF], host.Jump.Host)
 		if line += 1; line > ui.dim[H] - 3 {
 			return
 		}
@@ -210,7 +210,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			ui.style[STYLE_TITLE], "Port: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], strconv.Itoa(int(host.JumpPort)))
+			ui.style[STYLE_DEF], strconv.Itoa(int(host.Jump.Port)))
 		if line += 1; line > ui.dim[H] - 3 {
 			return
 		}
@@ -219,11 +219,11 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			ui.style[STYLE_TITLE], "User: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], host.JumpUser)
+			ui.style[STYLE_DEF], host.Jump.User)
 		if line += 1; line > ui.dim[H] - 3 {
 			return
 		}
-		if len(host.JumpPass) > 0 {
+		if len(host.Jump.Pass) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_TITLE], "Pass: ")
@@ -234,13 +234,13 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 				return
 			}
 		}
-		if host.Protocol == 0 && len(host.JumpPriv) > 0 {
+		if host.Protocol == 0 && len(host.Jump.Priv) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_TITLE], "Privkey: ")
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
-				ui.style[STYLE_DEF], host.JumpPriv)
+				ui.style[STYLE_DEF], host.Jump.Priv)
 			if line += 1; line > ui.dim[H] - 3 {
 				return
 			}

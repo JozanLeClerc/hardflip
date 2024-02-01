@@ -94,12 +94,12 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 		if len(host.User) == 0 {
 			host.User = "root"
 		}
-		if len(host.Jump) > 0 {
-			if host.JumpPort == 0 {
-				host.JumpPort = 22
+		if len(host.Jump.Host) > 0 {
+			if host.Jump.Port == 0 {
+				host.Jump.Port = 22
 			}
-			if len(host.JumpUser) == 0 {
-				host.JumpUser = "root"
+			if len(host.Jump.User) == 0 {
+				host.Jump.User = "root"
 			}
 		}
 	} else if host.Protocol == 1 {

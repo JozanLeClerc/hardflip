@@ -51,6 +51,14 @@
 
 package main
 
+type JumpSettings struct {
+	Host     string `yaml:"host"`
+	Port uint16 `yaml:"port"`
+	User string `yaml:"user"`
+	Pass string `yaml:"pass"`
+	Priv string `yaml:"priv"`
+}
+
 // 0: ssh
 // 1: rdp
 type HostNode struct {
@@ -61,11 +69,7 @@ type HostNode struct {
 	User     string `yaml:"user"`
 	Pass     string `yaml:"pass"`
 	Priv     string `yaml:"priv"`
-	Jump     string `yaml:"jump"`
-	JumpPort uint16 `yaml:"jump_port"`
-	JumpUser string `yaml:"jump_user"`
-	JumpPass string `yaml:"jump_pass"`
-	JumpPriv string `yaml:"jump_priv"`
+	Jump     JumpSettings `yaml:"jump"`
 	Quality  uint8  `yaml:"quality"`
 	Domain   string `yaml:"domain"`
 	Width    uint16 `yaml:"width"`
