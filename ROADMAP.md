@@ -17,7 +17,7 @@
 
 ## v0.4
 
-- [ ] .config/hardflip
+- [x] .config/hardflip
 
 ## v0.5
 
@@ -26,6 +26,7 @@
 
 ## v0.6
 
+- [ ] ask gpg key
 - [ ] mkdir
 - [ ] add
 - [ ] clone
