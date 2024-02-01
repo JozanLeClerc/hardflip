@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_lhosts.go
- * Tue Jan 09 12:59:11 2024
+ * Thu Feb 01 16:22:33 2024
  * Joe
  *
  * the hosts linked list
@@ -52,7 +52,7 @@
 package main
 
 type JumpSettings struct {
-	Host     string `yaml:"host"`
+	Host string `yaml:"host"`
 	Port uint16 `yaml:"port"`
 	User string `yaml:"user"`
 	Pass string `yaml:"pass"`
@@ -76,7 +76,7 @@ type HostNode struct {
 	Height   uint16 `yaml:"height"`
 	Dynamic  bool   `yaml:"dynamic"`
 	Note     string `yaml:"note"`
-	// TODO: rdp drive
+	Drive    map[string]string `yaml:"drive"`
 	Filename string
 	Parent   *DirsNode
 	next     *HostNode

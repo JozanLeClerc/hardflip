@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Wed Jan 31 15:23:02 2024
+ * Thu Feb 01 16:56:52 2024
  * Joe
  *
  * exec the command at some point
@@ -123,6 +123,11 @@ func c_format_rdp(host *HostNode, pass string) []string {
 	}
 	if host.Dynamic == true {
 		cmd_fmt = append(cmd_fmt, "/dynamic-resolution")
+	}
+	if host.Drive != nil {
+		for share, path := range host.Drive {
+			cmd_fmt = append(cmd_fmt, "/drive:" + share + "," + path)
+		}
 	}
 	if host.Quality == 0 {
 		cmd_fmt = append(cmd_fmt,
