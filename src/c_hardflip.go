@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Wed Jan 31 15:23:27 2024
+ * Thu Feb 01 14:53:19 2024
  * Joe
  *
  * the main
@@ -63,14 +63,6 @@ type HardData struct {
 }
 
 func main() {
-	c_get_options(c_get_conf_dir(nil))
 	data_dir := c_get_data_dir(nil)
-	opts := HardOpts{
-		true,
-		true,
-		"6FF3AD08C158D2E163B77CFA0EAB41FC2D9F762A",
-		false,
-		"",
-		}
-	i_ui(data_dir, opts)
+	i_ui(data_dir)
 }

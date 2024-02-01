@@ -54,14 +54,16 @@ package main
 import (
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v3"
 )
 
 type HardOpts struct {
-	Icon    bool
-	Loop    bool
-	GPG		string
-	Perc    bool
-	Term	string
+	Icon    bool   `yaml:"icons"`
+	Loop    bool   `yaml:"loop"`
+	GPG		string `yaml:"gpg"`
+	Perc    bool   `yaml:"percent"`
+	Term	string `yaml:"terminal"`
 }
 
 // this function recurses into the specified root directory in order to load
@@ -107,12 +109,11 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 }
 
 func c_load_data_dir(dir string, opts HardOpts,
-		ui *HardUI) (*DirsList, []error) {
+		ui *HardUI, load_err *[]error) (*DirsList) {
 	ldirs := DirsList{}
-	var load_err []error
 
-	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui, &load_err)
-	return &ldirs, load_err
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui, load_err)
+	return &ldirs
 }
 
 // fills litems sorting with dirs last
@@ -139,21 +140,30 @@ func c_load_litems(ldirs *DirsList) *ItemsList {
 	return &litems
 }
 
-func c_write_options(dir string) {
-	// TODO: this
+func c_write_options(file string, opts HardOpts, load_err *[]error) {
+	data, err := yaml.Marshal(opts)
+	if err != nil {
+		*load_err = append(*load_err, err)
+		return
+	}
+	err = os.WriteFile(file, data, 0644)
+	if err != nil {
+		*load_err = append(*load_err, err)
+	}
 }
 
-func c_get_options(dir string) HardOpts {
+func c_get_options(dir string, load_err *[]error) HardOpts {
 	opts := HardOpts{}
 	file := dir + "/" + CONF_FILE_NAME
 
 	if _, err := os.Stat(file); os.IsNotExist(err) {
-		c_write_options(file)
-		return DEFAULT_OPS
+		c_write_options(file, DEFAULT_OPTS, load_err)
+		return DEFAULT_OPTS
 	}
 	opts, err := c_parse_opts(file)
 	if err != nil {
-		// TODO: this
+		*load_err = append(*load_err, err)
+		return DEFAULT_OPTS
 	}
 	return opts
 }

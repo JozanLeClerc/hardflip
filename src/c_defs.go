@@ -95,10 +95,10 @@ var (
 	DIRS_ICONS = [2]string{" ", " "}
 )
 
-var DEFAULT_OPS = HardOpts{
+var DEFAULT_OPTS = HardOpts{
 	true,
 	true,
-	"",
+	"6FF3AD08C158D2E163B77CFA0EAB41FC2D9F762A",
 	false,
 	"",
 }

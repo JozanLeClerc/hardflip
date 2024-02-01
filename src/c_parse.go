@@ -52,8 +52,9 @@
 package main
 
 import (
-	"os"
 	"errors"
+	"fmt"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
@@ -65,7 +66,7 @@ func c_parse_opts(file string) (HardOpts, error) {
 	if err != nil {
 		return opts, err
 	}
-	err = yaml.Unmarshal(yaml_file, opts)
+	err = yaml.Unmarshal(yaml_file, &opts)
 	return opts, err
 }
 
@@ -77,6 +78,7 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 		return nil, err
 	}
 	if err := yaml.Unmarshal(yaml_file, &host); err != nil {
+		err = errors.New(fmt.Sprintf("%s: %v", file, err))
 		return nil, err
 	}
 	if len(host.Name) == 0 {

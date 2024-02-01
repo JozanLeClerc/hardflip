@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 31 15:23:23 2024
+ * Wed Jan 31 18:17:20 2024
  * Joe
  *
  * events in the code
@@ -172,8 +172,9 @@ func i_reload_data(data *HardData) {
 	}
 	g_load_count = -1
 	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
-		&data.ui)
+		&data.ui, &data.load_err)
 	data.folds = make(map[*DirsNode]*ItemsList)
+	// TODO: reload conf
 }
 
 func i_delete_dir(data *HardData) error {

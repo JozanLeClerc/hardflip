@@ -321,21 +321,23 @@ func i_draw_load_ui(ui *HardUI) {
 
 func i_load_ui(data_dir string,
 			   opts HardOpts,
-			   ui *HardUI) (*DirsList, *ItemsList, []error) {
+			   ui *HardUI,
+			   load_err *[]error) (*DirsList, *ItemsList, []error) {
 	ui.mode = LOAD_MODE
-	ldirs, load_err := c_load_data_dir(data_dir, opts, ui)
+	ldirs := c_load_data_dir(data_dir, opts, ui, load_err)
 	litems := c_load_litems(ldirs)
 	if ui.mode != ERROR_MODE {
 		ui.mode = NORMAL_MODE
 	}
-	if len(load_err) == 0 {
-		load_err = nil
+	if len(*load_err) == 0 {
+		*load_err = nil
 	}
-	return ldirs, litems, load_err
+	return ldirs, litems, *load_err
 }
 
-func i_ui(data_dir string, opts HardOpts) {
+func i_ui(data_dir string) {
 	ui := HardUI{}
+	opts := HardOpts{}
 	var err error
 
 	ui.s, err = tcell.NewScreen()
@@ -368,7 +370,14 @@ func i_ui(data_dir string, opts HardOpts) {
 		Foreground(tcell.ColorBlue).Dim(true)
 	ui.s.SetStyle(ui.style[STYLE_DEF])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui)
+	var load_err []error
+	conf_dir  := c_get_conf_dir(&load_err)
+	if conf_dir == "" {
+		opts = DEFAULT_OPTS
+	} else {
+		opts = c_get_options(conf_dir, &load_err)
+	}
+	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui, &load_err)
 	data := HardData{
 		litems,
 		ldirs,

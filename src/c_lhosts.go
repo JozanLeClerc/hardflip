@@ -72,6 +72,7 @@ type HostNode struct {
 	Height   uint16 `yaml:"height"`
 	Dynamic  bool   `yaml:"dynamic"`
 	Note     string `yaml:"note"`
+	// TODO: rdp drive
 	Filename string
 	Parent   *DirsNode
 	next     *HostNode
