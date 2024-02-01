@@ -166,6 +166,12 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 }
 
 func i_reload_data(data *HardData) {
+	conf_dir  := c_get_conf_dir(&data.load_err)
+	if conf_dir == "" {
+		data.opts = DEFAULT_OPTS
+	} else {
+		data.opts = c_get_options(conf_dir, &data.load_err)
+	}
 	data.data_dir = c_get_data_dir(&data.ui)
 	if data.data_dir == "" {
 		return
@@ -174,7 +180,6 @@ func i_reload_data(data *HardData) {
 	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
 		&data.ui, &data.load_err)
 	data.folds = make(map[*DirsNode]*ItemsList)
-	// TODO: reload conf
 }
 
 func i_delete_dir(data *HardData) error {

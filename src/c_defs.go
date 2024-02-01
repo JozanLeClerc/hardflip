@@ -52,7 +52,7 @@
 package main
 
 const (
-	CONF_FILE_NAME = "hf.yml"
+	CONF_FILE_NAME = "config.yml"
 	CONF_DIR_NAME  = "hf"
 	DATA_DIR_NAME  = "hf"
 	VERSION        = "v0.2"
@@ -98,7 +98,7 @@ var (
 var DEFAULT_OPTS = HardOpts{
 	true,
 	true,
-	"6FF3AD08C158D2E163B77CFA0EAB41FC2D9F762A",
+	"",
 	false,
 	"",
 }
