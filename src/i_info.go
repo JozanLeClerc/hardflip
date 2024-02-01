@@ -89,12 +89,12 @@ func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
 		ui.style[STYLE_DEF], dir.path()[1:])
 }
 
-func i_info_panel_host(ui HardUI, host *HostNode) {
-	host_type := host.protocol_str()
+func i_info_panel_name_type(ui HardUI, host *HostNode) int {
 	line := 2
 	if line > ui.dim[H] - 3 {
-		return
+		return line
 	}
+	host_type := host.protocol_str()
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -103,7 +103,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Name)
 	if line += 1; line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -111,21 +111,34 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host_type)
-	if line += 2; line > ui.dim[H] - 3 {
-		return
-	}
+	return line + 2
+}
+
+func i_info_panel_host(ui HardUI, host *HostNode, line int) int {
 	if line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	// host, port
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-		ui.style[STYLE_TITLE], "Host: ")
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
-		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 {
-		return
+	if host.Protocol == 2 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Command: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], host.Host)
+		if line += 1; line > ui.dim[H] - 3 {
+			return line
+		}
+	} else {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Host: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], host.Host)
+	}
+	if line += 1; line > ui.dim[H] - 3 || host.Protocol == 2 {
+		return line
 	}
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -134,7 +147,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], strconv.Itoa(int(host.Port)))
 	if line += 1; line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	// RDP shit
 	if host.Protocol == 1 {
@@ -146,12 +159,12 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 				(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_DEF], host.Domain)
 			if line += 1; line > ui.dim[H] - 3 {
-				return
+				return line
 			}
 		}
 	}
 	if line += 1; line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	// user infos
 	i_draw_text(ui.s,
@@ -161,7 +174,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.User)
 	if line += 1; line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	if len(host.Pass) > 0 {
 		i_draw_text(ui.s,
@@ -171,7 +184,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], "***")
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 	}
 	if host.Protocol == 0 && len(host.Priv) > 0 {
@@ -182,11 +195,11 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Priv)
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 	}
 	if line += 1; line > ui.dim[H] - 3 {
-		return
+		return line
 	}
 	// jump
 	if host.Protocol == 0 && len(host.Jump.Host) > 0 {
@@ -194,7 +207,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Jump settings: ")
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
@@ -203,7 +216,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Jump.Host)
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
@@ -212,7 +225,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], strconv.Itoa(int(host.Jump.Port)))
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
@@ -221,7 +234,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Jump.User)
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		if len(host.Jump.Pass) > 0 {
 			i_draw_text(ui.s,
@@ -231,7 +244,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 				(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_DEF], "***")
 			if line += 1; line > ui.dim[H] - 3 {
-				return
+				return line
 			}
 		}
 		if host.Protocol == 0 && len(host.Jump.Priv) > 0 {
@@ -242,11 +255,11 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 				(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_DEF], host.Jump.Priv)
 			if line += 1; line > ui.dim[H] - 3 {
-				return
+				return line
 			}
 		}
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 	}
 	// RDP shit
@@ -261,7 +274,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			strconv.Itoa(int(host.Width)) + "x" +
 			strconv.Itoa(int(host.Height)))
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -270,7 +283,7 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 19, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], strconv.FormatBool(host.Dynamic))
 		if line += 1; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -279,14 +292,14 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], qual[host.Quality])
 		if line += 2; line > ui.dim[H] - 3 {
-			return
+			return line
 		}
 		if host.Drive != nil {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_TITLE], "Drives: ")
 			if line += 1; line > ui.dim[H] - 3 {
-				return
+				return line
 			}
 			for share, path := range host.Drive {
 				i_draw_text(ui.s,
@@ -297,13 +310,20 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 					ui.dim[W] - 2, line,
 					ui.style[STYLE_DEF], path)
 				if line += 1; line > ui.dim[H] - 3 {
-					return
+					return line
 				}
 			}
 			if line += 1; line > ui.dim[H] - 3 {
-				return
+				return line
 			}
 		}
+	}
+	return line
+}
+
+func i_info_panel_note(ui HardUI, host *HostNode, line int) {
+	if line > ui.dim[H] - 3 {
+		return
 	}
 	// note
 	if len(host.Note) > 0 {
@@ -313,9 +333,6 @@ func i_info_panel_host(ui HardUI, host *HostNode) {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Note)
-		if line += 1; line > ui.dim[H] - 3 {
-			return
-		}
 	}
 }
 
@@ -360,6 +377,8 @@ func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	} else if litems.curr.is_dir() == true {
 		i_info_panel_dirs(ui, litems.curr.Dirs)
 	} else {
-		i_info_panel_host(ui, litems.curr.Host)
+		line := i_info_panel_name_type(ui, litems.curr.Host)
+		line = i_info_panel_host(ui, litems.curr.Host, line)
+		i_info_panel_note(ui, litems.curr.Host, line)
 	}
 }

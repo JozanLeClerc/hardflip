@@ -60,9 +60,12 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-func c_exec_cmd(cmd_fmt []string) {
+func c_exec_cmd(cmd_fmt, cmd_env []string) {
 	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
 
+	if cmd_env != nil {
+		cmd.Env = append(cmd.Env, cmd_env...)
+	}
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -147,8 +150,28 @@ func c_format_rdp(host *HostNode, pass string) []string {
 	return cmd_fmt
 }
 
-func c_format_cmd(host *HostNode, opts HardOpts, ui *HardUI) []string {
-	var cmd_fmt []string
+func c_format_openstack(host *HostNode, pass string) ([]string, []string) {
+	cmd_fmt := []string{"openstack"}
+	cmd_env := []string{
+		"OS_USERNAME="             + host.User,
+		"OS_PASSWORD="             + pass,
+		"OS_AUTH_URL="             + host.Host,
+		"OS_USER_DOMAIN_ID="       + host.Stack.UserDomainId, 
+		"OS_PROJECT_ID="           + host.Stack.ProjectId, 
+		"OS_IDENTITY_API_VERSION=" + host.Stack.IdentityAPI, 
+		"OS_IMAGE_API_VERSION="    + host.Stack.ImageAPI, 
+		"OS_NETWORK_API_VERSION="  + host.Stack.NetworkAPI, 
+		"OS_VOLUME_API_VERSION="   + host.Stack.VolumeAPI, 
+		"OS_REGION_NAME="          + host.Stack.RegionName, 
+		"OS_ENDPOINT_TYPE="        + host.Stack.EndpointType, 
+		"OS_INTERFACE="            + host.Stack.Interface,
+	}
+	return cmd_fmt, cmd_env
+}
+
+func c_format_cmd(host *HostNode, opts HardOpts,
+				  ui *HardUI) ([]string, []string) {
+	var cmd_fmt, cmd_env []string
 	var pass string
 	gpg, term := opts.GPG, opts.Term
 
@@ -158,7 +181,7 @@ func c_format_cmd(host *HostNode, opts HardOpts, ui *HardUI) []string {
 		if err != nil {
 			c_error_mode(host.Parent.path() + host.Filename +
 				": password decryption failed", err, ui)
-			return nil
+			return nil, nil
 		}
 		pass = strings.TrimSuffix(pass, "\n")
 	}
@@ -167,6 +190,10 @@ func c_format_cmd(host *HostNode, opts HardOpts, ui *HardUI) []string {
 		cmd_fmt = c_format_ssh(host, pass)
 	case 1:
 		cmd_fmt = c_format_rdp(host, pass)
+	case 2:
+		cmd_fmt = []string{"/bin/sh", "-c", host.Host}
+	case 3:
+		cmd_fmt, cmd_env = c_format_openstack(host, pass)
 	default:
 		c_die("you fucked up joe, users cant see this", nil)
 	}
@@ -177,7 +204,7 @@ func c_format_cmd(host *HostNode, opts HardOpts, ui *HardUI) []string {
 		}
 		cmd_fmt = append([]string{"setsid", term, "-e"}, cmd_fmt...)
 	}
-	return cmd_fmt
+	return cmd_fmt, cmd_env
 }
 
 func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
@@ -186,12 +213,12 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host == nil {
 		return
 	}
-	cmd_fmt := c_format_cmd(host, opts, ui)
+	cmd_fmt, cmd_env := c_format_cmd(host, opts, ui)
 	if cmd_fmt == nil {
 		return
 	}
 	ui.s.Fini()
-	c_exec_cmd(cmd_fmt)
+	c_exec_cmd(cmd_fmt, cmd_env)
 	if opts.Loop == false {
 		os.Exit(0)
 	} else {

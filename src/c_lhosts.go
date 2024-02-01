@@ -51,6 +51,19 @@
 
 package main
 
+
+type StackSettings struct {
+  UserDomainId string `yaml:"user_domain_id"`
+  ProjectId    string `yaml:"project_id"`
+  IdentityAPI  string `yaml:"identity_api_version"`
+  ImageAPI     string `yaml:"image_api_version"`
+  NetworkAPI   string `yaml:"network_api_version"`
+  VolumeAPI    string `yaml:"volume_api_version"`
+  RegionName   string `yaml:"region_name"`
+  EndpointType string `yaml:"endpoint_type"`
+  Interface    string `yaml:"interface"`
+}
+
 type JumpSettings struct {
 	Host string `yaml:"host"`
 	Port uint16 `yaml:"port"`
@@ -61,6 +74,8 @@ type JumpSettings struct {
 
 // 0: ssh
 // 1: rdp
+// 2: single cmd
+// 3: openstack
 type HostNode struct {
 	Protocol int8   `yaml:"type"`
 	Name     string `yaml:"name"`
@@ -77,6 +92,7 @@ type HostNode struct {
 	Dynamic  bool   `yaml:"dynamic"`
 	Note     string `yaml:"note"`
 	Drive    map[string]string `yaml:"drive"`
+	Stack    StackSettings `yaml:"openstack"`
 	Filename string
 	Parent   *DirsNode
 	next     *HostNode
@@ -144,6 +160,8 @@ func (host *HostNode) protocol_str() string {
 	switch host.Protocol {
 	case 0: return "SSH"
 	case 1: return "RDP"
+	case 2: return "Single command"
+	case 3: return "OpenStack"
 	default: return ""
 	}
 }
