@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Wed Jan 31 16:40:52 2024
+ * Fri Feb 02 10:07:55 2024
  * Joe
  *
  * constants
@@ -89,6 +89,10 @@ const (
 	STYLE_ERR   = 4
 	STYLE_TITLE = 5
 	STYLE_BOT   = 6
+)
+
+const (
+	PROTOCOL_MAX = 3
 )
 
 var (

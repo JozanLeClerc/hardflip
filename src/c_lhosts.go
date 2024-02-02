@@ -161,7 +161,7 @@ func (host *HostNode) protocol_str() string {
 	case 0: return "SSH"
 	case 1: return "RDP"
 	case 2: return "Single command"
-	case 3: return "OpenStack"
+	case 3: return "OpenStack CLI"
 	default: return ""
 	}
 }

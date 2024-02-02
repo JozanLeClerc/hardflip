@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Fri Feb 02 09:41:42 2024
+ * Fri Feb 02 10:09:23 2024
  * Joe
  *
  * exec the command at some point
@@ -177,6 +177,12 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 	gpg, term := opts.GPG, opts.Term
 
 	if len(gpg) > 0 && gpg != "plain" && len(host.Pass) > 0 {
+		i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " GnuPG ")
+		text := "decryption using gpg..."
+		left, right := i_left_right(len(text), ui)
+		i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,
+			ui.style[STYLE_DEF], text)
+		ui.s.Show()
 		var err error
 		pass, err = c_decrypt_str(host.Pass)
 		if err != nil {
@@ -196,7 +202,7 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 	case 3:
 		cmd_fmt, cmd_env = c_format_openstack(host, pass)
 	default:
-		c_die("you fucked up joe, users cant see this", nil)
+		return nil, nil
 	}
 	if len(term) > 0 {
 		// TODO: setsid

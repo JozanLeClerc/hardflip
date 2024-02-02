@@ -57,7 +57,9 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
+type info_func func(HardUI, *HostNode, int) int
+
+func i_info_dirs(ui HardUI, dir *DirsNode) {
 	line := 2
 	if line > ui.dim[H] - 3 {
 		return
@@ -89,7 +91,7 @@ func i_info_panel_dirs(ui HardUI, dir *DirsNode) {
 		ui.style[STYLE_DEF], dir.path()[1:])
 }
 
-func i_info_panel_name_type(ui HardUI, host *HostNode) int {
+func i_info_name_type(ui HardUI, host *HostNode) int {
 	line := 2
 	if line > ui.dim[H] - 3 {
 		return line
@@ -114,29 +116,17 @@ func i_info_panel_name_type(ui HardUI, host *HostNode) int {
 	return line + 2
 }
 
-func i_info_panel_host(ui HardUI, host *HostNode, line int) int {
+func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 	if line > ui.dim[H] - 3 {
 		return line
 	}
 	// host, port
-	if host.Protocol == 2 {
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_TITLE], "Command: ")
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], host.Host)
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
-	} else {
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_TITLE], "Host: ")
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], host.Host)
-	}
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Host: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Host)
 	if line += 1; line > ui.dim[H] - 3 || host.Protocol == 2 {
 		return line
 	}
@@ -321,7 +311,46 @@ func i_info_panel_host(ui HardUI, host *HostNode, line int) int {
 	return line
 }
 
-func i_info_panel_note(ui HardUI, host *HostNode, line int) {
+func i_info_rdp(ui HardUI, host *HostNode, line int) int {
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Host: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Host)
+	if line += 1; line > ui.dim[H] - 3 || host.Protocol == 2 {
+		return line
+	}
+	return line
+}
+
+func i_info_cmd(ui HardUI, host *HostNode, line int) int {
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Command: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Host)
+	if line += 1; line > ui.dim[H] - 3 {
+		return line
+	}
+	return line
+}
+
+func i_info_openstack(ui HardUI, host *HostNode, line int) int {
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Endpoint: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Host)
+	if line += 1; line > ui.dim[H] - 3 {
+		return line
+	}
+	return line
+}
+
+func i_info_note(ui HardUI, host *HostNode, line int) {
 	if line > ui.dim[H] - 3 {
 		return
 	}
@@ -375,10 +404,19 @@ func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	if litems.head == nil {
 		return
 	} else if litems.curr.is_dir() == true {
-		i_info_panel_dirs(ui, litems.curr.Dirs)
+		i_info_dirs(ui, litems.curr.Dirs)
 	} else {
-		line := i_info_panel_name_type(ui, litems.curr.Host)
-		line = i_info_panel_host(ui, litems.curr.Host, line)
-		i_info_panel_note(ui, litems.curr.Host, line)
+		line := i_info_name_type(ui, litems.curr.Host)
+		if litems.curr.Host.Protocol > PROTOCOL_MAX {
+			return
+		}
+		fn := [PROTOCOL_MAX + 1]info_func{
+			i_info_ssh,
+			i_info_rdp,
+			i_info_cmd,
+			i_info_openstack,
+		}
+		line = fn[litems.curr.Host.Protocol](ui, litems.curr.Host, line)
+		i_info_note(ui, litems.curr.Host, line)
 	}
 }
