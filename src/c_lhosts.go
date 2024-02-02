@@ -77,21 +77,23 @@ type JumpSettings struct {
 // 2: single cmd
 // 3: openstack
 type HostNode struct {
-	Protocol int8   `yaml:"type"`
-	Name     string `yaml:"name"`
-	Host     string `yaml:"host"`
-	Port     uint16 `yaml:"port"`
-	User     string `yaml:"user"`
-	Pass     string `yaml:"pass"`
-	Priv     string `yaml:"priv"`
+	Protocol int8     `yaml:"type"`
+	Name     string   `yaml:"name"`
+	Host     string   `yaml:"host"`
+	Port     uint16   `yaml:"port"`
+	User     string   `yaml:"user"`
+	Pass     string   `yaml:"pass"`
+	Priv     string   `yaml:"priv"`
 	Jump     JumpSettings `yaml:"jump"`
-	Quality  uint8  `yaml:"quality"`
-	Domain   string `yaml:"domain"`
-	Width    uint16 `yaml:"width"`
-	Height   uint16 `yaml:"height"`
-	Dynamic  bool   `yaml:"dynamic"`
-	Note     string `yaml:"note"`
+	Quality  uint8    `yaml:"quality"`
+	Domain   string   `yaml:"domain"`
+	Width    uint16   `yaml:"width"`
+	Height   uint16   `yaml:"height"`
+	Dynamic  bool     `yaml:"dynamic"`
+	Note     string   `yaml:"note"`
 	Drive    map[string]string `yaml:"drive"`
+	Silent   bool     `yaml:"silent"`
+	Shell    []string `yaml:"shell"`
 	Stack    StackSettings `yaml:"openstack"`
 	Filename string
 	Parent   *DirsNode

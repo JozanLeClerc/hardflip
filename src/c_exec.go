@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Fri Feb 02 10:09:23 2024
+ * Fri Feb 02 11:44:44 2024
  * Joe
  *
  * exec the command at some point
@@ -52,25 +52,32 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-
-	"github.com/gdamore/tcell/v2"
 )
 
-func c_exec_cmd(cmd_fmt, cmd_env []string) {
+func c_exec_cmd(cmd_fmt, cmd_env []string, silent bool) (error, string) {
+	var errb bytes.Buffer
 	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
 
 	if cmd_env != nil {
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, cmd_env...)
 	}
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
+	if silent == false {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	} else {
+		cmd.Stderr = &errb
+	}
+	if err := cmd.Run(); err != nil {
+		return err, errb.String()
+	}
+	return nil, ""
 }
 
 func c_format_ssh_jump(host *HostNode) string {
@@ -198,7 +205,7 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 	case 1:
 		cmd_fmt = c_format_rdp(host, pass)
 	case 2:
-		cmd_fmt = []string{"/bin/sh", "-c", host.Host}
+		cmd_fmt = append(host.Shell, host.Host)
 	case 3:
 		cmd_fmt, cmd_env = c_format_openstack(host, pass)
 	default:
@@ -215,8 +222,6 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 }
 
 func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
-	var err error
-
 	if host == nil {
 		return
 	}
@@ -224,17 +229,33 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if cmd_fmt == nil {
 		return
 	}
-	ui.s.Fini()
-	c_exec_cmd(cmd_fmt, cmd_env)
-	if opts.Loop == false {
-		os.Exit(0)
+	silent := false
+	if host.Protocol == 2 {
+		silent = host.Silent
+	}
+	if silent == false {
+		if err := ui.s.Suspend(); err != nil {
+			c_error_mode("screen", err, ui)
+			return
+		}
 	} else {
-		if ui.s, err = tcell.NewScreen(); err != nil {
+		i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Exec ")
+		text := "running command..."
+		left, right := i_left_right(len(text), ui)
+		i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,
+			ui.style[STYLE_DEF], text)
+		ui.s.Show()
+	}
+	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent); err != nil {
+		c_error_mode(err_str, err, ui)
+	}
+	if opts.Loop == false {
+		ui.s.Fini()
+		os.Exit(0)
+	} else if silent == false {
+		if err := ui.s.Resume(); err != nil {
+			ui.s.Fini()
 			c_die("view", err)
 		}
-		if err := ui.s.Init(); err != nil {
-			c_die("view", err)
-		}
-		ui.s.SetStyle(ui.style[STYLE_DEF])
 	}
 }

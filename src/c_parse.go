@@ -115,6 +115,10 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 		if host.Height == 0 {
 			host.Height = 1200
 		}
+	} else if host.Protocol == 2 {
+		if len(host.Shell) == 0 {
+			host.Shell = []string{"/bin/sh", "-c"}
+		}
 	} else if host.Protocol > PROTOCOL_MAX {
 		return nil, errors.New(file + ": unknown protocol")
 	}
