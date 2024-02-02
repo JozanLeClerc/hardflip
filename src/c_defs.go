@@ -96,7 +96,7 @@ const (
 )
 
 var (
-	HOST_ICONS = [4]string{" ", " ", " ", "󰞵 "}
+	HOST_ICONS = [4]string{" ", " ", " ", "󰅟 "}
 	DIRS_ICONS = [2]string{" ", " "}
 )
 
