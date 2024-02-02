@@ -68,7 +68,7 @@ func c_exec_cmd(cmd_fmt, cmd_env []string, silent bool) (error, string) {
 		cmd.Env = append(cmd.Env, cmd_env...)
 	}
 	if silent == false {
-		cmd.Stdin = os.Stdin
+		cmd.Stdin  = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	} else {
