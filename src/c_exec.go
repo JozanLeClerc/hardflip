@@ -97,7 +97,7 @@ func c_format_ssh_jump(host *HostNode) string {
 		return jump_fmt
 }
 
-func c_format_ssh(host *HostNode, pass string) []string {
+func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
 	cmd_fmt := []string{}
 	if len(pass) > 0 {
 		cmd_fmt = append(cmd_fmt, "sshpass", "-p", pass)
@@ -114,10 +114,10 @@ func c_format_ssh(host *HostNode, pass string) []string {
 		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
 	}
 	cmd_fmt = append(cmd_fmt, host.User + "@" + host.Host)
-	return cmd_fmt
+	return cmd_fmt, nil
 }
 
-func c_format_rdp(host *HostNode, pass string) []string {
+func c_format_rdp(host *HostNode, pass string) ([]string, []string) {
 	cmd_fmt := []string{"xfreerdp"}
 
 	cmd_fmt = append(cmd_fmt,
@@ -155,7 +155,7 @@ func c_format_rdp(host *HostNode, pass string) []string {
 	cmd_fmt = append(cmd_fmt,
 		"/size:" + strconv.Itoa(int(host.Width)) +
 		"x" + strconv.Itoa(int(host.Height)))
-	return cmd_fmt
+	return cmd_fmt, nil
 }
 
 func c_format_openstack(host *HostNode, pass string) ([]string, []string) {
@@ -177,12 +177,19 @@ func c_format_openstack(host *HostNode, pass string) ([]string, []string) {
 	return cmd_fmt, cmd_env
 }
 
+func c_format_command(host *HostNode, pass string) ([]string, []string){
+	return append(host.Shell, host.Host), nil
+}
+
 func c_format_cmd(host *HostNode, opts HardOpts,
 				  ui *HardUI) ([]string, []string) {
-	var cmd_fmt, cmd_env []string
+	type format_func func(*HostNode, string) ([]string, []string)
 	var pass string
 	gpg, term := opts.GPG, opts.Term
 
+	if host.Protocol > PROTOCOL_MAX {
+		return nil, nil
+	}
 	if len(gpg) > 0 && gpg != "plain" && len(host.Pass) > 0 {
 		i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " GnuPG ")
 		text := "decryption using gpg..."
@@ -199,18 +206,13 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 		}
 		pass = strings.TrimSuffix(pass, "\n")
 	}
-	switch host.Protocol {
-	case 0:
-		cmd_fmt = c_format_ssh(host, pass)
-	case 1:
-		cmd_fmt = c_format_rdp(host, pass)
-	case 2:
-		cmd_fmt = append(host.Shell, host.Host)
-	case 3:
-		cmd_fmt, cmd_env = c_format_openstack(host, pass)
-	default:
-		return nil, nil
+	fp := [PROTOCOL_MAX + 1]format_func{
+		c_format_ssh,
+		c_format_rdp,
+		c_format_command,
+		c_format_openstack,
 	}
+	cmd_fmt, cmd_env := fp[host.Protocol](host, pass)
 	if len(term) > 0 {
 		// TODO: setsid
 		if term == "$TERMINAL" {
@@ -246,7 +248,8 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 			ui.style[STYLE_DEF], text)
 		ui.s.Show()
 	}
-	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent); err != nil {
+	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent);
+	   err != nil && host.Protocol == 2 {
 		c_error_mode(err_str, err, ui)
 	}
 	if opts.Loop == false {

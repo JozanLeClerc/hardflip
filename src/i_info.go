@@ -57,8 +57,6 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-type info_func func(HardUI, *HostNode, int) int
-
 func i_info_dirs(ui HardUI, dir *DirsNode) {
 	line := 2
 	if line > ui.dim[H] - 3 {
@@ -366,6 +364,8 @@ func i_info_note(ui HardUI, host *HostNode, line int) {
 }
 
 func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
+	type info_func func(HardUI, *HostNode, int) int
+
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		ui.style[STYLE_BOX], ui.style[STYLE_HEAD], " Infos ", false)
@@ -410,13 +410,13 @@ func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 		if litems.curr.Host.Protocol > PROTOCOL_MAX {
 			return
 		}
-		fn := [PROTOCOL_MAX + 1]info_func{
+		fp := [PROTOCOL_MAX + 1]info_func{
 			i_info_ssh,
 			i_info_rdp,
 			i_info_cmd,
 			i_info_openstack,
 		}
-		line = fn[litems.curr.Host.Protocol](ui, litems.curr.Host, line)
+		line = fp[litems.curr.Host.Protocol](ui, litems.curr.Host, line)
 		i_info_note(ui, litems.curr.Host, line)
 	}
 }
