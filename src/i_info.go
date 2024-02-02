@@ -125,35 +125,14 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 || host.Protocol == 2 {
-		return line
-	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Port: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], strconv.Itoa(int(host.Port)))
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
-	// RDP shit
-	if host.Protocol == 1 {
-		if len(host.Domain) > 0 {
-			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-				ui.style[STYLE_TITLE], "Domain: ")
-			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
-				ui.style[STYLE_DEF], host.Domain)
-			if line += 1; line > ui.dim[H] - 3 {
-				return line
-			}
-		}
-	}
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 2; line > ui.dim[H] - 3 { return line }
 	// user infos
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -161,9 +140,7 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.User)
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
 	if len(host.Pass) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -171,59 +148,45 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], "***")
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
-	if host.Protocol == 0 && len(host.Priv) > 0 {
+	if len(host.Priv) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Privkey: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Priv)
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
 	// jump
-	if host.Protocol == 0 && len(host.Jump.Host) > 0 {
+	if len(host.Jump.Host) > 0 {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Jump settings: ")
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Host: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Jump.Host)
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "Port: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], strconv.Itoa(int(host.Jump.Port)))
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_TITLE], "User: ")
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Jump.User)
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 		if len(host.Jump.Pass) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
@@ -231,93 +194,107 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_DEF], "***")
-			if line += 1; line > ui.dim[H] - 3 {
-				return line
-			}
+			if line += 1; line > ui.dim[H] - 3 { return line }
 		}
-		if host.Protocol == 0 && len(host.Jump.Priv) > 0 {
+		if len(host.Jump.Priv) > 0 {
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_TITLE], "Privkey: ")
 			i_draw_text(ui.s,
 				(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 				ui.style[STYLE_DEF], host.Jump.Priv)
-			if line += 1; line > ui.dim[H] - 3 {
-				return line
-			}
+			if line += 1; line > ui.dim[H] - 3 { return line }
 		}
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
-	}
-	// RDP shit
-	if host.Protocol == 1 {
-		qual := [3]string{"Low", "Medium", "High"}
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_TITLE], "Screen size: ")
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF],
-			strconv.Itoa(int(host.Width)) + "x" +
-			strconv.Itoa(int(host.Height)))
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_TITLE], "Dynamic window: ")
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 19, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], strconv.FormatBool(host.Dynamic))
-		if line += 1; line > ui.dim[H] - 3 {
-			return line
-		}
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_TITLE], "Quality: ")
-		i_draw_text(ui.s,
-			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], qual[host.Quality])
-		if line += 2; line > ui.dim[H] - 3 {
-			return line
-		}
-		if host.Drive != nil {
-			i_draw_text(ui.s,
-				(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-				ui.style[STYLE_TITLE], "Drives: ")
-			if line += 1; line > ui.dim[H] - 3 {
-				return line
-			}
-			for share, path := range host.Drive {
-				i_draw_text(ui.s,
-					(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
-					ui.style[STYLE_TITLE], share + ":")
-				i_draw_text(ui.s,
-					(ui.dim[W] / 3) + 4 + len(share) + 2, line,
-					ui.dim[W] - 2, line,
-					ui.style[STYLE_DEF], path)
-				if line += 1; line > ui.dim[H] - 3 {
-					return line
-				}
-			}
-			if line += 1; line > ui.dim[H] - 3 {
-				return line
-			}
-		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
 	return line
 }
 
 func i_info_rdp(ui HardUI, host *HostNode, line int) int {
+	// host, port
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Host: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 || host.Protocol == 2 {
-		return line
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Port: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], strconv.Itoa(int(host.Port)))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	// rdp shit
+	if len(host.Domain) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Domain: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], host.Domain)
+	}
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	// user infos
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "User: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.User)
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	if len(host.Pass) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Pass: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], "***")
+		if line += 1; line > ui.dim[H] - 3 { return line }
+	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	// rdp shit
+	qual := [3]string{"Low", "Medium", "High"}
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Screen size: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF],
+		strconv.Itoa(int(host.Width)) + "x" +
+		strconv.Itoa(int(host.Height)))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Dynamic window: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 19, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], strconv.FormatBool(host.Dynamic))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Quality: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], qual[host.Quality])
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	if host.Drive != nil {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Drives: ")
+		if line += 1; line > ui.dim[H] - 3 { return line }
+		for share, path := range host.Drive {
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+				ui.style[STYLE_TITLE], share + ":")
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 4 + len(share) + 2, line,
+				ui.dim[W] - 2, line,
+				ui.style[STYLE_DEF], path)
+			if line += 1; line > ui.dim[H] - 3 { return line }
+		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
 	return line
 }
@@ -329,9 +306,14 @@ func i_info_cmd(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Silent: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Silent)
+	// TODO: here
 	return line
 }
 
