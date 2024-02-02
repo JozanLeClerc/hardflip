@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Thu Feb 01 16:56:52 2024
+ * Fri Feb 02 09:41:42 2024
  * Joe
  *
  * exec the command at some point
@@ -64,6 +64,7 @@ func c_exec_cmd(cmd_fmt, cmd_env []string) {
 	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
 
 	if cmd_env != nil {
+		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, cmd_env...)
 	}
 	cmd.Stdin = os.Stdin
