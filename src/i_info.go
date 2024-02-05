@@ -311,9 +311,20 @@ func i_info_cmd(ui HardUI, host *HostNode, line int) int {
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Silent: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
-		ui.style[STYLE_DEF], host.Silent)
-	// TODO: here
+		(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], strconv.FormatBool(host.Silent))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Shell: ")
+	str := ""
+	for _, s := range host.Shell {
+		str += s + " "
+	}
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], str)
+	if line += 2; line > ui.dim[H] - 3 { return line }
 	return line
 }
 
@@ -324,9 +335,7 @@ func i_info_openstack(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
 	return line
 }
 
