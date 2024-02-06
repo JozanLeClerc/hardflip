@@ -53,8 +53,8 @@ package main
 
 
 type StackSettings struct {
-  UserDomainId string `yaml:"user_domain_id"`
-  ProjectId    string `yaml:"project_id"`
+  UserDomainID string `yaml:"user_domain_id"`
+  ProjectID    string `yaml:"project_id"`
   IdentityAPI  string `yaml:"identity_api_version"`
   ImageAPI     string `yaml:"image_api_version"`
   NetworkAPI   string `yaml:"network_api_version"`
