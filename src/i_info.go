@@ -59,9 +59,7 @@ import (
 
 func i_info_dirs(ui HardUI, dir *DirsNode) {
 	line := 2
-	if line > ui.dim[H] - 3 {
-		return
-	}
+	if line > ui.dim[H] - 3 { return }
 
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -69,18 +67,14 @@ func i_info_dirs(ui HardUI, dir *DirsNode) {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], dir.Name)
-	if line += 1; line > ui.dim[H] - 3 {
-		return
-	}
+	if line += 1; line > ui.dim[H] - 3 { return }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Type: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], "Directory")
-	if line += 2; line > ui.dim[H] - 3 {
-		return
-	}
+	if line += 2; line > ui.dim[H] - 3 { return }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Path: ")
@@ -91,9 +85,7 @@ func i_info_dirs(ui HardUI, dir *DirsNode) {
 
 func i_info_name_type(ui HardUI, host *HostNode) int {
 	line := 2
-	if line > ui.dim[H] - 3 {
-		return line
-	}
+	if line > ui.dim[H] - 3 { return line }
 	host_type := host.protocol_str()
 	// name, type
 	i_draw_text(ui.s,
@@ -102,22 +94,19 @@ func i_info_name_type(ui HardUI, host *HostNode) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Name)
-	if line += 1; line > ui.dim[H] - 3 {
-		return line
-	}
+	if line += 1; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Type: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host_type)
-	return line + 2
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	return line
 }
 
 func i_info_ssh(ui HardUI, host *HostNode, line int) int {
-	if line > ui.dim[H] - 3 {
-		return line
-	}
+	if line > ui.dim[H] - 3 { return line }
 	// host, port
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -211,6 +200,7 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 }
 
 func i_info_rdp(ui HardUI, host *HostNode, line int) int {
+	if line > ui.dim[H] - 3 { return line }
 	// host, port
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -300,6 +290,7 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 }
 
 func i_info_cmd(ui HardUI, host *HostNode, line int) int {
+	if line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Command: ")
@@ -329,6 +320,7 @@ func i_info_cmd(ui HardUI, host *HostNode, line int) int {
 }
 
 func i_info_openstack(ui HardUI, host *HostNode, line int) int {
+	if line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Endpoint: ")
@@ -338,17 +330,42 @@ func i_info_openstack(ui HardUI, host *HostNode, line int) int {
 	if line += 1; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Region name: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Stack.RegionName)
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "User domain ID: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
+		(ui.dim[W] / 3) + 19, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Stack.UserDomainID)
 	if line += 1; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_TITLE], "Project ID: ")
 	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
+		(ui.dim[W] / 3) + 15, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Stack.ProjectID)
+	if line += 2; line > ui.dim[H] - 3 { return line }
+	// user infos
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "User: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.User)
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	if len(host.Pass) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "Pass: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 9, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], "***")
+		if line += 1; line > ui.dim[H] - 3 { return line }
+	}
 	if line += 1; line > ui.dim[H] - 3 { return line }
 	return line
 }
