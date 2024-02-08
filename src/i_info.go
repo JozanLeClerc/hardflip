@@ -327,13 +327,6 @@ func i_info_openstack(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Host)
-	if line += 1; line > ui.dim[H] - 3 { return line }
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
-		ui.style[STYLE_TITLE], "Region name: ")
-	i_draw_text(ui.s,
-		(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
-		ui.style[STYLE_DEF], host.Stack.RegionName)
 	if line += 2; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
@@ -348,6 +341,13 @@ func i_info_openstack(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 15, line, ui.dim[W] - 2, line,
 		ui.style[STYLE_DEF], host.Stack.ProjectID)
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_TITLE], "Region name: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
+		ui.style[STYLE_DEF], host.Stack.RegionName)
 	if line += 2; line > ui.dim[H] - 3 { return line }
 	// user infos
 	i_draw_text(ui.s,

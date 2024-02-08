@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Fri Feb 02 10:07:55 2024
+ * Thu Feb 08 14:30:35 2024
  * Joe
  *
  * constants
@@ -55,7 +55,7 @@ const (
 	CONF_FILE_NAME = "config.yml"
 	CONF_DIR_NAME  = "hf"
 	DATA_DIR_NAME  = "hf"
-	VERSION        = "v0.4"
+	VERSION        = "v0.5"
 )
 
 const (

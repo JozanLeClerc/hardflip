@@ -22,7 +22,7 @@
 ## v0.5
 
 - [x] single commands
-- [ ] openstack
+- [x] openstack
 
 ## v0.6
 
