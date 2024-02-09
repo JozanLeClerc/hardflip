@@ -186,6 +186,69 @@ func i_draw_bottom_text(ui HardUI) {
 		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[STYLE_BOT], " " + VERSION)
 }
 
+func i_draw_welcome_box(ui HardUI) {
+	l_max, r_max := ui.dim[W] / 8 + 1, ui.dim[W] - ui.dim[W] / 8 - 1
+	b_max := ui.dim[H] / 2 - 1
+	i_draw_box(ui.s,
+		l_max - 1, 0, r_max, b_max + 1,
+		ui.style[STYLE_BOX], ui.style[STYLE_HEAD], "", true)
+	art := [6]string{
+		` _      __`,
+		`| |    / _|`,
+		`| |__ | |_`,
+		`| '_ \|  _|`,
+		`| | | | |`,
+		`|_| |_|_|`,
+	}
+	line := 0
+	for k, v := range art {
+		if k + 1 > b_max { break }
+		line = k + 1
+		l, r := (ui.dim[W] / 2) - 6, ui.dim[W]
+		if l < l_max { l = l_max }; if r > r_max { r = r_max }
+		i_draw_text(ui.s,
+			l, k + 1, r, k + 1,
+			ui.style[STYLE_DEF], v)
+	}
+	if line > b_max { return }
+	text := "hardflip " + VERSION
+	if len(VERSION_NAME) > 0 {
+		text += " - " + VERSION_NAME
+	}
+	l, r := ui.dim[W] / 2 - len(text) / 2 + 10,
+			ui.dim[W] / 2 + len(text) / 2 + 1 + 10
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s,
+		l,
+		line,
+		r,
+		line,
+		ui.style[STYLE_DEF], text)
+	if line += 2; line > b_max { return }
+	text = `  Welcome to hardflip! Please enter the public gpg key ID to be used
+for password encryption/decryption.`
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s,
+		l,
+		line,
+		r,
+		b_max,
+		ui.style[STYLE_DEF], text)
+	text = `  If you don't want to use GnuPG for password storage, please type
+'plain'. (Plaintext passswords are not recommended)`
+	// FIX: fuck
+	if line += 2; line > b_max { return }
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s,
+		l,
+		line,
+		r,
+		b_max,
+		ui.style[STYLE_DEF], text)
+}
+
 func i_draw_zhosts_box(ui HardUI) {
 	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
@@ -396,7 +459,9 @@ func i_ui(data_dir string) {
 		if data.load_err != nil && len(data.load_err) > 0 {
 			data.ui.mode = ERROR_MODE
 		}
-		if data.litems.head == nil {
+		if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
+			i_draw_welcome_box(data.ui)
+		} else if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
 		}
 		if data.ui.mode == DELETE_MODE {
