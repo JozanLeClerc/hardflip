@@ -211,42 +211,61 @@ func i_draw_welcome_box(ui HardUI) {
 			ui.style[STYLE_DEF], v)
 	}
 	if line > b_max { return }
-	text := "hardflip " + VERSION
+	text := "hf " + VERSION
 	if len(VERSION_NAME) > 0 {
 		text += " - " + VERSION_NAME
 	}
-	l, r := ui.dim[W] / 2 - len(text) / 2 + 10,
-			ui.dim[W] / 2 + len(text) / 2 + 1 + 10
+	l, r := ui.dim[W] / 2 - len(text) / 2 + 7,
+			ui.dim[W] / 2 + len(text) / 2 + 1 + 7
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s,
-		l,
-		line,
-		r,
-		line,
-		ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
 	if line += 2; line > b_max { return }
-	text = `  Welcome to hardflip! Please enter the public gpg key ID to be used
-for password encryption/decryption.`
+	text = `Welcome to hardflip!`
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s,
-		l,
-		line,
-		r,
-		b_max,
-		ui.style[STYLE_DEF], text)
-	text = `  If you don't want to use GnuPG for password storage, please type
-'plain'. (Plaintext passswords are not recommended)`
-	// FIX: fuck
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	text = `Please enter the public gpg key ID to be used`
+	if line += 1; line > b_max { return }
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	text = `for password encryption`
+	if line += 1; line > b_max { return }
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	text = `Set gpg key can be modified in the config file`
+	if line += 1; line > b_max { return }
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	text = `If you don't want to use GnuPG for password`
 	if line += 2; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s,
-		l,
-		line,
-		r,
-		b_max,
-		ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	text = `storage, please type `
+	text_2 := `plain`
+	text_3 := ` (plaintext passwords`
+	if line += 1; line > b_max { return }
+	l = ui.dim[W] / 2 - len(text + text_2 + text_3) / 2
+	r = r_max
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	l = l + len(text)
+	r = l + len(text_2)
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	if l >= r_max { return }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF].Bold(true), text_2)
+	l = l + len(text_2)
+	r = l + len(text_3)
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text_3)
+	text = `are not recommended)`
+	if line += 1; line > b_max { return }
+	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
+	if l < l_max { l = l_max }; if r > r_max { r = r_max }
+	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
