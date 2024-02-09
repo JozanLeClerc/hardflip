@@ -345,6 +345,30 @@ func i_events(data *HardData) {
 				ui.mode = NORMAL_MODE
 				data.load_err = nil
 			}
+		case WELCOME_MODE:
+			if event.Key() == tcell.KeyEscape ||
+			   event.Key() == tcell.KeyCtrlC {
+				ui.s.Fini()
+				os.Exit(0)
+			}
+			if len(data.opts.GPG) == 0 {
+				if len(data.ui.buff) > 0 &&
+				   (event.Key() == tcell.KeyBackspace ||
+				    event.Key() == tcell.KeyBackspace2) {
+					data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
+				} else if event.Key() == tcell.KeyCtrlU {
+					data.ui.buff = ""
+				} else if event.Key() == tcell.KeyEnter {
+					data.opts.GPG = data.ui.buff
+					data.ui.buff = ""
+					data.ui.s.HideCursor()
+				} else if event.Rune() >= 32 && event.Rune() <= 126 {
+					data.ui.buff += string(event.Rune())
+				}
+			} else {
+				// TODO: confirm
+			}
 		}	
+
 	}
 }

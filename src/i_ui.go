@@ -66,6 +66,7 @@ type HardUI struct {
 	style	[7]tcell.Style
 	dim     [2]int
 	err     [2]string
+	buff    string
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {
@@ -177,6 +178,9 @@ func i_draw_bottom_text(ui HardUI) {
 		text = "Loading..."
 	case ERROR_MODE:
 		text = ERROR_KEYS_HINTS
+	case WELCOME_MODE:
+	default:
+		text = ""
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
@@ -266,6 +270,16 @@ func i_draw_welcome_box(ui HardUI) {
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+}
+
+func i_prompt_gpg(ui HardUI) {
+	text := "gpg: "
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], text)
+	ui.s.ShowCursor(6 + len(ui.buff), ui.dim[H] - 1)
+	i_draw_text(ui.s, 6, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
+		ui.style[STYLE_DEF], ui.buff)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -469,6 +483,9 @@ func i_ui(data_dir string) {
 		data_dir,
 		load_err,
 	}
+	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
+		data.ui.mode = WELCOME_MODE
+	}
 	for {
 		data.ui.s.Clear()
 		i_draw_bottom_text(data.ui)
@@ -478,8 +495,12 @@ func i_ui(data_dir string) {
 		if data.load_err != nil && len(data.load_err) > 0 {
 			data.ui.mode = ERROR_MODE
 		}
-		if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
+		if data.ui.mode == WELCOME_MODE {
 			i_draw_welcome_box(data.ui)
+			if len(data.opts.GPG) == 0 {
+				i_prompt_gpg(data.ui)
+			} else {
+			}
 		} else if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
 		}

@@ -72,10 +72,11 @@ n: no`
 )
 
 const (
-	NORMAL_MODE = 0
-	DELETE_MODE = 1
-	LOAD_MODE   = 2
-	ERROR_MODE  = 3
+	NORMAL_MODE  = 0
+	DELETE_MODE  = 1
+	LOAD_MODE    = 2
+	ERROR_MODE   = 3
+	WELCOME_MODE = 4
 )
 
 const (
