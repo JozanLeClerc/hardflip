@@ -270,11 +270,22 @@ func i_draw_welcome_box(ui HardUI) {
 	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
 }
 
-func i_prompt_gpg(ui HardUI, keys []string) {
+func i_prompt_gpg(ui HardUI, keys [][2]string) {
 	text := "gpg: "
 	// TODO: 0 keys
 	i_draw_msg(ui.s, len(keys), ui.style[STYLE_DEF], ui.dim, " GnuPG keys ")
-	i_draw_text(ui.s, 0, 0, 80, 12, ui.style[STYLE_DEF], keys[0])
+	for k, v := range keys {
+		text := ""
+		if v[0] != "plain" {
+			text = "[" + strconv.Itoa(k + 1) + "] " +
+				v[1] + " " + v[0][:10] + "... "
+		} else {
+			text = "[" + strconv.Itoa(k + 1) + "] " + "plain"
+		}
+		line := ui.dim[H] - 2 - len(keys) + k
+		// TODO: here
+		i_draw_text(ui.s, 2, line, ui.dim[W] - 2, line, ui.style[STYLE_DEF], text)
+	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[STYLE_DEF], text)
@@ -433,7 +444,7 @@ func i_load_ui(data_dir string,
 }
 
 func i_ui(data_dir string) {
-	var keys []string
+	var keys [][2]string
 	ui := HardUI{}
 	opts := HardOpts{}
 	var err error

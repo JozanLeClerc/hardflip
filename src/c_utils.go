@@ -55,6 +55,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -171,32 +172,48 @@ func c_decrypt_str(str string) (string, error) {
 	return string(out), err
 }
 
-func c_get_secret_gpg_keyring(ui *HardUI) []string {
-	var keys []string
-	var out bytes.Buffer
-	cmd_fmt := []string{
+func c_get_secret_gpg_keyring(ui *HardUI) [][2]string {
+	var keys [][2]string
+	var sed_out bytes.Buffer
+	gpg_fmt := []string{
 		`gpg`,
 		`--list-secret-keys`,
-		`|`,
+	}
+	grep_fmt := []string{
 		`grep`,
 		`-A`,
 		`2`,
-		`'^sec'`,
-		`|`,
+		`^sec`,
+	}
+	sed_fmt := []string{
 		`sed`,
-		`'{/^sec/d;/--/d;s/^uid.*] //;}'`,
+		`{/^sec/d;/--/d;s/^uid.*] //;s/^\s*//;}`,
 	}
 
-	ui.s.Fini()
-	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		c_die("failed to list gpg secret keys", err)
-		c_error_mode("failed to list gpg secret keys", err, ui)
-		return nil
+	gpg := exec.Command(gpg_fmt[0], gpg_fmt[1:]...)
+	grep := exec.Command(grep_fmt[0], grep_fmt[1:]...)
+	sed := exec.Command(sed_fmt[0], sed_fmt[1:]...)
+	gpg_r, gpg_w := io.Pipe()
+	grep_r, grep_w := io.Pipe()
+	gpg.Stdout = gpg_w
+	grep.Stdin = gpg_r
+	grep.Stdout = grep_w
+	sed.Stdin = grep_r
+	sed.Stdout = &sed_out
+	gpg.Start()
+	grep.Start()
+	sed.Start()
+	gpg.Wait()
+	gpg_w.Close()
+	grep.Wait()
+	grep_w.Close()
+	sed.Wait()
+	lines := strings.Split(sed_out.String(), "\n")
+	for i := 0; i < len(lines); i+= 2 {
+		if i + 1 < len(lines) {
+			keys = append(keys, [2]string{lines[i], lines[i + 1]})
+		}
 	}
-	fmt.Printf("%s\n", out.String())
-	os.Exit(0)
-	// keys[0] = string(cmd)
+	keys = append(keys, [2]string{"plain", ""})
 	return keys
 }
