@@ -196,13 +196,11 @@ func i_draw_welcome_box(ui HardUI) {
 	i_draw_box(ui.s,
 		l_max - 1, 0, r_max, b_max + 1,
 		ui.style[STYLE_BOX], ui.style[STYLE_HEAD], "", true)
-	art := [6]string{
-		` _      __`,
-		`| |    / _|`,
-		`| |__ | |_`,
-		`| '_ \|  _|`,
-		`| | | | |`,
-		`|_| |_|_|`,
+	art := [4]string{
+		` _     __`,
+		`| |_  / _|`,
+		`| ' \|  _|`,
+		`|_||_|_|`,
 	}
 	line := 0
 	for k, v := range art {
@@ -228,7 +226,7 @@ func i_draw_welcome_box(ui HardUI) {
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
-	text = `Please enter the public gpg key ID to be used`
+	text = `Please select the gpg key ID to be used`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
@@ -272,8 +270,11 @@ func i_draw_welcome_box(ui HardUI) {
 	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
 }
 
-func i_prompt_gpg(ui HardUI) {
+func i_prompt_gpg(ui HardUI, keys []string) {
 	text := "gpg: "
+	// TODO: 0 keys
+	i_draw_msg(ui.s, len(keys), ui.style[STYLE_DEF], ui.dim, " GnuPG keys ")
+	i_draw_text(ui.s, 0, 0, 80, 12, ui.style[STYLE_DEF], keys[0])
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[STYLE_DEF], text)
@@ -432,6 +433,7 @@ func i_load_ui(data_dir string,
 }
 
 func i_ui(data_dir string) {
+	var keys []string
 	ui := HardUI{}
 	opts := HardOpts{}
 	var err error
@@ -485,6 +487,7 @@ func i_ui(data_dir string) {
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE
+		keys = c_get_secret_gpg_keyring(&data.ui)
 	}
 	for {
 		data.ui.s.Clear()
@@ -498,7 +501,7 @@ func i_ui(data_dir string) {
 		if data.ui.mode == WELCOME_MODE {
 			i_draw_welcome_box(data.ui)
 			if len(data.opts.GPG) == 0 {
-				i_prompt_gpg(data.ui)
+				i_prompt_gpg(data.ui, keys)
 			} else {
 			}
 		} else if data.litems.head == nil {

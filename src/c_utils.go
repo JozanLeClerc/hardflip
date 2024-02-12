@@ -52,6 +52,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -168,4 +169,34 @@ func c_decrypt_str(str string) (string, error) {
 	cmd.Stdin = strings.NewReader(str)
 	out, err := cmd.Output()
 	return string(out), err
+}
+
+func c_get_secret_gpg_keyring(ui *HardUI) []string {
+	var keys []string
+	var out bytes.Buffer
+	cmd_fmt := []string{
+		`gpg`,
+		`--list-secret-keys`,
+		`|`,
+		`grep`,
+		`-A`,
+		`2`,
+		`'^sec'`,
+		`|`,
+		`sed`,
+		`'{/^sec/d;/--/d;s/^uid.*] //;}'`,
+	}
+
+	ui.s.Fini()
+	cmd := exec.Command(cmd_fmt[0], cmd_fmt[1:]...)
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		c_die("failed to list gpg secret keys", err)
+		c_error_mode("failed to list gpg secret keys", err, ui)
+		return nil
+	}
+	fmt.Printf("%s\n", out.String())
+	os.Exit(0)
+	// keys[0] = string(cmd)
+	return keys
 }
