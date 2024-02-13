@@ -26,7 +26,7 @@
 
 ## v0.6
 
-- [ ] ask gpg key
+- [x] ask gpg key
 - [ ] mkdir
 - [ ] add
 - [ ] clone

@@ -64,6 +64,7 @@ type HardOpts struct {
 	GPG		string `yaml:"gpg"`
 	Perc    bool   `yaml:"percent"`
 	Term	string `yaml:"terminal"`
+	file    string
 }
 
 // this function recurses into the specified root directory in order to load
@@ -161,6 +162,7 @@ func c_get_options(dir string, load_err *[]error) HardOpts {
 		return DEFAULT_OPTS
 	}
 	opts, err := c_parse_opts(file)
+	opts.file = file
 	if err != nil {
 		*load_err = append(*load_err, err)
 		return DEFAULT_OPTS

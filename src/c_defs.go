@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Thu Feb 08 14:30:35 2024
+ * Tue Feb 13 17:59:26 2024
  * Joe
  *
  * constants
@@ -105,6 +105,7 @@ var DEFAULT_OPTS = HardOpts{
 	true,
 	"",
 	false,
+	"",
 	"",
 }
 

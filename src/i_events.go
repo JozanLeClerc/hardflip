@@ -361,6 +361,7 @@ func i_events(data *HardData) {
 			} else {
 				if event.Rune() == 'y' {
 					ui.mode = NORMAL_MODE
+					c_write_options(data.opts.file, data.opts, &data.load_err)
 				} else if event.Rune() == 'n' {
 					data.opts.GPG = ""
 				}
