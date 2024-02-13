@@ -53,7 +53,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
@@ -297,7 +296,8 @@ func i_events(data *HardData) {
 					  event.Key() == tcell.KeyEnd {
 				data.litems.curr = data.litems.last
 			} else if event.Rune() == 'D' &&
-					  data.ldirs.head != nil {
+					  data.litems.head != nil &&
+					  data.litems.curr != nil {
 				ui.mode = DELETE_MODE
 			} else if event.Rune() == 'l' ||
 					  event.Key() == tcell.KeyEnter {
@@ -330,7 +330,6 @@ func i_events(data *HardData) {
 		case DELETE_MODE:
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'q' ||
 			   event.Rune() == 'n' {
 				ui.mode = NORMAL_MODE
 			} else if event.Key() == tcell.KeyEnter ||
@@ -357,9 +356,14 @@ func i_events(data *HardData) {
 					break
 				} else {
 					data.opts.GPG = data.keys[event.Rune() - 48 - 1][0]
+					ui.s.HideCursor()
 				}
 			} else {
-				// TODO: confirm
+				if event.Rune() == 'y' {
+					ui.mode = NORMAL_MODE
+				} else if event.Rune() == 'n' {
+					data.opts.GPG = ""
+				}
 			}
 		}	
 

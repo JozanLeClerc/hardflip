@@ -166,19 +166,24 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style, title)
 }
 
-func i_draw_bottom_text(ui HardUI) {
+func i_draw_bottom_text(ui HardUI, opts HardOpts) {
 	text := ""
 
 	switch ui.mode {
 	case NORMAL_MODE:
 		text = NORMAL_KEYS_HINTS
 	case DELETE_MODE:
-		text = DELETE_KEYS_HINTS
+		text = CONFIRM_KEYS_HINTS
 	case LOAD_MODE:
 		text = "Loading..."
 	case ERROR_MODE:
 		text = ERROR_KEYS_HINTS
 	case WELCOME_MODE:
+		if len(opts.GPG) > 0 {
+			text = CONFIRM_KEYS_HINTS
+		} else {
+			text = ""
+		}
 	default:
 		text = ""
 	}
@@ -275,7 +280,7 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 	if lines == 1 {
 		lines = 2
 	}
-	i_draw_msg(ui.s, lines, ui.style[STYLE_DEF], ui.dim, " GnuPG keys ")
+	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " GnuPG keys ")
 	for k, v := range keys {
 		text := ""
 		if v[0] != "plain" {
@@ -297,6 +302,25 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[STYLE_BOT], "gpg: ")
 	ui.s.ShowCursor(6 + len(ui.buff), ui.dim[H] - 1)
+}
+
+func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
+	if opts.GPG == "plain" {
+		i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Confirm plaintext ")
+		text := "Really use plaintext to store passwords?"
+		l, r := i_left_right(len(text), &ui)
+		i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
+			ui.style[STYLE_DEF], text)
+		return
+	}
+	i_draw_msg(ui.s, 2, ui.style[STYLE_BOX], ui.dim, " Confirm GnuPG key ")
+	text := "Really use this gpg key?"
+	l, r := i_left_right(len(text), &ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
+		ui.style[STYLE_DEF], text)
+	l, r = i_left_right(len(opts.GPG), &ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
+		ui.style[STYLE_DEF], opts.GPG)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -396,7 +420,7 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 
 var g_load_count int = -1
 
-func i_draw_load_ui(ui *HardUI) {
+func i_draw_load_ui(ui *HardUI, opts HardOpts) {
 	g_load_count += 1
 	if g_load_count % 1000 != 0 {
 		return
@@ -409,7 +433,7 @@ func i_draw_load_ui(ui *HardUI) {
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.style[STYLE_BOT], text)
-	i_draw_bottom_text(*ui)
+	i_draw_bottom_text(*ui, opts)
 	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
@@ -507,7 +531,7 @@ func i_ui(data_dir string) {
 	}
 	for {
 		data.ui.s.Clear()
-		i_draw_bottom_text(data.ui)
+		i_draw_bottom_text(data.ui, data.opts)
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
@@ -520,7 +544,6 @@ func i_ui(data_dir string) {
 				i_prompt_gpg(data.ui, data.keys)
 			} else {
 				i_prompt_confirm_gpg(data.ui, data.opts)
-				// TODO: here
 			}
 		} else if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)

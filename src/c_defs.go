@@ -65,10 +65,8 @@ const (
 !s: search -
 [C-r]: reload
 !?: help`
-	DELETE_KEYS_HINTS = `q: quit -
-y: yes -
-n: no`
-	ERROR_KEYS_HINTS = "[Enter] Ok"
+	ERROR_KEYS_HINTS = "[Enter]: Ok"
+	CONFIRM_KEYS_HINTS = `y/n: yes - no`
 )
 
 const (
