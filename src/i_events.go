@@ -53,6 +53,7 @@ package main
 
 import (
 	"os"
+	"fmt"
 
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
@@ -352,18 +353,10 @@ func i_events(data *HardData) {
 				os.Exit(0)
 			}
 			if len(data.opts.GPG) == 0 {
-				if len(data.ui.buff) > 0 &&
-				   (event.Key() == tcell.KeyBackspace ||
-				    event.Key() == tcell.KeyBackspace2) {
-					data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
-				} else if event.Key() == tcell.KeyCtrlU {
-					data.ui.buff = ""
-				} else if event.Key() == tcell.KeyEnter {
-					data.opts.GPG = data.ui.buff
-					data.ui.buff = ""
-					data.ui.s.HideCursor()
-				} else if event.Rune() >= 32 && event.Rune() <= 126 {
-					data.ui.buff += string(event.Rune())
+				if event.Rune() < '1' || event.Rune() > '9' {
+					break
+				} else {
+					data.opts.GPG = data.keys[event.Rune() - 48 - 1][0]
 				}
 			} else {
 				// TODO: confirm
@@ -372,3 +365,18 @@ func i_events(data *HardData) {
 
 	}
 }
+
+// readline type beat
+// if len(data.ui.buff) > 0 &&
+//    (event.Key() == tcell.KeyBackspace ||
+//     event.Key() == tcell.KeyBackspace2) {
+// 	data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
+// } else if event.Key() == tcell.KeyCtrlU {
+// 	data.ui.buff = ""
+// } else if event.Key() == tcell.KeyEnter {
+// 	data.opts.GPG = data.ui.buff
+// 	data.ui.buff = ""
+// 	data.ui.s.HideCursor()
+// } else if event.Rune() >= 32 && event.Rune() <= 126 {
+// 	data.ui.buff += string(event.Rune())
+// }

@@ -60,6 +60,7 @@ type HardData struct {
 	folds  map[*DirsNode]*ItemsList
 	data_dir string
 	load_err []error
+	keys   [][2]string
 }
 
 func main() {

@@ -246,7 +246,7 @@ func i_draw_welcome_box(ui HardUI) {
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
-	text = `storage, please type `
+	text = `storage, please select `
 	text_2 := `plain`
 	text_3 := ` (plaintext passwords`
 	if line += 1; line > b_max { return }
@@ -271,9 +271,11 @@ func i_draw_welcome_box(ui HardUI) {
 }
 
 func i_prompt_gpg(ui HardUI, keys [][2]string) {
-	text := "gpg: "
-	// TODO: 0 keys
-	i_draw_msg(ui.s, len(keys), ui.style[STYLE_DEF], ui.dim, " GnuPG keys ")
+	lines := len(keys)
+	if lines == 1 {
+		lines = 2
+	}
+	i_draw_msg(ui.s, lines, ui.style[STYLE_DEF], ui.dim, " GnuPG keys ")
 	for k, v := range keys {
 		text := ""
 		if v[0] != "plain" {
@@ -283,15 +285,18 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 			text = "[" + strconv.Itoa(k + 1) + "] " + "plain"
 		}
 		line := ui.dim[H] - 2 - len(keys) + k
-		// TODO: here
-		i_draw_text(ui.s, 2, line, ui.dim[W] - 2, line, ui.style[STYLE_DEF], text)
+		i_draw_text(ui.s, 2, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], text)
+	}
+	if len(keys) == 1 {
+		i_draw_text(ui.s, 2, ui.dim[H] - 4, ui.dim[W] - 1, ui.dim[H] - 4,
+			ui.style[STYLE_DEF],
+			"No gpg key! Creating your gpg key first is recommended")
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], text)
+		ui.style[STYLE_BOT], "gpg: ")
 	ui.s.ShowCursor(6 + len(ui.buff), ui.dim[H] - 1)
-	i_draw_text(ui.s, 6, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[STYLE_DEF], ui.buff)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -444,7 +449,6 @@ func i_load_ui(data_dir string,
 }
 
 func i_ui(data_dir string) {
-	var keys [][2]string
 	ui := HardUI{}
 	opts := HardOpts{}
 	var err error
@@ -495,10 +499,11 @@ func i_ui(data_dir string) {
 		make(map[*DirsNode]*ItemsList),
 		data_dir,
 		load_err,
+		[][2]string{},
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE
-		keys = c_get_secret_gpg_keyring(&data.ui)
+		data.keys = c_get_secret_gpg_keyring(&data.ui)
 	}
 	for {
 		data.ui.s.Clear()
@@ -512,8 +517,10 @@ func i_ui(data_dir string) {
 		if data.ui.mode == WELCOME_MODE {
 			i_draw_welcome_box(data.ui)
 			if len(data.opts.GPG) == 0 {
-				i_prompt_gpg(data.ui, keys)
+				i_prompt_gpg(data.ui, data.keys)
 			} else {
+				i_prompt_confirm_gpg(data.ui, data.opts)
+				// TODO: here
 			}
 		} else if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
