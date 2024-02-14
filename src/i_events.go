@@ -257,6 +257,36 @@ func i_readline(event *tcell.EventKey, data *HardData) {
 	}
 }
 
+func i_mkdir(data *HardData, ui *HardUI) {
+	if len(ui.buff) == 0 {
+		return
+	}
+	path := "/"
+	if data.litems.curr != nil {
+		if data.litems.curr.is_dir() == true {
+			path = data.litems.curr.Dirs.path()
+		} else {
+			path = data.litems.curr.Host.Parent.path()
+		}
+	}
+	if err := os.MkdirAll(data.data_dir +
+		path +
+		ui.buff, os.ModePerm); err != nil {
+		c_error_mode("mkdir " + path[1:] + ui.buff + " failed",
+		err, ui)
+		return
+	}
+	i_reload_data(data)
+	for curr := data.litems.head; curr != nil; curr = curr.next {
+		if curr.is_dir() == true &&
+		   curr.Dirs.Name == ui.buff &&
+		   curr.Dirs.Parent.path() == path {
+			data.litems.curr = curr
+			return
+		}
+	}
+}
+
 // screen events such as keypresses
 func i_events(data *HardData) {
 	ui := &data.ui
@@ -387,22 +417,9 @@ func i_events(data *HardData) {
 				ui.buff = ""
 				ui.mode = NORMAL_MODE
 			} else if event.Key() == tcell.KeyEnter {
+				i_mkdir(data, ui)
 				ui.s.HideCursor()
 				ui.mode = NORMAL_MODE
-				if data.litems.curr != nil && len(ui.buff) > 0 {
-					path := ""
-					if data.litems.curr.is_dir() == true {
-						path = data.litems.curr.Dirs.path()
-					} else {
-						path = data.litems.curr.Host.Parent.path()
-					}
-					if err := os.MkdirAll(data.data_dir +
-										  path +
-										  ui.buff, os.ModePerm); err != nil {
-						c_error_mode("mkdir " + path + ui.buff, err, ui)
-					}
-				}
-				i_reload_data(data)
 				ui.buff = ""
 			} else {
 				i_readline(event, data)

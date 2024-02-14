@@ -324,7 +324,7 @@ func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 }
 
 func i_draw_mkdir(ui HardUI, curr *ItemsNode) {
-	path := ""
+	path := "/"
 	if curr != nil {
 		if curr.is_dir() == true {
 			path = curr.Dirs.path()
