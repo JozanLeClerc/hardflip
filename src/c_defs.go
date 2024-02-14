@@ -61,7 +61,7 @@ const (
 
 const (
 	NORMAL_KEYS_HINTS = `!a/i: insert host -
-!m: mkdir -
+m: mkdir -
 !s: search -
 [C-r]: reload
 !?: help`
