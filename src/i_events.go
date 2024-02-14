@@ -76,7 +76,6 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 		litems.draw.prev != nil {
 		litems.draw = litems.draw.prev
 	}
-	// FIX: resize under select disappear
 }
 
 func i_set_unfold(data *HardData, item *ItemsNode) {
