@@ -300,8 +300,8 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_BOT], "gpg: ")
-	ui.s.ShowCursor(6 + len(ui.buff), ui.dim[H] - 1)
+		ui.style[STYLE_DEF], "gpg: ")
+	ui.s.ShowCursor(6, ui.dim[H] - 1)
 }
 
 func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
@@ -321,6 +321,29 @@ func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 	l, r = i_left_right(len(opts.GPG), &ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
 		ui.style[STYLE_DEF], opts.GPG)
+}
+
+func i_draw_mkdir(ui HardUI, curr *ItemsNode) {
+	path := ""
+	if curr != nil {
+		if curr.is_dir() == true {
+			path = curr.Dirs.path()
+		} else {
+			path = curr.Host.Parent.path()
+		}
+	}
+	path = path[1:]
+	prompt := "mkdir: "
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], prompt)
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], path)
+	i_draw_text(ui.s, len(prompt) + 1 + len(path),
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF].Bold(true), ui.buff)
+	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
@@ -553,6 +576,9 @@ func i_ui(data_dir string) {
 		}
 		if data.ui.mode == ERROR_MODE {
 			i_draw_error_msg(data.ui, data.load_err)
+		}
+		if data.ui.mode == MKDIR_MODE {
+			i_draw_mkdir(data.ui, data.litems.curr)
 		}
 		data.ui.s.Show()
 		i_events(&data)

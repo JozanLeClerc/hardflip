@@ -245,6 +245,18 @@ func i_delete_host(data *HardData) error {
 	return nil
 }
 
+func i_readline(event *tcell.EventKey, data *HardData) {
+	if len(data.ui.buff) > 0 &&
+	(event.Key() == tcell.KeyBackspace ||
+	event.Key() == tcell.KeyBackspace2) {
+		data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
+	} else if event.Key() == tcell.KeyCtrlU {
+		data.ui.buff = "" 
+	} else if event.Rune() >= 32 && event.Rune() <= 126 {
+		data.ui.buff += string(event.Rune())
+	}
+}
+
 // screen events such as keypresses
 func i_events(data *HardData) {
 	ui := &data.ui
@@ -324,6 +336,9 @@ func i_events(data *HardData) {
 			} else if event.Key() == tcell.KeyCtrlR {
 				event = nil
 				i_reload_data(data)
+			} else if event.Rune() == 'm' ||
+					  event.Key() == tcell.KeyF7 {
+				data.ui.mode = MKDIR_MODE
 			}
 			i_list_follow_cursor(data.litems, ui)
 		case DELETE_MODE:
@@ -365,22 +380,19 @@ func i_events(data *HardData) {
 					data.opts.GPG = ""
 				}
 			}
+		case MKDIR_MODE:
+			if event.Key() == tcell.KeyEscape ||
+			   event.Key() == tcell.KeyCtrlC {
+				ui.s.HideCursor()
+				ui.buff = ""
+				ui.mode = NORMAL_MODE
+			} else if event.Key() == tcell.KeyEnter {
+				ui.s.HideCursor()
+				ui.buff = ""
+				ui.mode = NORMAL_MODE
+			} else {
+				i_readline(event, data)
+			}
 		}	
-
 	}
 }
-
-// readline type beat
-// if len(data.ui.buff) > 0 &&
-//    (event.Key() == tcell.KeyBackspace ||
-//     event.Key() == tcell.KeyBackspace2) {
-// 	data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
-// } else if event.Key() == tcell.KeyCtrlU {
-// 	data.ui.buff = ""
-// } else if event.Key() == tcell.KeyEnter {
-// 	data.opts.GPG = data.ui.buff
-// 	data.ui.buff = ""
-// 	data.ui.s.HideCursor()
-// } else if event.Rune() >= 32 && event.Rune() <= 126 {
-// 	data.ui.buff += string(event.Rune())
-// }
