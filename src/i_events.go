@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Jan 31 18:17:20 2024
+ * Wed Feb 14 11:16:54 2024
  * Joe
  *
  * events in the code
@@ -388,8 +388,22 @@ func i_events(data *HardData) {
 				ui.mode = NORMAL_MODE
 			} else if event.Key() == tcell.KeyEnter {
 				ui.s.HideCursor()
-				ui.buff = ""
 				ui.mode = NORMAL_MODE
+				if data.litems.curr != nil && len(ui.buff) > 0 {
+					path := ""
+					if data.litems.curr.is_dir() == true {
+						path = data.litems.curr.Dirs.path()
+					} else {
+						path = data.litems.curr.Host.Parent.path()
+					}
+					if err := os.MkdirAll(data.data_dir +
+										  path +
+										  ui.buff, os.ModePerm); err != nil {
+						c_error_mode("mkdir " + path + ui.buff, err, ui)
+					}
+				}
+				i_reload_data(data)
+				ui.buff = ""
 			} else {
 				i_readline(event, data)
 			}
