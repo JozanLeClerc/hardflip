@@ -28,6 +28,7 @@
 
 - [x] ask gpg key
 - [ ] mkdir
+- [ ] .rdp file
 - [ ] add
 - [ ] clone
 - [ ] edit
