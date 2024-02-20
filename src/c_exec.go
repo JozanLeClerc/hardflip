@@ -120,16 +120,20 @@ func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
 func c_format_rdp(host *HostNode, pass string) ([]string, []string) {
 	cmd_fmt := []string{"xfreerdp"}
 
+	if len(host.RDPFile) > 0 {
+		cmd_fmt = append(cmd_fmt, host.RDPFile)
+	} else {
 	cmd_fmt = append(cmd_fmt,
 		"/v:" + host.Host,
 		"/u:" + host.User)
+	}
 	if len(host.Domain) > 0 {
 		cmd_fmt = append(cmd_fmt, "/d:" + host.Domain)
 	}
 	if len(pass) > 0 {
 		cmd_fmt = append(cmd_fmt, "/p:" + pass)
 	}
-	if host.Port != 0 {
+	if host.Port != 0 && len(host.RDPFile) == 0 {
 		cmd_fmt = append(cmd_fmt, "/port:" + strconv.Itoa(int(host.Port)))
 	}
 	if host.Dynamic == true {

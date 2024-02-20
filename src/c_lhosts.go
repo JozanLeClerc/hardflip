@@ -84,6 +84,7 @@ type HostNode struct {
 	User     string   `yaml:"user"`
 	Pass     string   `yaml:"pass"`
 	Priv     string   `yaml:"priv"`
+	RDPFile  string   `yaml:"rdp_file"`
 	Jump     JumpSettings `yaml:"jump"`
 	Quality  uint8    `yaml:"quality"`
 	Domain   string   `yaml:"domain"`

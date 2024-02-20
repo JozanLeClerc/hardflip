@@ -85,7 +85,12 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 		return nil, nil
 	}
 	if len(host.Host) == 0 {
-		return nil, nil
+		if len(host.RDPFile) > 0 {
+			host.Host = "rdp_file"
+			host.User = "rdp_file"
+		} else {
+			return nil, nil
+		}
 	}
 	if host.Protocol == 0 {
 		if host.Port == 0 {

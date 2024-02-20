@@ -27,8 +27,9 @@
 ## v0.6
 
 - [x] ask gpg key
-- [ ] mkdir
-- [ ] .rdp file
+- [x] mkdir
+- [x] .rdp file
+- [ ] reload keep position
 - [ ] add
 - [ ] clone
 - [ ] edit

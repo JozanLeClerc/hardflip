@@ -224,8 +224,18 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 		i_draw_text(ui.s,
 			(ui.dim[W] / 3) + 11, line, ui.dim[W] - 2, line,
 			ui.style[STYLE_DEF], host.Domain)
+		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
-	if line += 2; line > ui.dim[H] - 3 { return line }
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	if len(host.RDPFile) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_TITLE], "RDP File: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
+			ui.style[STYLE_DEF], host.RDPFile)
+		if line += 2; line > ui.dim[H] - 3 { return line }
+	}
 	// user infos
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
