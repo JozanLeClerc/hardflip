@@ -340,7 +340,49 @@ func i_events(data *HardData) {
 					  data.litems.head != nil &&
 					  data.litems.curr != nil {
 				ui.mode = DELETE_MODE
+			} else if event.Rune() == 'H' {
+				for curr := data.ldirs.head; curr != nil; curr = curr.next {
+					if data.folds[curr] == nil {
+						i_fold_dir(data, curr)
+					}
+				}
+			} else if event.Rune() == 'h' ||
+					  event.Key() == tcell.KeyLeft {
+				for curr := data.litems.curr;
+					curr != nil;
+					curr = curr.prev {
+					if curr.is_dir() == true {
+						if data.folds[curr.Dirs] == nil {
+							i_fold_dir(data, curr)
+							data.litems.curr = curr
+							break
+						} else {
+							if data.folds[curr.Dirs.Parent] == nil {
+								parent := curr.Dirs.Parent
+								for curr_new := curr;
+									curr_new != nil;
+									curr_new = curr_new.prev {
+									if curr_new.is_dir() == true {
+										if curr_new.Dirs == parent {
+											i_fold_dir(data, curr_new)
+											data.litems.curr = curr_new
+											break
+											// TODO: here
+										} else {
+											if data.folds[curr_new.Dirs] ==
+											   nil {
+												i_fold_dir(data, curr_new)
+											}
+										}
+									}
+								}
+							}
+							break
+						}
+					}
+				}
 			} else if event.Rune() == 'l' ||
+					  event.Key() == tcell.KeyRight ||
 					  event.Key() == tcell.KeyEnter {
 				if data.litems.curr == nil {
 					break
