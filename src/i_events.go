@@ -344,6 +344,7 @@ func i_events(data *HardData) {
 				for curr := data.ldirs.head; curr != nil; curr = curr.next {
 					if data.folds[curr] == nil {
 						i_fold_dir(data, curr)
+						// TODO: here
 					}
 				}
 			} else if event.Rune() == 'h' ||
@@ -367,7 +368,6 @@ func i_events(data *HardData) {
 											i_fold_dir(data, curr_new)
 											data.litems.curr = curr_new
 											break
-											// TODO: here
 										} else {
 											if data.folds[curr_new.Dirs] ==
 											   nil {
