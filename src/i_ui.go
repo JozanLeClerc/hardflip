@@ -70,7 +70,7 @@ type HardUI struct {
 }
 
 type Quad struct {
-	L, R, T, B int
+	L, T, R, B int
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {

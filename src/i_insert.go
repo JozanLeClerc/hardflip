@@ -64,4 +64,5 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
 		ui.style[STYLE_BOX], ui.style[STYLE_HEAD],
 		" Insert - " + in.Name + " ", true)
+	// TODO: here
 }
