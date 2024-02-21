@@ -29,7 +29,7 @@
 - [x] ask gpg key
 - [x] mkdir
 - [x] .rdp file
-- [ ] reload keep position
+- [x] reload keep position
 - [ ] add
 - [ ] clone
 - [ ] edit
