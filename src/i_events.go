@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Feb 14 11:16:54 2024
+ * Wed Feb 21 12:10:39 2024
  * Joe
  *
  * events in the code
@@ -166,6 +166,17 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 }
 
 func i_reload_data(data *HardData) {
+	tmp_name := ""
+	tmp_parent_path := ""
+	if data.litems.curr != nil {
+		if data.litems.curr.is_dir() == true {
+			tmp_name = data.litems.curr.Dirs.Name
+			tmp_parent_path = data.litems.curr.Dirs.Parent.path()
+		} else {
+			tmp_name = data.litems.curr.Host.Filename
+			tmp_parent_path = data.litems.curr.Host.Parent.path()
+		}
+	}
 	conf_dir  := c_get_conf_dir(&data.load_err)
 	if conf_dir == "" {
 		data.opts = DEFAULT_OPTS
@@ -180,6 +191,29 @@ func i_reload_data(data *HardData) {
 	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
 		&data.ui, &data.load_err)
 	data.folds = make(map[*DirsNode]*ItemsList)
+	if tmp_name == "" {
+		data.litems.curr = data.litems.head
+		return
+	}
+	for curr := data.litems.head; curr != nil; curr = curr.next {
+		// HACK: optimize by searching from the path
+		if curr.is_dir() == true {
+			if curr.Dirs.Name == tmp_name {
+				if curr.Dirs.Parent.path() == tmp_parent_path {
+					data.litems.curr = curr
+					return
+				}
+			}
+		} else {
+			if curr.Host.Filename == tmp_name {
+				if curr.Host.Parent.path() == tmp_parent_path {
+					data.litems.curr = curr
+					return
+				}
+			}
+		}
+	}
+	data.litems.curr = data.litems.head
 }
 
 func i_delete_dir(data *HardData) error {
@@ -341,12 +375,13 @@ func i_events(data *HardData) {
 					  data.litems.curr != nil {
 				ui.mode = DELETE_MODE
 			} else if event.Rune() == 'H' {
-				for curr := data.ldirs.head; curr != nil; curr = curr.next {
-					if data.folds[curr] == nil {
+				for curr := data.litems.last; curr != nil; curr = curr.prev {
+					if curr.is_dir() == true && data.folds[curr.Dirs] == nil {
 						i_fold_dir(data, curr)
-						// TODO: here
 					}
 				}
+				data.litems.curr = data.litems.head
+				data.litems.draw = data.litems.curr
 			} else if event.Rune() == 'h' ||
 					  event.Key() == tcell.KeyLeft {
 				for curr := data.litems.curr;
@@ -356,6 +391,7 @@ func i_events(data *HardData) {
 						if data.folds[curr.Dirs] == nil {
 							i_fold_dir(data, curr)
 							data.litems.curr = curr
+							data.litems.draw = data.litems.curr
 							break
 						} else {
 							if data.folds[curr.Dirs.Parent] == nil {
@@ -367,6 +403,7 @@ func i_events(data *HardData) {
 										if curr_new.Dirs == parent {
 											i_fold_dir(data, curr_new)
 											data.litems.curr = curr_new
+											data.litems.draw = data.litems.curr
 											break
 										} else {
 											if data.folds[curr_new.Dirs] ==
