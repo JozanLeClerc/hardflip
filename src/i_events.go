@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Feb 21 12:10:39 2024
+ * Wed Feb 21 14:39:57 2024
  * Joe
  *
  * events in the code
@@ -441,6 +441,9 @@ func i_events(data *HardData) {
 				} else {
 					i_unfold_dir(data, data.litems.curr)
 				}
+			} else if event.Rune() == 'a' ||
+					  event.Rune() == 'i' {
+				data.ui.mode = INSERT_MODE
 			} else if event.Key() == tcell.KeyCtrlR {
 				event = nil
 				i_reload_data(data)
@@ -487,6 +490,11 @@ func i_events(data *HardData) {
 				} else if event.Rune() == 'n' {
 					data.opts.GPG = ""
 				}
+			}
+		case INSERT_MODE:
+			if event.Key() == tcell.KeyEscape ||
+			   event.Key() == tcell.KeyCtrlC {
+				data.ui.mode = NORMAL_MODE
 			}
 		case MKDIR_MODE:
 			if event.Key() == tcell.KeyEscape ||

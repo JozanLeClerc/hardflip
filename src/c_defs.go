@@ -76,6 +76,7 @@ const (
 	ERROR_MODE   = 3
 	WELCOME_MODE = 4
 	MKDIR_MODE   = 5
+	INSERT_MODE  = 6
 )
 
 const (
