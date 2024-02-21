@@ -494,14 +494,33 @@ func i_events(data *HardData) {
 		case INSERT_MODE:
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {
+				ui.s.HideCursor()
 				data.ui.mode = NORMAL_MODE
+				data.insert = nil
+				ui.buff = ""
+			} else if event.Key() == tcell.KeyEnter {
+				if ui.buff == "" {
+					ui.s.HideCursor()
+					data.ui.mode = NORMAL_MODE
+					data.insert = nil
+					ui.buff = ""
+					break
+				}
+				ui.s.HideCursor()
+				data.insert = &HostNode{}
+				data.insert.Name = ui.buff
+				ui.buff = ""
+			} else {
+				i_readline(event, data)
 			}
+		// TODO: reset data.insert to nil on validate
 		case MKDIR_MODE:
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {
 				ui.s.HideCursor()
 				ui.buff = ""
 				ui.mode = NORMAL_MODE
+				data.insert = nil 
 			} else if event.Key() == tcell.KeyEnter {
 				i_mkdir(data, ui)
 				ui.s.HideCursor()

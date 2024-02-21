@@ -42,29 +42,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_hardflip.go
- * Wed Feb 21 19:38:57 2024
+ * hardflip: src/i_insert.go
+ * Wed Feb 21 19:41:56 2024
  * Joe
  *
- * the main
+ * insert a new host
  */
 
 package main
 
-// the main data structure, holds up everything important
-type HardData struct {
-	litems *ItemsList
-	ldirs  *DirsList
-	ui     HardUI
-	opts   HardOpts
-	folds  map[*DirsNode]*ItemsList
-	data_dir string
-	load_err []error
-	keys   [][2]string
-	insert  *HostNode
-}
-
-func main() {
-	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir)
+func i_draw_insert_panel(ui HardUI, in *HostNode) {
+	if len(in.Name) == 0 {
+		return
+	}
+	win := Quad{
+		ui.dim[W] / 8,
+		ui.dim[H] / 8,
+		ui.dim[W] - ui.dim[W] / 8,
+		ui.dim[H] - ui.dim[H] / 8,
+	}
+	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
+		ui.style[STYLE_BOX], ui.style[STYLE_HEAD],
+		" Insert - " + in.Name + " ", true)
 }

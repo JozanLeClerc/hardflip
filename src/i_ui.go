@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue Jan 23 18:11:28 2024
+ * Wed Feb 21 19:42:11 2024
  * Joe
  *
  * interfacing with the user
@@ -67,6 +67,10 @@ type HardUI struct {
 	dim     [2]int
 	err     [2]string
 	buff    string
+}
+
+type Quad struct {
+	L, R, T, B int
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {
@@ -323,7 +327,7 @@ func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 		ui.style[STYLE_DEF], opts.GPG)
 }
 
-func i_draw_mkdir(ui HardUI, curr *ItemsNode) {
+func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
 		if curr.is_dir() == true {
@@ -334,6 +338,29 @@ func i_draw_mkdir(ui HardUI, curr *ItemsNode) {
 	}
 	path = path[1:]
 	prompt := "mkdir: "
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], prompt)
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], path)
+	i_draw_text(ui.s, len(prompt) + 1 + len(path),
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF].Bold(true), ui.buff)
+	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
+}
+
+func i_prompt_insert(ui HardUI, curr *ItemsNode) {
+	path := "/"
+	if curr != nil {
+		if curr.is_dir() == true {
+			path = curr.Dirs.path()
+		} else {
+			path = curr.Host.Parent.path()
+		}
+	}
+	path = path[1:]
+	prompt := "name: "
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[STYLE_DEF], prompt)
@@ -547,6 +574,7 @@ func i_ui(data_dir string) {
 		data_dir,
 		load_err,
 		[][2]string{},
+		nil,
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE
@@ -573,12 +601,16 @@ func i_ui(data_dir string) {
 		}
 		if data.ui.mode == DELETE_MODE {
 			i_draw_delete_msg(data.ui, data.litems.curr)
-		}
-		if data.ui.mode == ERROR_MODE {
+		} else if data.ui.mode == ERROR_MODE {
 			i_draw_error_msg(data.ui, data.load_err)
-		}
-		if data.ui.mode == MKDIR_MODE {
-			i_draw_mkdir(data.ui, data.litems.curr)
+		} else if data.ui.mode == MKDIR_MODE {
+			i_prompt_mkdir(data.ui, data.litems.curr)
+		} else if data.ui.mode == INSERT_MODE {
+			if data.insert == nil {
+				i_prompt_insert(data.ui, data.litems.curr)
+			} else {
+				i_draw_insert_panel(data.ui, data.insert)
+			}
 		}
 		data.ui.s.Show()
 		i_events(&data)
