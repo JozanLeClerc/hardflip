@@ -196,7 +196,6 @@ func i_reload_data(data *HardData) {
 		return
 	}
 	for curr := data.litems.head; curr != nil; curr = curr.next {
-		// HACK: optimize by searching from the path
 		if curr.is_dir() == true {
 			if curr.Dirs.Name == tmp_name {
 				if curr.Dirs.Parent.path() == tmp_parent_path {
