@@ -170,7 +170,7 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style, title)
 }
 
-func i_draw_bottom_text(ui HardUI, opts HardOpts) {
+func i_draw_bottom_text(ui HardUI, opts HardOpts, insert *HostNode) {
 	text := ""
 
 	switch ui.mode {
@@ -183,10 +183,16 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts) {
 	case ERROR_MODE:
 		text = ERROR_KEYS_HINTS
 	case WELCOME_MODE:
-		if len(opts.GPG) > 0 {
-			text = CONFIRM_KEYS_HINTS
-		} else {
+		if len(opts.GPG) == 0 {
 			text = ""
+		} else {
+			text = CONFIRM_KEYS_HINTS
+		}
+	case INSERT_MODE:
+		if insert == nil {
+			text = ""
+		} else {
+			text = INSERT_KEYS_HINTS
 		}
 	default:
 		text = ""
@@ -483,7 +489,7 @@ func i_draw_load_ui(ui *HardUI, opts HardOpts) {
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.style[STYLE_BOT], text)
-	i_draw_bottom_text(*ui, opts)
+	i_draw_bottom_text(*ui, opts, nil)
 	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
@@ -582,7 +588,7 @@ func i_ui(data_dir string) {
 	}
 	for {
 		data.ui.s.Clear()
-		i_draw_bottom_text(data.ui, data.opts)
+		i_draw_bottom_text(data.ui, data.opts, data.insert)
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)

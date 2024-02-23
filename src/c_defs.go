@@ -65,8 +65,10 @@ m: mkdir -
 !s: search -
 [C-r]: reload
 !?: help`
-	ERROR_KEYS_HINTS = "[Enter]: Ok"
+	ERROR_KEYS_HINTS = "[Enter]: ok"
 	CONFIRM_KEYS_HINTS = `y/n: yes - no`
+	INSERT_KEYS_HINTS = `[Tab]: next -
+[S-Tab]: prev`
 )
 
 const (

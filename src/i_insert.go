@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Wed Feb 21 19:41:56 2024
+ * Fri Feb 23 16:01:46 2024
  * Joe
  *
  * insert a new host
@@ -51,6 +51,11 @@
 
 package main
 
+func i_draw_text_box(ui HardUI, line int, label, content string) {
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(label) - 1, line, ui.dim[W] / 2, line, )
+	// TODO: here
+	// i_draw_box(ui.s, )
+}
 func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	if len(in.Name) == 0 {
 		return
@@ -64,5 +69,4 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
 		ui.style[STYLE_BOX], ui.style[STYLE_HEAD],
 		" Insert - " + in.Name + " ", true)
-	// TODO: here
 }
