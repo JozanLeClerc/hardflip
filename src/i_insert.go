@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Feb 23 16:01:46 2024
+ * Tue Feb 27 13:48:05 2024
  * Joe
  *
  * insert a new host
@@ -51,11 +51,25 @@
 
 package main
 
-func i_draw_text_box(ui HardUI, line int, label, content string) {
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(label) - 1, line, ui.dim[W] / 2, line, )
+import "github.com/gdamore/tcell/v2"
+
+func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string) {
+	const tbox_size int = 14
+
+	l := ui.dim[W] / 2 - len(label) - 1
+	if l <= dim.L { l = dim.L + 1 }
+	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
+		ui.style[STYLE_DEF], label)
 	// TODO: here
-	// i_draw_box(ui.s, )
+	spaces := ""
+	for i := 0; i < tbox_size; i++ {
+		spaces += " "
+	}
+	i_draw_text(ui.s, ui.dim[W] / 2, line, dim.R, line,
+		ui.style[STYLE_DEF].Background(tcell.ColorBlack).Dim(true),
+		"|" + spaces + "|")
 }
+
 func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	if len(in.Name) == 0 {
 		return
@@ -69,4 +83,5 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
 		ui.style[STYLE_BOX], ui.style[STYLE_HEAD],
 		" Insert - " + in.Name + " ", true)
+	i_draw_text_box(ui, win.T + 2, win, "Connection type", "fuck this")
 }
