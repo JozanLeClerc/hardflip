@@ -67,8 +67,7 @@ m: mkdir -
 !?: help`
 	ERROR_KEYS_HINTS = "[Enter]: ok"
 	CONFIRM_KEYS_HINTS = `y/n: yes - no`
-	INSERT_KEYS_HINTS = `[Tab]: next -
-[S-Tab]: prev`
+	INSERT_KEYS_HINTS = ``
 )
 
 const (

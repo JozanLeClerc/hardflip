@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Feb 21 19:42:11 2024
+ * Tue Feb 27 14:31:52 2024
  * Joe
  *
  * interfacing with the user
@@ -61,12 +61,15 @@ import (
 )
 
 type HardUI struct {
-	s       tcell.Screen
-	mode    uint8
-	style	[7]tcell.Style
-	dim     [2]int
-	err     [2]string
-	buff    string
+	s     tcell.Screen
+	mode  uint8
+	style [7]tcell.Style
+	dim   [2]int
+	err   [2]string
+	buff  string
+	insert_sel int
+	insert_sel_max int
+	insert_sel_ok bool
 }
 
 type Quad struct {
@@ -356,6 +359,23 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
+func i_prompt_type(ui HardUI) {
+	i_draw_msg(ui.s, 4, ui.style[STYLE_BOX], ui.dim, " Connection type ")
+	i_draw_text(ui.s, 2, ui.dim[H] - 6, ui.dim[W] - 2, ui.dim[H] - 6,
+		ui.style[STYLE_DEF], "[1] SSH")
+	i_draw_text(ui.s, 2, ui.dim[H] - 5, ui.dim[W] - 2, ui.dim[H] - 5,
+		ui.style[STYLE_DEF], "[2] RDP")
+	i_draw_text(ui.s, 2, ui.dim[H] - 4, ui.dim[W] - 2, ui.dim[H] - 4,
+		ui.style[STYLE_DEF], "[3] Single command")
+	i_draw_text(ui.s, 2, ui.dim[H] - 3, ui.dim[W] - 2, ui.dim[H] - 3,
+		ui.style[STYLE_DEF], "[4] OpenStack CLI")
+	text := "Type: "
+	i_draw_text(ui.s, 0,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], text)
+	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
+}
+
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
@@ -616,6 +636,11 @@ func i_ui(data_dir string) {
 				i_prompt_insert(data.ui, data.litems.curr)
 			} else {
 				i_draw_insert_panel(data.ui, data.insert)
+				if data.ui.insert_sel_ok == true {
+					if data.ui.insert_sel == 0 {
+						i_prompt_type(data.ui)
+					}
+				}
 			}
 		}
 		data.ui.s.Show()

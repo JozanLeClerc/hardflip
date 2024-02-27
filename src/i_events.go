@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Wed Feb 21 14:39:57 2024
+ * Tue Feb 27 14:56:58 2024
  * Joe
  *
  * events in the code
@@ -320,6 +320,29 @@ func i_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
+func i_set_protocol_defaults(in *HostNode) {
+	switch in.Protocol {
+	case 0:
+		in.Port = 22
+	case 1:
+		in.Port = 3389
+		in.Quality = 2
+		in.Width = 1600
+		in.Height = 1200
+		in.Dynamic = true
+	case 2:
+		in.Shell = []string{"/bin/sh", "-c"}
+	case 3:
+		in.Stack.RegionName = "eu-west-0"
+		in.Stack.IdentityAPI = "3"
+		in.Stack.ImageAPI    = "2"
+		in.Stack.NetworkAPI  = "2"
+		in.Stack.VolumeAPI   = "3.42"
+		in.Stack.EndpointType = "publicURL"
+		in.Stack.Interface = "public"
+	}
+}
+
 // screen events such as keypresses
 func i_events(data *HardData) {
 	ui := &data.ui
@@ -444,6 +467,9 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'a' ||
 					  event.Rune() == 'i' {
 				data.ui.mode = INSERT_MODE
+				data.ui.insert_sel = 0
+				data.ui.insert_sel_max = 4
+				data.ui.insert_sel_ok = false
 			} else if event.Key() == tcell.KeyCtrlR {
 				event = nil
 				i_reload_data(data)
@@ -492,26 +518,72 @@ func i_events(data *HardData) {
 				}
 			}
 		case INSERT_MODE:
-			if event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyCtrlC {
-				ui.s.HideCursor()
-				data.ui.mode = NORMAL_MODE
-				data.insert = nil
-				ui.buff = ""
-			} else if event.Key() == tcell.KeyEnter {
-				if ui.buff == "" {
+			if data.insert == nil {
+				if event.Key() == tcell.KeyEscape ||
+				event.Key() == tcell.KeyCtrlC {
 					ui.s.HideCursor()
 					data.ui.mode = NORMAL_MODE
+					data.ui.insert_sel = 0
 					data.insert = nil
 					ui.buff = ""
-					break
+				} else if event.Key() == tcell.KeyEnter {
+					if ui.buff == "" {
+						ui.s.HideCursor()
+						data.ui.mode = NORMAL_MODE
+						data.ui.insert_sel = 0
+						data.ui.insert_sel_ok = false
+						data.insert = nil
+						ui.buff = ""
+						break
+					}
+					ui.s.HideCursor()
+					data.insert = &HostNode{}
+					i_set_protocol_defaults(data.insert)
+					data.insert.Name = ui.buff
+					ui.buff = ""
+				} else {
+					i_readline(event, data)
 				}
-				ui.s.HideCursor()
-				data.insert = &HostNode{}
-				data.insert.Name = ui.buff
-				ui.buff = ""
-			} else {
-				i_readline(event, data)
+			} else if data.insert != nil {
+				if data.ui.insert_sel_ok == false {
+					if event.Key() == tcell.KeyEscape ||
+					   event.Key() == tcell.KeyCtrlC {
+						ui.s.HideCursor()
+						data.ui.mode = NORMAL_MODE
+						data.ui.insert_sel = 0
+						data.insert = nil
+						ui.buff = ""
+					} else if event.Rune() == 'j' ||
+							  event.Key() == tcell.KeyDown {
+						if data.ui.insert_sel < data.ui.insert_sel_max {
+							data.ui.insert_sel += 1
+						}
+					} else if event.Rune() == 'k' ||
+							  event.Key() == tcell.KeyUp {
+						if data.ui.insert_sel > 0 {
+							data.ui.insert_sel -= 1
+						}
+					} else if event.Key() == tcell.KeyEnter {
+						data.ui.insert_sel_ok = true
+					}
+				} else {
+					if event.Key() == tcell.KeyEscape ||
+					   event.Key() == tcell.KeyCtrlC {
+						data.ui.insert_sel_ok = false
+						ui.s.HideCursor()
+					}
+					switch data.ui.insert_sel {
+					case 0:
+						if event.Rune() < '1' || event.Rune() > '4' {
+							break
+						} else {
+							data.insert.Protocol = int8(event.Rune() - 48 - 1)
+							data.ui.insert_sel_ok = false
+							ui.s.HideCursor()
+							i_set_protocol_defaults(data.insert)
+						}
+					}
+				}
 			}
 		// TODO: reset data.insert to nil on validate
 		case MKDIR_MODE:

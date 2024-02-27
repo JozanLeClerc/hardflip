@@ -38,6 +38,7 @@
 ## v0.7
 
 - [ ] help
+- [ ] ssh jump rdp
 
 ## v0.8
 

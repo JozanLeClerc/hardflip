@@ -150,7 +150,7 @@ func c_format_rdp(host *HostNode, pass string) ([]string, []string) {
 			"-decorations", "-fonts", "-themes",
 			"/bpp:8", "/compression-level:2")
 	} else if host.Quality == 1 {
-	} else {
+	} else if host.Quality == 2 {
 		cmd_fmt = append(cmd_fmt,
 			"+aero", "+menu-anims", "+window-drag",
 			"+decorations", "+fonts", "+themes", "/gfx:RFX", "/rfx", "/gdi:hw",
