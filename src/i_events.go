@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Tue Feb 27 14:56:58 2024
+ * Tue Feb 27 18:07:11 2024
  * Joe
  *
  * events in the code
@@ -582,6 +582,8 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data.insert)
 						}
+					case 1:
+						i_readline(event, data)
 					}
 				}
 			}
