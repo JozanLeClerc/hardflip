@@ -39,6 +39,7 @@
 
 - [ ] help
 - [ ] ssh jump rdp
+- [ ] better readline
 
 ## v0.8
 

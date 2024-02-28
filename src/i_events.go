@@ -53,6 +53,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
@@ -98,7 +99,7 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 		return
 	}
 	// single empty dir
-	if start == item && end == end {
+	if start == item && end == end { // HACK: i forgot why end == end
 		i_set_unfold(data, item)
 		return
 	}
@@ -565,11 +566,18 @@ func i_events(data *HardData) {
 						}
 					} else if event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
+						switch data.ui.insert_sel {
+						case 1:
+							ui.buff = data.insert.Host
+						case 2:
+							ui.buff = strconv.Itoa(int(data.insert.Port))
+						}
 					}
 				} else {
 					if event.Key() == tcell.KeyEscape ||
 					   event.Key() == tcell.KeyCtrlC {
 						data.ui.insert_sel_ok = false
+						ui.buff = ""
 						ui.s.HideCursor()
 					}
 					switch data.ui.insert_sel {
@@ -582,8 +590,20 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data.insert)
 						}
-					case 1:
-						i_readline(event, data)
+					case 1, 2:
+						if event.Key() == tcell.KeyEnter {
+							if data.ui.insert_sel == 1 {
+								data.insert.Host = ui.buff
+							} else if data.ui.insert_sel == 2 {
+								tmp, _ := strconv.Atoi(ui.buff)
+								data.insert.Port = uint16(tmp)
+							}
+							data.ui.insert_sel_ok = false
+							ui.buff = ""
+							ui.s.HideCursor()
+						} else {
+							i_readline(event, data)
+						}
 					}
 				}
 			}

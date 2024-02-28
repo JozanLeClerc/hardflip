@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Feb 27 14:31:54 2024
+ * Wed Feb 28 17:27:20 2024
  * Joe
  *
  * insert a new host
@@ -97,7 +97,10 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
 		0, ui.insert_sel)
 	line += 2
-	i_draw_insert_ssh(ui, line, win, in)
+	switch in.Protocol {
+	case 0:
+		i_draw_insert_ssh(ui, line, win, in)
+	}
 }
 
 func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {

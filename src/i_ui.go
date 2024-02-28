@@ -376,6 +376,16 @@ func i_prompt_type(ui HardUI) {
 	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
 }
 
+func i_prompt_generic(ui HardUI, prompt string) {
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF], prompt)
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[STYLE_DEF].Bold(true), ui.buff)
+	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
+}
+
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
@@ -386,7 +396,7 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		}
 	}
 	path = path[1:]
-	prompt := "name: "
+	prompt := "Name: "
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[STYLE_DEF], prompt)
@@ -637,8 +647,13 @@ func i_ui(data_dir string) {
 			} else {
 				i_draw_insert_panel(data.ui, data.insert)
 				if data.ui.insert_sel_ok == true {
-					if data.ui.insert_sel == 0 {
+					switch data.ui.insert_sel {
+					case 0:
 						i_prompt_type(data.ui)
+					case 1:
+						i_prompt_generic(data.ui, "Host/IP: ")
+					case 2:
+						i_prompt_generic(data.ui, "Port: ")
 					}
 				}
 			}
