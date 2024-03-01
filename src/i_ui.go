@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue Feb 27 14:31:52 2024
+ * Fri Mar 01 15:27:17 2024
  * Joe
  *
  * interfacing with the user
@@ -372,7 +372,7 @@ func i_prompt_type(ui HardUI) {
 	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
 }
 
-func i_prompt_generic(ui HardUI, prompt string, secret bool) {
+func i_prompt_generic(ui HardUI, prompt string, secret, file bool) {
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
@@ -643,16 +643,16 @@ func i_ui(data_dir string) {
 					switch data.ui.insert_sel {
 					case 0:
 						i_prompt_type(data.ui)
-					case 1:
-						i_prompt_generic(data.ui, "Host/IP: ", false)
+					case 1, 6:
+						i_prompt_generic(data.ui, "Host/IP: ", false, false)
 					case 2:
-						i_prompt_generic(data.ui, "Port: ", false)
+						i_prompt_generic(data.ui, "Port: ", false, false)
 					case 3:
-						i_prompt_generic(data.ui, "User: ", false)
+						i_prompt_generic(data.ui, "User: ", false, false)
 					case 4:
-						i_prompt_generic(data.ui, "Pass: ", true)
+						i_prompt_generic(data.ui, "Pass: ", true, false)
 					case 5:
-						i_prompt_generic(data.ui, "Private key: ", false)
+						i_prompt_generic(data.ui, "Private key: ", false, true)
 					}
 				}
 			}

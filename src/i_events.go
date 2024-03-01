@@ -321,7 +321,7 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case 0:
 		in.Port = 22
-		data.ui.insert_sel_max = 5
+		data.ui.insert_sel_max = 6
 	case 1:
 		in.Port = 3389
 		in.Quality = 2
@@ -602,7 +602,7 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
-					case 1, 2, 3, 4:
+					case 1, 2, 3, 4, 5, 6:
 						if event.Key() == tcell.KeyEnter {
 							if data.ui.insert_sel == 1 {
 								data.insert.Host = ui.buff
@@ -617,6 +617,8 @@ func i_events(data *HardData) {
 								data.insert.Pass = pass
 							} else if data.ui.insert_sel == 5 {
 								data.insert.Priv = ui.buff
+							} else if data.ui.insert_sel == 6 {
+								data.insert.Jump.Host = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""

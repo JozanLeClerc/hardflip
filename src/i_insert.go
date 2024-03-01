@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Wed Feb 28 17:27:20 2024
+ * Fri Mar 01 15:35:55 2024
  * Joe
  *
  * insert a new host
@@ -52,7 +52,9 @@
 package main
 
 import (
+	"os"
 	"strconv"
+
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -69,6 +71,19 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
 		ui.style[DEF_STYLE], label)
+	if id == 4 && len(content) > 0 {
+		content = "***"
+	} else if id == 5 && len(content) > 0 {
+		file := content
+		if file[0] == '~' {
+			home, _ := os.UserHomeDir()
+			file = home + file[1:]
+		}
+		if _, err := os.Stat(file);
+		   err != nil {
+			tbox_style = tbox_style.Foreground(tcell.ColorRed)
+		}
+	}
 	spaces := ""
 	for i := 0; i < tbox_size; i++ {
 		spaces += " "
@@ -76,9 +91,6 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	i_draw_text(ui.s, ui.dim[W] / 2, line, dim.R, line,
 		tbox_style,
 		"[" + spaces + "]")
-	if id == 4 && len(content) > 0 {
-		content = "***"
-	}
 	i_draw_text(ui.s, ui.dim[W] / 2 + 1, line, ui.dim[W] / 2 + 1 + tbox_size,
 		line, tbox_style, content)
 }
@@ -90,16 +102,17 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	win := Quad{
 		ui.dim[W] / 8,
 		ui.dim[H] / 8,
-		ui.dim[W] - ui.dim[W] / 8,
-		ui.dim[H] - ui.dim[H] / 8,
+		ui.dim[W] - ui.dim[W] / 8 - 1,
+		ui.dim[H] - ui.dim[H] / 8 - 1,
 	}
 	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Insert - " + in.Name + " ", true)
 	line := 2
+	if win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
 		0, ui.insert_sel)
-	line += 3
+	line += 2
 	switch in.Protocol {
 	case 0:
 		i_draw_insert_ssh(ui, line, win, in)
@@ -122,10 +135,27 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel)
 	if line += 1; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "SSH private key",
-		in.Pass, 5, ui.insert_sel)
-	if line += 3; win.T + line >= win.B { return }
+		in.Priv, 5, ui.insert_sel)
+	if len(in.Priv) > 0 {
+		file := in.Priv
+		if file[0] == '~' {
+			home, _ := os.UserHomeDir()
+			file = home + file[1:]
+		}
+		if _, err := os.Stat(file);
+		   err != nil {
+			if line += 1; win.T + line >= win.B { return }
+			text := "file does not exist"
+			i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
+	}
+	if line += 2; win.T + line >= win.B { return }
 	text = "---- Jump settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "Host/IP",
+		in.Jump.Host, 6, ui.insert_sel)
 	// TODO: here
 }
