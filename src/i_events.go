@@ -297,11 +297,7 @@ func i_mkdir(data *HardData, ui *HardUI) {
 	}
 	path := "/"
 	if data.litems.curr != nil {
-		if data.litems.curr.is_dir() == true {
-			path = data.litems.curr.Dirs.path()
-		} else {
-			path = data.litems.curr.Host.Parent.path()
-		}
+		path = data.litems.curr.path()
 	}
 	if err := os.MkdirAll(data.data_dir +
 		path +
@@ -321,18 +317,21 @@ func i_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
-func i_set_protocol_defaults(in *HostNode) {
+func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case 0:
 		in.Port = 22
+		data.ui.insert_sel_max = 5
 	case 1:
 		in.Port = 3389
 		in.Quality = 2
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
+		data.ui.insert_sel_max = 4
 	case 2:
 		in.Shell = []string{"/bin/sh", "-c"}
+		data.ui.insert_sel_max = 2
 	case 3:
 		in.Stack.RegionName = "eu-west-0"
 		in.Stack.IdentityAPI = "3"
@@ -341,6 +340,7 @@ func i_set_protocol_defaults(in *HostNode) {
 		in.Stack.VolumeAPI   = "3.42"
 		in.Stack.EndpointType = "publicURL"
 		in.Stack.Interface = "public"
+		data.ui.insert_sel_max = 2
 	}
 }
 
@@ -469,7 +469,6 @@ func i_events(data *HardData) {
 					  event.Rune() == 'i' {
 				data.ui.mode = INSERT_MODE
 				data.ui.insert_sel = 0
-				data.ui.insert_sel_max = 4
 				data.ui.insert_sel_ok = false
 			} else if event.Key() == tcell.KeyCtrlR {
 				event = nil
@@ -539,16 +538,20 @@ func i_events(data *HardData) {
 					}
 					ui.s.HideCursor()
 					data.insert = &HostNode{}
-					i_set_protocol_defaults(data.insert)
+					i_set_protocol_defaults(data, data.insert)
 					data.insert.Name = ui.buff
 					ui.buff = ""
+					if data.litems.curr != nil {
+						data.insert.Parent = data.litems.curr.path_node()
+					}
 				} else {
 					i_readline(event, data)
 				}
 			} else if data.insert != nil {
 				if data.ui.insert_sel_ok == false {
 					if event.Key() == tcell.KeyEscape ||
-					   event.Key() == tcell.KeyCtrlC {
+					   event.Key() == tcell.KeyCtrlC ||
+					   event.Rune() == 'q' {
 						ui.s.HideCursor()
 						data.ui.mode = NORMAL_MODE
 						data.ui.insert_sel = 0
@@ -583,20 +586,37 @@ func i_events(data *HardData) {
 					switch data.ui.insert_sel {
 					case 0:
 						if event.Rune() < '1' || event.Rune() > '4' {
+							data.ui.insert_sel_ok = false
+							ui.buff = ""
+							ui.s.HideCursor()
 							break
 						} else {
+							name := data.insert.Name
+							parent := data.insert.Parent
+							data.insert = nil
+							data.insert = &HostNode{}
+							data.insert.Name = name
+							data.insert.Parent = parent
 							data.insert.Protocol = int8(event.Rune() - 48 - 1)
 							data.ui.insert_sel_ok = false
 							ui.s.HideCursor()
-							i_set_protocol_defaults(data.insert)
+							i_set_protocol_defaults(data, data.insert)
 						}
-					case 1, 2:
+					case 1, 2, 3, 4:
 						if event.Key() == tcell.KeyEnter {
 							if data.ui.insert_sel == 1 {
 								data.insert.Host = ui.buff
 							} else if data.ui.insert_sel == 2 {
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Port = uint16(tmp)
+							} else if data.ui.insert_sel == 3 {
+								data.insert.User = ui.buff
+							} else if data.ui.insert_sel == 4 {
+								pass, _ := c_encrypt_str(ui.buff,
+														 data.opts.GPG)
+								data.insert.Pass = pass
+							} else if data.ui.insert_sel == 5 {
+								data.insert.Priv = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""

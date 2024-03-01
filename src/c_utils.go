@@ -158,6 +158,9 @@ func c_error_mode(msg string, err error, ui *HardUI) {
 
 // c_encrypt_str encrypts a string with the given gpgkey
 func c_encrypt_str(str string, gpg string) (string, error) {
+	if len(gpg) == 0 || gpg == "plain" {
+		return str, nil
+	}
 	cmd := exec.Command("gpg", "-r", gpg, "-a", "-e")
 	cmd.Stdin = strings.NewReader(str)
 	out, err := cmd.Output()

@@ -219,3 +219,15 @@ func (litems *ItemsList) reset_id() {
 		ptr.next.ID = ptr.ID + 1
 	}
 }
+
+func (item *ItemsNode) path_node() *DirsNode {
+	if item.is_dir() == true {
+		return item.Dirs
+	} else {
+		return item.Host.Parent
+	}
+}
+
+func (item *ItemsNode) path() string {
+	return item.path_node().path()
+}

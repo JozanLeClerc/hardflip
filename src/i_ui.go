@@ -202,10 +202,10 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts, insert *HostNode) {
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_BOT], text)
+		ui.style[BOT_STYLE], text)
 	i_draw_text(ui.s,
 		ui.dim[W] - len(VERSION) - 2, ui.dim[H] - 1,
-		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[STYLE_BOT], " " + VERSION)
+		ui.dim[W] - 1, ui.dim[H] - 1, ui.style[BOT_STYLE], " " + VERSION)
 }
 
 func i_draw_welcome_box(ui HardUI) {
@@ -213,7 +213,7 @@ func i_draw_welcome_box(ui HardUI) {
 	b_max := ui.dim[H] / 2 - 1
 	i_draw_box(ui.s,
 		l_max - 1, 0, r_max, b_max + 1,
-		ui.style[STYLE_BOX], ui.style[STYLE_HEAD], "", true)
+		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], "", true)
 	art := [4]string{
 		` _     __`,
 		`| |_  / _|`,
@@ -228,7 +228,7 @@ func i_draw_welcome_box(ui HardUI) {
 		if l < l_max { l = l_max }; if r > r_max { r = r_max }
 		i_draw_text(ui.s,
 			l, k + 1, r, k + 1,
-			ui.style[STYLE_DEF], v)
+			ui.style[DEF_STYLE], v)
 	}
 	if line > b_max { return }
 	text := "hf " + VERSION
@@ -238,32 +238,32 @@ func i_draw_welcome_box(ui HardUI) {
 	l, r := ui.dim[W] / 2 - len(text) / 2 + 7,
 			ui.dim[W] / 2 + len(text) / 2 + 1 + 7
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	if line += 2; line > b_max { return }
 	text = `Welcome to hardflip!`
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	text = `Please select the gpg key ID to be used`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	text = `for password encryption`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	text = `Set gpg key can be modified in the config file`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	text = `If you don't want to use GnuPG for password`
 	if line += 2; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	text = `storage, please select `
 	text_2 := `plain`
 	text_3 := ` (plaintext passwords`
@@ -271,21 +271,21 @@ func i_draw_welcome_box(ui HardUI) {
 	l = ui.dim[W] / 2 - len(text + text_2 + text_3) / 2
 	r = r_max
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	l = l + len(text)
 	r = l + len(text_2)
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	if l >= r_max { return }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF].Bold(true), text_2)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE].Bold(true), text_2)
 	l = l + len(text_2)
 	r = l + len(text_3)
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text_3)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text_3)
 	text = `are not recommended)`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
-	i_draw_text(ui.s, l, line, r, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 }
 
 func i_prompt_gpg(ui HardUI, keys [][2]string) {
@@ -293,7 +293,7 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 	if lines == 1 {
 		lines = 2
 	}
-	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " GnuPG keys ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " GnuPG keys ")
 	for k, v := range keys {
 		text := ""
 		if v[0] != "plain" {
@@ -304,146 +304,139 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 		}
 		line := ui.dim[H] - 2 - len(keys) + k
 		i_draw_text(ui.s, 2, line, ui.dim[W] - 2, line,
-			ui.style[STYLE_DEF], text)
+			ui.style[DEF_STYLE], text)
 	}
 	if len(keys) == 1 {
 		i_draw_text(ui.s, 2, ui.dim[H] - 4, ui.dim[W] - 1, ui.dim[H] - 4,
-			ui.style[STYLE_DEF],
+			ui.style[DEF_STYLE],
 			"No gpg key! Creating your gpg key first is recommended")
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], "gpg: ")
+		ui.style[DEF_STYLE], "gpg: ")
 	ui.s.ShowCursor(6, ui.dim[H] - 1)
 }
 
 func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 	if opts.GPG == "plain" {
-		i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Confirm plaintext ")
+		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Confirm plaintext ")
 		text := "Really use plaintext to store passwords?"
 		l, r := i_left_right(len(text), &ui)
 		i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
-			ui.style[STYLE_DEF], text)
+			ui.style[DEF_STYLE], text)
 		return
 	}
-	i_draw_msg(ui.s, 2, ui.style[STYLE_BOX], ui.dim, " Confirm GnuPG key ")
+	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Confirm GnuPG key ")
 	text := "Really use this gpg key?"
 	l, r := i_left_right(len(text), &ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
-		ui.style[STYLE_DEF], text)
+		ui.style[DEF_STYLE], text)
 	l, r = i_left_right(len(opts.GPG), &ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
-		ui.style[STYLE_DEF], opts.GPG)
+		ui.style[DEF_STYLE], opts.GPG)
 }
 
 func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
-		if curr.is_dir() == true {
-			path = curr.Dirs.path()
-		} else {
-			path = curr.Host.Parent.path()
-		}
+		path = curr.path()
 	}
 	path = path[1:]
 	prompt := "mkdir: "
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], prompt)
+		ui.style[DEF_STYLE], prompt)
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], path)
+		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF].Bold(true), ui.buff)
+		ui.style[DEF_STYLE].Bold(true), ui.buff)
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
 func i_prompt_type(ui HardUI) {
-	i_draw_msg(ui.s, 4, ui.style[STYLE_BOX], ui.dim, " Connection type ")
+	i_draw_msg(ui.s, 4, ui.style[BOX_STYLE], ui.dim, " Connection type ")
 	i_draw_text(ui.s, 2, ui.dim[H] - 6, ui.dim[W] - 2, ui.dim[H] - 6,
-		ui.style[STYLE_DEF], "[1] SSH")
+		ui.style[DEF_STYLE], "[1] SSH")
 	i_draw_text(ui.s, 2, ui.dim[H] - 5, ui.dim[W] - 2, ui.dim[H] - 5,
-		ui.style[STYLE_DEF], "[2] RDP")
+		ui.style[DEF_STYLE], "[2] RDP")
 	i_draw_text(ui.s, 2, ui.dim[H] - 4, ui.dim[W] - 2, ui.dim[H] - 4,
-		ui.style[STYLE_DEF], "[3] Single command")
+		ui.style[DEF_STYLE], "[3] Single command")
 	i_draw_text(ui.s, 2, ui.dim[H] - 3, ui.dim[W] - 2, ui.dim[H] - 3,
-		ui.style[STYLE_DEF], "[4] OpenStack CLI")
+		ui.style[DEF_STYLE], "[4] OpenStack CLI")
 	text := "Type: "
 	i_draw_text(ui.s, 0,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], text)
+		ui.style[DEF_STYLE], text)
 	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
 }
 
-func i_prompt_generic(ui HardUI, prompt string) {
+func i_prompt_generic(ui HardUI, prompt string, secret bool) {
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], prompt)
+		ui.style[DEF_STYLE], prompt)
+	if secret == true {
+		ui.s.ShowCursor(len(prompt) + 1, ui.dim[H] - 1)
+		return
+	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF].Bold(true), ui.buff)
+		ui.style[DEF_STYLE].Bold(true), ui.buff)
 	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
 }
 
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
-	if curr != nil {
-		if curr.is_dir() == true {
-			path = curr.Dirs.path()
-		} else {
-			path = curr.Host.Parent.path()
-		}
-	}
+	path = curr.path()
 	path = path[1:]
 	prompt := "Name: "
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], prompt)
+		ui.style[DEF_STYLE], prompt)
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF], path)
+		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[STYLE_DEF].Bold(true), ui.buff)
+		ui.style[DEF_STYLE].Bold(true), ui.buff)
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " No hosts ")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
 	left, right := i_left_right(len(text), &ui)
 	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.style[STYLE_DEF], text)
+		ui.style[DEF_STYLE], text)
 }
 
 func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	var text string
 	var file string
 
+	file = item.path()
 	if item.is_dir() == true {
 		text = "Really delete this directory and all of its content?"
-		file = item.Dirs.path()
 	} else {
-		host := item.Host
 		text = "Really delete this host?"
-		file = host.Parent.path() + host.Filename
+		file += item.Host.Filename
 	}
 	file = file[1:]
-	i_draw_msg(ui.s, 2, ui.style[STYLE_BOX], ui.dim, " Delete ")
+	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")
 	left, right := i_left_right(len(text), &ui)
 	line := ui.dim[H] - 2 - 2
-	i_draw_text(ui.s, left, line, right, line, ui.style[STYLE_DEF], text)
+	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
 	left, right = i_left_right(len(file), &ui)
 	line += 1
 	i_draw_text(ui.s,
 	    left, line, right, line,
-	    ui.style[STYLE_DEF].Bold(true), file)
+	    ui.style[DEF_STYLE].Bold(true), file)
 }
 
 func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	lines := len(load_err)
-	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " Load time errors ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(load_err)
 	if line < 0 {
@@ -453,7 +446,7 @@ func i_draw_load_error_msg(ui HardUI, load_err []error) {
 		line += 1
 		err_str := fmt.Sprintf("%v", err)
 		i_draw_text(ui.s, left, line, right, line,
-			ui.style[STYLE_ERR], err_str)
+			ui.style[ERR_STYLE], err_str)
 	}
 }
 
@@ -466,18 +459,18 @@ func i_draw_error_msg(ui HardUI, load_err []error) {
 	if len(ui.err[ERROR_ERR]) == 0 {
 		lines = 1
 	}
-	i_draw_msg(ui.s, lines, ui.style[STYLE_BOX], ui.dim, " Error ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Error ")
 	left, right := 1, ui.dim[W] - 2
 	line := ui.dim[H] - 2 - 2
 	if len(ui.err[ERROR_ERR]) == 0 {
 		line += 1
 	}
 	i_draw_text(ui.s, left, line, right, line,
-		ui.style[STYLE_ERR], ui.err[ERROR_MSG])
+		ui.style[ERR_STYLE], ui.err[ERROR_MSG])
 	if len(ui.err[ERROR_ERR]) > 0 {
 		line += 1
 		i_draw_text(ui.s, left, line, right, line,
-			ui.style[STYLE_ERR], ui.err[ERROR_ERR])
+			ui.style[ERR_STYLE], ui.err[ERROR_ERR])
 	}
 }
 
@@ -494,12 +487,12 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 	if draw_id > 1 {
 		ui.s.SetContent(0, 1,
 			'▲',
-			nil, ui.style[STYLE_BOX])
+			nil, ui.style[BOX_STYLE])
 	}
 	if last - draw_id > h {
 		ui.s.SetContent(0, ui.dim[H] - 3,
 			'▼',
-			nil, ui.style[STYLE_BOX])
+			nil, ui.style[BOX_STYLE])
 		return
 	}
 }
@@ -518,14 +511,14 @@ func i_draw_load_ui(ui *HardUI, opts HardOpts) {
 		text += " "
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[STYLE_BOT], text)
+		ui.style[BOT_STYLE], text)
 	i_draw_bottom_text(*ui, opts, nil)
-	i_draw_msg(ui.s, 1, ui.style[STYLE_BOX], ui.dim, " Loading ")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s,
 		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.style[STYLE_DEF], text)
+		ui.style[DEF_STYLE], text)
 	ui.s.Show()
 	ui.s.PostEvent(nil)
 	event := ui.s.PollEvent()
@@ -570,28 +563,28 @@ func i_ui(data_dir string) {
 	if err := ui.s.Init(); err != nil {
 		c_die("view", err)
 	}
-	ui.style[STYLE_DEF] = tcell.StyleDefault.
+	ui.style[DEF_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[STYLE_DIR] = tcell.StyleDefault.
+	ui.style[DIR_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[STYLE_BOX] = tcell.StyleDefault.
+	ui.style[BOX_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[STYLE_HEAD] = tcell.StyleDefault.
+	ui.style[HEAD_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
-	ui.style[STYLE_ERR] = tcell.StyleDefault.
+	ui.style[ERR_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorRed).Dim(true)
-	ui.style[STYLE_TITLE] = tcell.StyleDefault.
+	ui.style[TITLE_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[STYLE_BOT] = tcell.StyleDefault.
+	ui.style[BOT_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true)
-	ui.s.SetStyle(ui.style[STYLE_DEF])
+	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	var load_err []error
 	conf_dir  := c_get_conf_dir(&load_err)
@@ -651,9 +644,15 @@ func i_ui(data_dir string) {
 					case 0:
 						i_prompt_type(data.ui)
 					case 1:
-						i_prompt_generic(data.ui, "Host/IP: ")
+						i_prompt_generic(data.ui, "Host/IP: ", false)
 					case 2:
-						i_prompt_generic(data.ui, "Port: ")
+						i_prompt_generic(data.ui, "Port: ", false)
+					case 3:
+						i_prompt_generic(data.ui, "User: ", false)
+					case 4:
+						i_prompt_generic(data.ui, "Pass: ", true)
+					case 5:
+						i_prompt_generic(data.ui, "Private key: ", false)
 					}
 				}
 			}

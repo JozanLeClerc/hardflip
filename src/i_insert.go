@@ -59,7 +59,7 @@ import (
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 					 id, selected int) {
 	const tbox_size int = 14
-	tbox_style := ui.style[STYLE_DEF].Background(tcell.ColorBlack).Dim(true)
+	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
 	if id == selected {
 		tbox_style = tbox_style.Reverse(true).Dim(false)
@@ -68,7 +68,7 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	l := ui.dim[W] / 2 - len(label) - 2
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
-		ui.style[STYLE_DEF], label)
+		ui.style[DEF_STYLE], label)
 	spaces := ""
 	for i := 0; i < tbox_size; i++ {
 		spaces += " "
@@ -76,6 +76,9 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	i_draw_text(ui.s, ui.dim[W] / 2, line, dim.R, line,
 		tbox_style,
 		"[" + spaces + "]")
+	if id == 4 && len(content) > 0 {
+		content = "***"
+	}
 	i_draw_text(ui.s, ui.dim[W] / 2 + 1, line, ui.dim[W] / 2 + 1 + tbox_size,
 		line, tbox_style, content)
 }
@@ -91,12 +94,12 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 		ui.dim[H] - ui.dim[H] / 8,
 	}
 	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
-		ui.style[STYLE_BOX], ui.style[STYLE_HEAD],
+		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Insert - " + in.Name + " ", true)
 	line := 2
 	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
 		0, ui.insert_sel)
-	line += 2
+	line += 3
 	switch in.Protocol {
 	case 0:
 		i_draw_insert_ssh(ui, line, win, in)
@@ -104,14 +107,25 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 }
 
 func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
+	if win.T + line >= win.B { return }
+	text := "---- Host settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host, 1, ui.insert_sel)
-	line += 1
+	if line += 1; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
 		2, ui.insert_sel)
-	line += 2
+	if line += 2; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel)
-	line += 1
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel) // TODO: gpg
-	line += 1
+	if line += 1; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel)
+	if line += 1; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "SSH private key",
+		in.Pass, 5, ui.insert_sel)
+	if line += 3; win.T + line >= win.B { return }
+	text = "---- Jump settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
 	// TODO: here
 }

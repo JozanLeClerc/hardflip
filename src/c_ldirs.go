@@ -112,7 +112,7 @@ func (dir *DirsNode) path() string {
 	var path string
 
 	if dir == nil {
-		return ""
+		return "/"
 	}
 	curr := dir
 	for curr != nil {
