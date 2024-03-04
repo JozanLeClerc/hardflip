@@ -394,7 +394,7 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 				Bold(false).
 				Underline(true)
 		} else {
-			style = style.Foreground(tcell.ColorGreen)
+			style = style.Foreground(tcell.ColorGreen).Bold(false)
 		}
 	}
 	i_draw_text(ui.s, len(prompt) + 1,
