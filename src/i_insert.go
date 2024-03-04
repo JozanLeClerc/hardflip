@@ -59,7 +59,7 @@ import (
 )
 
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
-					 id, selected int) {
+					 id, selected int, red bool) {
 	const tbox_size int = 14
 	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
@@ -73,16 +73,9 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 		ui.style[DEF_STYLE], label)
 	if id == 4 && len(content) > 0 {
 		content = "***"
-	} else if id == 5 && len(content) > 0 {
-		file := content
-		if file[0] == '~' {
-			home, _ := os.UserHomeDir()
-			file = home + file[1:]
-		}
-		if _, err := os.Stat(file);
-		   err != nil {
-			tbox_style = tbox_style.Foreground(tcell.ColorRed)
-		}
+	}
+	if red == true {
+		tbox_style = tbox_style.Foreground(tcell.ColorRed)
 	}
 	spaces := ""
 	for i := 0; i < tbox_size; i++ {
@@ -111,7 +104,7 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	line := 2
 	if win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
-		0, ui.insert_sel)
+		0, ui.insert_sel, false)
 	line += 2
 	switch in.Protocol {
 	case 0:
@@ -120,35 +113,42 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 }
 
 func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
+	red := false
 	if win.T + line >= win.B { return }
 	text := "---- Host settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host, 1, ui.insert_sel)
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host, 1, ui.insert_sel,
+		false)
 	if line += 1; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		2, ui.insert_sel)
+		2, ui.insert_sel, false)
 	if line += 2; win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel)
+	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel,
+		false)
 	if line += 1; win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel)
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel,
+		false)
 	if line += 1; win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "SSH private key",
-		in.Priv, 5, ui.insert_sel)
 	if len(in.Priv) > 0 {
 		file := in.Priv
 		if file[0] == '~' {
 			home, _ := os.UserHomeDir()
 			file = home + file[1:]
 		}
-		if _, err := os.Stat(file);
-		   err != nil {
-			if line += 1; win.T + line >= win.B { return }
-			text := "file does not exist"
-			i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
-				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		if stat, err := os.Stat(file);
+		   err != nil || stat.IsDir() == true {
+			red = true
 		}
+	}
+	i_draw_text_box(ui, win.T + line, win, "SSH private key",
+		in.Priv, 5, ui.insert_sel, red)
+	if red == true {
+		if line += 1; win.T + line >= win.B { return }
+		text := "file does not exist"
+		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
 	if line += 2; win.T + line >= win.B { return }
 	text = "---- Jump settings ----"
@@ -156,6 +156,6 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP",
-		in.Jump.Host, 6, ui.insert_sel)
+		in.Jump.Host, 6, ui.insert_sel, false)
 	// TODO: here
 }

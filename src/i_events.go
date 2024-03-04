@@ -570,10 +570,12 @@ func i_events(data *HardData) {
 					} else if event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
-						case 1:
-							ui.buff = data.insert.Host
-						case 2:
-							ui.buff = strconv.Itoa(int(data.insert.Port))
+						case 1: ui.buff = data.insert.Host
+						case 2: ui.buff = strconv.Itoa(int(data.insert.Port))
+						case 3: ui.buff = data.insert.User
+						case 4: break
+						case 5: ui.buff = data.insert.Priv
+						case 6: ui.buff = data.insert.Jump.Host
 						}
 					}
 				} else {
@@ -604,21 +606,18 @@ func i_events(data *HardData) {
 						}
 					case 1, 2, 3, 4, 5, 6:
 						if event.Key() == tcell.KeyEnter {
-							if data.ui.insert_sel == 1 {
-								data.insert.Host = ui.buff
-							} else if data.ui.insert_sel == 2 {
+							switch data.ui.insert_sel {
+							case 1: data.insert.Host = ui.buff
+							case 2: 
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Port = uint16(tmp)
-							} else if data.ui.insert_sel == 3 {
-								data.insert.User = ui.buff
-							} else if data.ui.insert_sel == 4 {
+							case 3: data.insert.User = ui.buff
+							case 4:
 								pass, _ := c_encrypt_str(ui.buff,
 														 data.opts.GPG)
 								data.insert.Pass = pass
-							} else if data.ui.insert_sel == 5 {
-								data.insert.Priv = ui.buff
-							} else if data.ui.insert_sel == 6 {
-								data.insert.Jump.Host = ui.buff
+							case 5: data.insert.Priv = ui.buff
+							case 6: data.insert.Jump.Host = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""

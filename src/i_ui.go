@@ -372,7 +372,7 @@ func i_prompt_type(ui HardUI) {
 	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
 }
 
-func i_prompt_generic(ui HardUI, prompt string, secret, file bool) {
+func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
@@ -380,9 +380,26 @@ func i_prompt_generic(ui HardUI, prompt string, secret, file bool) {
 		ui.s.ShowCursor(len(prompt) + 1, ui.dim[H] - 1)
 		return
 	}
+	style := ui.style[DEF_STYLE].Bold(true)
+	if len(home_dir) > 0 && len(ui.buff) > 0 {
+		file := ui.buff
+		if file[0] == '~' {
+			file = home_dir + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		   err != nil {
+			style = style.Foreground(tcell.ColorRed)
+		} else if stat.IsDir() == true {
+			style = style.Foreground(tcell.ColorPurple).
+				Bold(false).
+				Underline(true)
+		} else {
+			style = style.Foreground(tcell.ColorGreen)
+		}
+	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff)
+		style, ui.buff)
 	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
 }
 
@@ -552,6 +569,7 @@ func i_load_ui(data_dir string,
 }
 
 func i_ui(data_dir string) {
+	home_dir, _ := os.UserHomeDir()
 	ui := HardUI{}
 	opts := HardOpts{}
 	var err error
@@ -644,15 +662,16 @@ func i_ui(data_dir string) {
 					case 0:
 						i_prompt_type(data.ui)
 					case 1, 6:
-						i_prompt_generic(data.ui, "Host/IP: ", false, false)
+						i_prompt_generic(data.ui, "Host/IP: ", false, "")
 					case 2:
-						i_prompt_generic(data.ui, "Port: ", false, false)
+						i_prompt_generic(data.ui, "Port: ", false, "")
 					case 3:
-						i_prompt_generic(data.ui, "User: ", false, false)
+						i_prompt_generic(data.ui, "User: ", false, "")
 					case 4:
-						i_prompt_generic(data.ui, "Pass: ", true, false)
+						i_prompt_generic(data.ui, "Pass: ", true, "")
 					case 5:
-						i_prompt_generic(data.ui, "Private key: ", false, true)
+						i_prompt_generic(data.ui, "Private key: ",
+							false, home_dir)
 					}
 				}
 			}
