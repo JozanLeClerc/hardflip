@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Mar 01 15:27:17 2024
+ * Thu Mar 14 10:39:01 2024
  * Joe
  *
  * interfacing with the user
@@ -663,7 +663,7 @@ func i_ui(data_dir string) {
 						i_prompt_type(data.ui)
 					case 1, 6:
 						i_prompt_generic(data.ui, "Host/IP: ", false, "")
-					case 2:
+					case 2, 7:
 						i_prompt_generic(data.ui, "Port: ", false, "")
 					case 3:
 						i_prompt_generic(data.ui, "User: ", false, "")

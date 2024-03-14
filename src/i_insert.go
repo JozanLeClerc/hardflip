@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Mar 01 15:35:55 2024
+ * Thu Mar 14 10:18:40 2024
  * Joe
  *
  * insert a new host
@@ -123,7 +123,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 		false)
 	if line += 1; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		2, ui.insert_sel, false)
+		2, ui.insert_sel, false);
 	if line += 2; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel,
 		false)
@@ -157,5 +157,8 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	if line += 2; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP",
 		in.Jump.Host, 6, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "Port",
+		strconv.Itoa(int(in.Jump.Port)), 7, ui.insert_sel, false)
 	// TODO: here
 }

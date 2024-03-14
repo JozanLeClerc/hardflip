@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Tue Feb 27 18:07:11 2024
+ * Thu Mar 14 10:38:55 2024
  * Joe
  *
  * events in the code
@@ -321,7 +321,8 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case 0:
 		in.Port = 22
-		data.ui.insert_sel_max = 6
+		in.Jump.Port = 22
+		data.ui.insert_sel_max = 7
 	case 1:
 		in.Port = 3389
 		in.Quality = 2
@@ -604,7 +605,7 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
-					case 1, 2, 3, 4, 5, 6:
+					case 1, 2, 3, 4, 5, 6, 7:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case 1: data.insert.Host = ui.buff
@@ -618,6 +619,9 @@ func i_events(data *HardData) {
 								data.insert.Pass = pass
 							case 5: data.insert.Priv = ui.buff
 							case 6: data.insert.Jump.Host = ui.buff
+							case 7:
+								tmp, _ := strconv.Atoi(ui.buff)
+								data.insert.Jump.Port = uint16(tmp)
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""
