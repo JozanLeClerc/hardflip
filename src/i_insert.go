@@ -71,7 +71,7 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
 		ui.style[DEF_STYLE], label)
-	if id == 4 && len(content) > 0 {
+	if (id == 4 || id == 9) && len(content) > 0 {
 		content = "***"
 	}
 	if red == true {
@@ -150,6 +150,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
+	red = false
 	if line += 2; win.T + line >= win.B { return }
 	text = "---- Jump settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -160,5 +161,31 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	if line += 1; win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Port",
 		strconv.Itoa(int(in.Jump.Port)), 7, ui.insert_sel, false)
+	if line += 2; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "User",
+		in.Jump.User, 8, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return }
+	i_draw_text_box(ui, win.T + line, win, "Pass",
+		in.Jump.Pass, 9, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return }
+	if len(in.Jump.Priv) > 0 {
+		file := in.Jump.Priv
+		if file[0] == '~' {
+			home, _ := os.UserHomeDir()
+			file = home + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		   err != nil || stat.IsDir() == true {
+			red = true
+		}
+	}
+	i_draw_text_box(ui, win.T + line, win, "SSH private key",
+		in.Jump.Priv, 10, ui.insert_sel, red)
+	if red == true {
+		if line += 1; win.T + line >= win.B { return }
+		text := "file does not exist"
+		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+	}
 	// TODO: here
 }

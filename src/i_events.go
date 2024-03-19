@@ -159,7 +159,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		return
 	}
 	// this is not the end
-	end = next_dir.prev 
+	end = next_dir.prev
 	end.next = nil
 	item.next = next_dir
 	next_dir.prev = item
@@ -285,7 +285,7 @@ func i_readline(event *tcell.EventKey, data *HardData) {
 	event.Key() == tcell.KeyBackspace2) {
 		data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
 	} else if event.Key() == tcell.KeyCtrlU {
-		data.ui.buff = "" 
+		data.ui.buff = ""
 	} else if event.Rune() >= 32 && event.Rune() <= 126 {
 		data.ui.buff += string(event.Rune())
 	}
@@ -322,7 +322,7 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	case 0:
 		in.Port = 22
 		in.Jump.Port = 22
-		data.ui.insert_sel_max = 7
+		data.ui.insert_sel_max = 10
 	case 1:
 		in.Port = 3389
 		in.Quality = 2
@@ -577,6 +577,11 @@ func i_events(data *HardData) {
 						case 4: break
 						case 5: ui.buff = data.insert.Priv
 						case 6: ui.buff = data.insert.Jump.Host
+						case 7: ui.buff = strconv.Itoa(int(
+							data.insert.Jump.Port))
+						case 8: ui.buff = data.insert.Jump.User
+						case 9: break
+						case 10: ui.buff = data.insert.Jump.Priv
 						}
 					}
 				} else {
@@ -605,11 +610,11 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
-					case 1, 2, 3, 4, 5, 6, 7:
+					case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case 1: data.insert.Host = ui.buff
-							case 2: 
+							case 2:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Port = uint16(tmp)
 							case 3: data.insert.User = ui.buff
@@ -622,6 +627,12 @@ func i_events(data *HardData) {
 							case 7:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Jump.Port = uint16(tmp)
+							case 8: data.insert.Jump.User = ui.buff
+							case 9:
+								pass, _ := c_encrypt_str(ui.buff,
+														 data.opts.GPG)
+								data.insert.Jump.Pass = pass
+							case 10: data.insert.Jump.Priv = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""
@@ -639,7 +650,7 @@ func i_events(data *HardData) {
 				ui.s.HideCursor()
 				ui.buff = ""
 				ui.mode = NORMAL_MODE
-				data.insert = nil 
+				data.insert = nil
 			} else if event.Key() == tcell.KeyEnter {
 				i_mkdir(data, ui)
 				ui.s.HideCursor()
@@ -648,6 +659,6 @@ func i_events(data *HardData) {
 			} else {
 				i_readline(event, data)
 			}
-		}	
+		}
 	}
 }

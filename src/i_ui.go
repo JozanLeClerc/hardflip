@@ -665,11 +665,11 @@ func i_ui(data_dir string) {
 						i_prompt_generic(data.ui, "Host/IP: ", false, "")
 					case 2, 7:
 						i_prompt_generic(data.ui, "Port: ", false, "")
-					case 3:
+					case 3, 8:
 						i_prompt_generic(data.ui, "User: ", false, "")
-					case 4:
+					case 4, 9:
 						i_prompt_generic(data.ui, "Pass: ", true, "")
-					case 5:
+					case 5, 10:
 						i_prompt_generic(data.ui, "Private key: ",
 							false, home_dir)
 					}
