@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_hardflip.go
- * Wed Feb 21 19:38:57 2024
+ * Wed Mar 27 13:48:53 2024
  * Joe
  *
  * the main
@@ -60,6 +60,7 @@ type HardData struct {
 	folds  map[*DirsNode]*ItemsList
 	data_dir string
 	load_err []error
+	insert_err []error
 	keys   [][2]string
 	insert  *HostNode
 }

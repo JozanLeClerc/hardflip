@@ -52,11 +52,23 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
 )
+
+func i_insert_check_ok(data *HardData, insert *HostNode) {
+	if len(insert.Name) == 0 {
+		data.insert_err = append(data.insert_err,
+			errors.New("no name"))
+	}
+	if len(insert.Host) == 0 {
+		data.insert_err = append(data.insert_err,
+			errors.New("no host"))
+	}
+}
 
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 					 id, selected int, red bool) {
@@ -86,6 +98,27 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 		"[" + spaces + "]")
 	i_draw_text(ui.s, ui.dim[W] / 2 + 1, line, ui.dim[W] / 2 + 1 + tbox_size,
 		line, tbox_style, content)
+}
+
+func i_draw_ok_butt(ui HardUI, line int, id, selected int) {
+	const butt_size int = 10
+	const txt string = "ok"
+	style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
+
+	if id == selected {
+		style = style.Reverse(true).Dim(false)
+	}
+	buff := "["
+	for i := 0; i < butt_size / 2 - len(txt); i++ {
+		buff += " "
+	}
+	buff += txt
+	for i := 0; i < butt_size / 2 - len(txt); i++ {
+		buff += " "
+	}
+	buff += "]"
+	i_draw_text(ui.s, (ui.dim[W] / 2) - (butt_size / 2), line,
+		(ui.dim[W] / 2) + (butt_size / 2), line, style, buff)
 }
 
 func i_draw_insert_panel(ui HardUI, in *HostNode) {
@@ -187,5 +220,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
+	if line += 2; win.T + line >= win.B { return }
+	i_draw_ok_butt(ui, win.T + line, 11, ui.insert_sel)
 	// TODO: here
 }

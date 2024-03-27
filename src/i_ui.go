@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Mar 14 10:39:01 2024
+ * Wed Mar 27 15:48:56 2024
  * Joe
  *
  * interfacing with the user
@@ -173,7 +173,8 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style, title)
 }
 
-func i_draw_bottom_text(ui HardUI, opts HardOpts, insert *HostNode) {
+func i_draw_bottom_text(ui HardUI, opts HardOpts,
+		insert *HostNode, insert_err []error) {
 	text := ""
 
 	switch ui.mode {
@@ -194,6 +195,8 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts, insert *HostNode) {
 	case INSERT_MODE:
 		if insert == nil {
 			text = ""
+		} else if insert_err != nil {
+			text = ERROR_KEYS_HINTS
 		} else {
 			text = INSERT_KEYS_HINTS
 		}
@@ -451,6 +454,22 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	    ui.style[DEF_STYLE].Bold(true), file)
 }
 
+func i_draw_insert_err_msg(ui HardUI, insert_err []error) {
+	lines := len(insert_err)
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Errors ")
+	left, right := 1, ui.dim[W] - 1
+	line := ui.dim[H] - 2 - 1 - len(insert_err)
+	if line < 0 {
+		line = 0
+	}
+	for _, err := range insert_err {
+		line += 1
+		err_str := fmt.Sprintf("%v", err)
+		i_draw_text(ui.s, left, line, right, line,
+			ui.style[ERR_STYLE], err_str)
+	}
+}
+
 func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	lines := len(load_err)
 	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
@@ -529,7 +548,7 @@ func i_draw_load_ui(ui *HardUI, opts HardOpts) {
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.style[BOT_STYLE], text)
-	i_draw_bottom_text(*ui, opts, nil)
+	i_draw_bottom_text(*ui, opts, nil, nil)
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
 	left, right := i_left_right(len(text), ui)
@@ -620,6 +639,7 @@ func i_ui(data_dir string) {
 		make(map[*DirsNode]*ItemsList),
 		data_dir,
 		load_err,
+		nil,
 		[][2]string{},
 		nil,
 	}
@@ -629,7 +649,7 @@ func i_ui(data_dir string) {
 	}
 	for {
 		data.ui.s.Clear()
-		i_draw_bottom_text(data.ui, data.opts, data.insert)
+		i_draw_bottom_text(data.ui, data.opts, data.insert, data.insert_err)
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
@@ -673,6 +693,8 @@ func i_ui(data_dir string) {
 						i_prompt_generic(data.ui, "Private key: ",
 							false, home_dir)
 					}
+				} else if data.insert_err != nil {
+					i_draw_insert_err_msg(data.ui, data.insert_err)
 				}
 			}
 		}

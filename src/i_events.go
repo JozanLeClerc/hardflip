@@ -322,7 +322,7 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	case 0:
 		in.Port = 22
 		in.Jump.Port = 22
-		data.ui.insert_sel_max = 10
+		data.ui.insert_sel_max = 11
 	case 1:
 		in.Port = 3389
 		in.Quality = 2
@@ -549,7 +549,13 @@ func i_events(data *HardData) {
 					i_readline(event, data)
 				}
 			} else if data.insert != nil {
-				if data.ui.insert_sel_ok == false {
+				if data.insert_err != nil {
+					if event.Rune() != 0 ||
+					   event.Key() == tcell.KeyEscape ||
+					   event.Key() == tcell.KeyEnter {
+						data.insert_err = nil
+					}
+				} else if data.ui.insert_sel_ok == false {
 					if event.Key() == tcell.KeyEscape ||
 					   event.Key() == tcell.KeyCtrlC ||
 					   event.Rune() == 'q' {
@@ -583,6 +589,9 @@ func i_events(data *HardData) {
 						case 8: ui.buff = data.insert.Jump.User
 						case 9: break
 						case 10: ui.buff = data.insert.Jump.Priv
+						case 11:
+							data.ui.insert_sel_ok = false
+							i_insert_check_ok(data, data.insert)
 						}
 					}
 				} else {
@@ -649,8 +658,8 @@ func i_events(data *HardData) {
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {
 				ui.s.HideCursor()
-				ui.buff = ""
 				ui.mode = NORMAL_MODE
+				ui.buff = ""
 				data.insert = nil
 			} else if event.Key() == tcell.KeyEnter {
 				i_mkdir(data, ui)
