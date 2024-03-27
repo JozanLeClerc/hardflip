@@ -559,7 +559,8 @@ func i_events(data *HardData) {
 						data.insert = nil
 						ui.buff = ""
 					} else if event.Rune() == 'j' ||
-							  event.Key() == tcell.KeyDown {
+							  event.Key() == tcell.KeyDown ||
+							  event.Key() == tcell.KeyTab {
 						if data.ui.insert_sel < data.ui.insert_sel_max {
 							data.ui.insert_sel += 1
 						}
