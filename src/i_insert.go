@@ -68,6 +68,7 @@ func i_insert_check_ok(data *HardData, insert *HostNode) {
 		data.insert_err = append(data.insert_err,
 			errors.New("no host"))
 	}
+	// TODO: here
 }
 
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
@@ -222,5 +223,4 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	}
 	if line += 2; win.T + line >= win.B { return }
 	i_draw_ok_butt(ui, win.T + line, 11, ui.insert_sel)
-	// TODO: here
 }
