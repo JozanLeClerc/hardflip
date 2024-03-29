@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Mar 29 14:53:01 2024
+ * Fri Mar 29 16:51:31 2024
  * Joe
  *
  * insert a new host
@@ -53,6 +53,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -87,7 +88,6 @@ func i_insert_check_ok(data *HardData, insert *HostNode) {
 				": file is a directory"))
 		}
 	}
-	// TODO: here
 }
 
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
@@ -159,31 +159,38 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
 		0, ui.insert_sel, false)
 	line += 2
+	var end_line int
 	switch in.Protocol {
 	case PROTOCOL_SSH:
-		i_draw_insert_ssh(ui, line, win, in)
+		end_line = i_draw_insert_ssh(ui, line, win, in)
+	}
+	if win.T + end_line >= win.B {
+		ui.s.Fini()
+		fmt.Println(end_line)
+		os.Exit(0)
+		// TODO: here
 	}
 }
 
-func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
+func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	red := false
-	if win.T + line >= win.B { return }
+	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host, 1, ui.insert_sel,
 		false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
 		2, ui.insert_sel, false);
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel,
 		false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel,
 		false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line }
 	if len(in.Priv) > 0 {
 		file := in.Priv
 		if file[0] == '~' {
@@ -198,29 +205,29 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	i_draw_text_box(ui, win.T + line, win, "SSH private key",
 		in.Priv, 5, ui.insert_sel, red)
 	if red == true {
-		if line += 1; win.T + line >= win.B { return }
+		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
 		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
 	red = false
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP",
 		in.Jump.Host, 6, ui.insert_sel, false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port",
 		strconv.Itoa(int(in.Jump.Port)), 7, ui.insert_sel, false)
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User",
 		in.Jump.User, 8, ui.insert_sel, false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Pass",
 		in.Jump.Pass, 9, ui.insert_sel, false)
-	if line += 1; win.T + line >= win.B { return }
+	if line += 1; win.T + line >= win.B { return line}
 	if len(in.Jump.Priv) > 0 {
 		file := in.Jump.Priv
 		if file[0] == '~' {
@@ -235,11 +242,12 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) {
 	i_draw_text_box(ui, win.T + line, win, "SSH private key",
 		in.Jump.Priv, 10, ui.insert_sel, red)
 	if red == true {
-		if line += 1; win.T + line >= win.B { return }
+		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
 		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
-	if line += 2; win.T + line >= win.B { return }
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, 11, ui.insert_sel)
+	return line
 }

@@ -575,6 +575,14 @@ func i_events(data *HardData) {
 						if data.ui.insert_sel > 0 {
 							data.ui.insert_sel -= 1
 						}
+					} else if event.Rune() == 'g' ||
+							  event.Rune() == 'h' ||
+							  event.Key() == tcell.KeyLeft {
+							data.ui.insert_sel = 0
+					} else if event.Rune() == 'G' ||
+							  event.Rune() == 'l' ||
+							  event.Key() == tcell.KeyRight {
+							data.ui.insert_sel = data.ui.insert_sel_max
 					} else if event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
