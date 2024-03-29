@@ -168,14 +168,14 @@ func c_format_openstack(host *HostNode, pass string) ([]string, []string) {
 		"OS_USERNAME="             + host.User,
 		"OS_PASSWORD="             + pass,
 		"OS_AUTH_URL="             + host.Host,
-		"OS_USER_DOMAIN_ID="       + host.Stack.UserDomainID, 
-		"OS_PROJECT_ID="           + host.Stack.ProjectID, 
-		"OS_IDENTITY_API_VERSION=" + host.Stack.IdentityAPI, 
-		"OS_IMAGE_API_VERSION="    + host.Stack.ImageAPI, 
-		"OS_NETWORK_API_VERSION="  + host.Stack.NetworkAPI, 
-		"OS_VOLUME_API_VERSION="   + host.Stack.VolumeAPI, 
-		"OS_REGION_NAME="          + host.Stack.RegionName, 
-		"OS_ENDPOINT_TYPE="        + host.Stack.EndpointType, 
+		"OS_USER_DOMAIN_ID="       + host.Stack.UserDomainID,
+		"OS_PROJECT_ID="           + host.Stack.ProjectID,
+		"OS_IDENTITY_API_VERSION=" + host.Stack.IdentityAPI,
+		"OS_IMAGE_API_VERSION="    + host.Stack.ImageAPI,
+		"OS_NETWORK_API_VERSION="  + host.Stack.NetworkAPI,
+		"OS_VOLUME_API_VERSION="   + host.Stack.VolumeAPI,
+		"OS_REGION_NAME="          + host.Stack.RegionName,
+		"OS_ENDPOINT_TYPE="        + host.Stack.EndpointType,
 		"OS_INTERFACE="            + host.Stack.Interface,
 	}
 	return cmd_fmt, cmd_env
@@ -236,7 +236,7 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		return
 	}
 	silent := false
-	if host.Protocol == 2 {
+	if host.Protocol == PROTOCOL_CMD {
 		silent = host.Silent
 	}
 	if silent == false {

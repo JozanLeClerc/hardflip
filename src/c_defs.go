@@ -71,31 +71,41 @@ m: mkdir -
 )
 
 const (
-	NORMAL_MODE  = 0
-	DELETE_MODE  = 1
-	LOAD_MODE    = 2
-	ERROR_MODE   = 3
-	WELCOME_MODE = 4
-	MKDIR_MODE   = 5
-	INSERT_MODE  = 6
+	NORMAL_MODE = iota
+	DELETE_MODE
+	LOAD_MODE
+	ERROR_MODE
+	WELCOME_MODE
+	MKDIR_MODE
+	INSERT_MODE
 )
 
 const (
-	W           = 0
-	H           = 1
+	W = 0
+	H = 1
+)
+
+const (
 	ERROR_MSG   = 0
 	ERROR_ERR   = 1
-	DEF_STYLE   = 0
-	DIR_STYLE   = 1
-	BOX_STYLE   = 2
-	HEAD_STYLE  = 3
-	ERR_STYLE   = 4
-	TITLE_STYLE = 5
-	BOT_STYLE   = 6
 )
 
 const (
-	PROTOCOL_MAX = 3
+	DEF_STYLE = iota
+	DIR_STYLE
+	BOX_STYLE
+	HEAD_STYLE
+	ERR_STYLE
+	TITLE_STYLE
+	BOT_STYLE
+)
+
+const (
+	PROTOCOL_SSH = iota
+	PROTOCOL_RDP
+	PROTOCOL_CMD
+	PROTOCOL_OS
+	PROTOCOL_MAX = PROTOCOL_OS
 )
 
 var (

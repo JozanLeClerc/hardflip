@@ -70,7 +70,7 @@ func c_parse_opts(file string) (HardOpts, error) {
 	return opts, err
 }
 
-func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
+func c_read_yaml_file(file string) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)
 
@@ -92,7 +92,7 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 			return nil, nil
 		}
 	}
-	if host.Protocol == 0 {
+	if host.Protocol == PROTOCOL_SSH {
 		if host.Port == 0 {
 			host.Port = 22
 		}
@@ -107,7 +107,7 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 				host.Jump.User = "root"
 			}
 		}
-	} else if host.Protocol == 1 {
+	} else if host.Protocol == PROTOCOL_RDP {
 		if len(host.User) == 0 {
 			host.User = "Administrator"
 		}
@@ -120,7 +120,7 @@ func c_read_yaml_file(file string, ui *HardUI) (*HostNode, error) {
 		if host.Height == 0 {
 			host.Height = 1200
 		}
-	} else if host.Protocol == 2 {
+	} else if host.Protocol == PROTOCOL_CMD {
 		if len(host.Shell) == 0 {
 			host.Shell = []string{"/bin/sh", "-c"}
 		}

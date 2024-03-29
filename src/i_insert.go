@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Wed Mar 27 16:43:21 2024
+ * Fri Mar 29 12:15:41 2024
  * Joe
  *
  * insert a new host
@@ -61,12 +61,31 @@ import (
 
 func i_insert_check_ok(data *HardData, insert *HostNode) {
 	if len(insert.Name) == 0 {
-		data.insert_err = append(data.insert_err,
-			errors.New("no name"))
+		data.insert_err = append(data.insert_err, errors.New("no name"))
 	}
 	if len(insert.Host) == 0 {
-		data.insert_err = append(data.insert_err,
-			errors.New("no host"))
+		data.insert_err = append(data.insert_err, errors.New("no host"))
+	}
+	if insert.Port == 0 {
+		data.insert_err = append(data.insert_err, errors.New("port can't be 0"))
+	}
+	if insert.Protocol == PROTOCOL_SSH && len(insert.Priv) != 0 {
+		file := insert.Priv
+		if file[0] == '~' {
+			home_dir, err := os.UserHomeDir()
+			if err != nil {
+				return
+			}
+			file = home_dir + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		err != nil {
+			data.insert_err = append(data.insert_err, errors.New(file +
+				": file does not exist"))
+		} else if stat.IsDir() == true {
+			data.insert_err = append(data.insert_err, errors.New(file +
+				": file is a directory"))
+		}
 	}
 	// TODO: here
 }
