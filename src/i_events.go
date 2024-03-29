@@ -319,21 +319,21 @@ func i_mkdir(data *HardData, ui *HardUI) {
 
 func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
-	case 0:
+	case PROTOCOL_SSH:
 		in.Port = 22
 		in.Jump.Port = 22
 		data.ui.insert_sel_max = 11
-	case 1:
+	case PROTOCOL_RDP:
 		in.Port = 3389
 		in.Quality = 2
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
 		data.ui.insert_sel_max = 4
-	case 2:
+	case PROTOCOL_CMD:
 		in.Shell = []string{"/bin/sh", "-c"}
 		data.ui.insert_sel_max = 2
-	case 3:
+	case PROTOCOL_OS:
 		in.Stack.RegionName = "eu-west-0"
 		in.Stack.IdentityAPI = "3"
 		in.Stack.ImageAPI    = "2"
