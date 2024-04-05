@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Apr 05 10:42:36 2024
+ * Fri Apr 05 14:19:38 2024
  * Joe
  *
  * insert a new host
@@ -53,6 +53,7 @@ package main
 
 import (
 	"errors"
+	// "fmt"
 	"os"
 	"strconv"
 
@@ -140,6 +141,8 @@ func i_draw_ok_butt(ui HardUI, line int, id, selected int) {
 		(ui.dim[W] / 2) + (butt_size / 2), line, style, buff)
 }
 
+var start_line int
+
 func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	if len(in.Name) == 0 {
 		return
@@ -165,6 +168,14 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	}
 	if win.T + end_line >= win.B {
 		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
+		// ui.s.Fini()
+		// fmt.Println("end_line ", end_line)
+		// fmt.Println("win.T    ", win.T)
+		// fmt.Println("win.T+end", win.T + end_line)
+		// fmt.Println("win.B    ", win.B)
+		// fmt.Println("insert_sel   ", ui.insert_sel)
+		// fmt.Println("insert_max   ", ui.insert_sel_max)
+		// os.Exit(0)
 		// TODO: here
 	}
 }
