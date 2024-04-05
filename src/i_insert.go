@@ -61,6 +61,7 @@ import (
 
 func i_insert_host(data *HardData, insert *HostNode) {
 	tmp_next := data.litems.curr.next
+	// TODO: here
 }
 
 func i_insert_check_ok(data *HardData, insert *HostNode) {
