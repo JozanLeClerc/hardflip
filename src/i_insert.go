@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Mar 29 16:51:31 2024
+ * Fri Apr 05 10:42:36 2024
  * Joe
  *
  * insert a new host
@@ -53,7 +53,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -165,9 +164,7 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 		end_line = i_draw_insert_ssh(ui, line, win, in)
 	}
 	if win.T + end_line >= win.B {
-		ui.s.Fini()
-		fmt.Println(end_line)
-		os.Exit(0)
+		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
 		// TODO: here
 	}
 }
