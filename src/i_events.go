@@ -600,6 +600,10 @@ func i_events(data *HardData) {
 						case 11:
 							data.ui.insert_sel_ok = false
 							i_insert_check_ok(data, data.insert)
+							if data.insert_err != nil {
+								break
+							}
+							i_insert_host(data, data.insert)
 						}
 					}
 				} else {
