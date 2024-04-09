@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 09 14:56:56 2024
+ * Tue Apr 09 15:36:02 2024
  * Joe
  *
  * insert a new host
@@ -53,13 +53,14 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"gopkg.in/yaml.v3"
+	"k8s.io/apimachinery/pkg/util/uuid"
 )
 
 func i_insert_format_filename(name, path string) string {
@@ -68,21 +69,36 @@ func i_insert_format_filename(name, path string) string {
 	if len(name) == 0 {
 		return ""
 	}
+	re := regexp.MustCompile("[^a-zA-Z0-9]+")
+	replace := "_"
+	str = re.ReplaceAllString(str, replace)
+	_, err := os.Stat(path + str + ".yml")
+	for err == nil {
+		uid := uuid.NewUUID()
+		str += "_" + string(uid[0:4])
+		_, err = os.Stat(path + str + ".yml")
+	}
 	str = strings.ToLower(str) + ".yml"
 	return str
 }
 
 func i_insert_host(data *HardData, insert *HostNode) {
-	data.ui.s.Fini()
-	fmt.Println(i_insert_format_filename(insert.Name,
-		data.data_dir + insert.parent.path()))
-	fmt.Println(data.data_dir + insert.parent.path())
-	os.Exit(0)
-	_, err := yaml.Marshal(insert)
+	filename := i_insert_format_filename(insert.Name,
+		data.data_dir + insert.parent.path())
+	insert.filename = filename
+	fmt, err := yaml.Marshal(insert)
 	if err != nil {
+		c_error_mode("yaml", err, &data.ui)
+		data.insert = nil
 		return
 	}
-	// err = os.WriteFile(i_insert_format_filename(insert.Name))
+	err = os.WriteFile(data.data_dir + insert.parent.path() + filename,
+		fmt, 0644)
+	if err != nil {
+		c_error_mode("can't write file", err, &data.ui)
+		data.insert = nil
+		return
+	}
 	item := &ItemsNode{
 		data.litems.curr.ID + 1,
 		nil,
