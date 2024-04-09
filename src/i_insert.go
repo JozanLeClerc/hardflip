@@ -172,7 +172,8 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
 		ui.style[DEF_STYLE], label)
-	if (id == 4 || id == 9) && len(content) > 0 {
+	if (id == INS_SSH_PASS || id == INS_SSH_JUMP_PASS || id == INS_RDP_PASS) &&
+		len(content) > 0 {
 		content = "***"
 	}
 	if red == true {
@@ -211,6 +212,8 @@ func i_draw_ok_butt(ui HardUI, line int, id, selected int) {
 }
 
 func i_draw_insert_panel(ui HardUI, in *HostNode) {
+	type draw_insert_func func(ui HardUI, line int, win Quad, in *HostNode) int
+
 	if len(in.Name) == 0 {
 		return
 	}
@@ -229,14 +232,51 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 		0, ui.insert_sel, false)
 	line += 2
 	var end_line int
-	switch in.Protocol {
-	case PROTOCOL_SSH:
-		end_line = i_draw_insert_ssh(ui, line, win, in)
+	fp := [PROTOCOL_MAX + 1]draw_insert_func{
+		i_draw_insert_ssh,
+		i_draw_insert_rdp,
+		i_draw_insert_cmd,
+		i_draw_insert_os,
 	}
+	end_line = fp[in.Protocol](ui, line, win, in)
 	if win.T + end_line >= win.B {
 		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
 		// TODO: scroll or something
 	}
+}
+
+func i_draw_insert_os(ui HardUI, line int, win Quad, in *HostNode) int {
+	return 0
+}
+
+func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
+	return 0
+}
+
+func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
+	// red := false
+	if win.T + line >= win.B { return line }
+	text := "---- Host settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
+		INS_RDP_HOST, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
+		INS_RDP_PORT, ui.insert_sel, false);
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Domain", in.Domain,
+		INS_RDP_DOMAIN, ui.insert_sel, false);
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "User", in.User,
+		INS_RDP_USER, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
+		INS_RDP_PASS, ui.insert_sel, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK, ui.insert_sel)
+	return line
 }
 
 func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
@@ -246,17 +286,17 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host, 1, ui.insert_sel,
-		false)
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
+		INS_SSH_HOST, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		2, ui.insert_sel, false);
+		INS_SSH_PORT, ui.insert_sel, false);
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "User", in.User, 3, ui.insert_sel,
-		false)
+	i_draw_text_box(ui, win.T + line, win, "User", in.User,
+		INS_SSH_USER, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass, 4, ui.insert_sel,
-		false)
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
+		INS_SSH_PASS, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
 	if len(in.Priv) > 0 {
 		file := in.Priv
@@ -269,8 +309,8 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 			red = true
 		}
 	}
-	i_draw_text_box(ui, win.T + line, win, "SSH private key",
-		in.Priv, 5, ui.insert_sel, red)
+	i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Priv,
+		INS_SSH_PRIV, ui.insert_sel, red)
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
@@ -283,17 +323,18 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Host/IP",
-		in.Jump.Host, 6, ui.insert_sel, false)
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
+		INS_SSH_JUMP_HOST, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port",
-		strconv.Itoa(int(in.Jump.Port)), 7, ui.insert_sel, false)
+		strconv.Itoa(int(in.Jump.Port)),
+		INS_SSH_JUMP_PORT, ui.insert_sel, false)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "User",
-		in.Jump.User, 8, ui.insert_sel, false)
+	i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
+		INS_SSH_JUMP_USER, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Pass",
-		in.Jump.Pass, 9, ui.insert_sel, false)
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
+		INS_SSH_JUMP_PASS, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line}
 	if len(in.Jump.Priv) > 0 {
 		file := in.Jump.Priv
@@ -306,8 +347,8 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 			red = true
 		}
 	}
-	i_draw_text_box(ui, win.T + line, win, "SSH private key",
-		in.Jump.Priv, 10, ui.insert_sel, red)
+	i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
+		INS_SSH_JUMP_PRIV, ui.insert_sel, red)
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
@@ -315,6 +356,6 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, 11, ui.insert_sel)
+	i_draw_ok_butt(ui, win.T + line, INS_SSH_OK, ui.insert_sel)
 	return line
 }

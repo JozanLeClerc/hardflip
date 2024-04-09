@@ -321,14 +321,14 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
 		in.Port = 22
-		data.ui.insert_sel_max = 11
+		data.ui.insert_sel_max = INS_SSH_OK
 	case PROTOCOL_RDP:
 		in.Port = 3389
 		in.Quality = 2
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
-		data.ui.insert_sel_max = 4
+		data.ui.insert_sel_max = INS_RDP_OK
 	case PROTOCOL_CMD:
 		in.Shell = []string{"/bin/sh", "-c"}
 		data.ui.insert_sel_max = 2
@@ -566,37 +566,60 @@ func i_events(data *HardData) {
 					} else if event.Rune() == 'j' ||
 							  event.Key() == tcell.KeyDown ||
 							  event.Key() == tcell.KeyTab {
-						if data.ui.insert_sel < data.ui.insert_sel_max {
+						if data.insert.Protocol == PROTOCOL_RDP &&
+						   data.ui.insert_sel == INS_PROTOCOL {
+							data.ui.insert_sel = INS_RDP_HOST
+						} else if data.ui.insert_sel < data.ui.insert_sel_max {
 							data.ui.insert_sel += 1
 						}
 					} else if event.Rune() == 'k' ||
 							  event.Key() == tcell.KeyUp {
-						if data.ui.insert_sel > 0 {
+						if data.insert.Protocol == PROTOCOL_RDP &&
+						   data.ui.insert_sel == INS_RDP_HOST {
+							data.ui.insert_sel = INS_PROTOCOL
+						} else if data.ui.insert_sel > INS_PROTOCOL {
 							data.ui.insert_sel -= 1
 						}
 					} else if event.Rune() == 'g' ||
 							  event.Rune() == 'h' ||
 							  event.Key() == tcell.KeyLeft {
-							data.ui.insert_sel = 0
+							data.ui.insert_sel = INS_PROTOCOL
 					} else if event.Rune() == 'G' ||
 							  event.Rune() == 'l' ||
 							  event.Key() == tcell.KeyRight {
 							data.ui.insert_sel = data.ui.insert_sel_max
-					} else if event.Key() == tcell.KeyEnter {
+					} else if event.Rune() == 'i' ||
+							  event.Rune() == 'a' ||
+							  event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
-						case 1: ui.buff = data.insert.Host
-						case 2: ui.buff = strconv.Itoa(int(data.insert.Port))
-						case 3: ui.buff = data.insert.User
-						case 4: break
-						case 5: ui.buff = data.insert.Priv
-						case 6: ui.buff = data.insert.Jump.Host
-						case 7: ui.buff = strconv.Itoa(int(
-							data.insert.Jump.Port))
-						case 8: ui.buff = data.insert.Jump.User
-						case 9: break
-						case 10: ui.buff = data.insert.Jump.Priv
-						case 11:
+						case INS_SSH_HOST,
+							 INS_RDP_HOST:
+							ui.buff = data.insert.Host
+						case INS_SSH_PORT,
+							 INS_RDP_PORT:
+							if data.insert.Port > 0 {
+								ui.buff = strconv.Itoa(int(data.insert.Port))
+							}
+						case INS_SSH_USER,
+							 INS_RDP_USER:
+							ui.buff = data.insert.User
+						case INS_SSH_PASS,
+							 INS_RDP_PASS:
+							break
+						case INS_SSH_PRIV: ui.buff = data.insert.Priv
+						case INS_SSH_JUMP_HOST: ui.buff = data.insert.Jump.Host
+						case INS_SSH_JUMP_PORT:
+							if data.insert.Jump.Port > 0 {
+								ui.buff = strconv.Itoa(int(
+								data.insert.Jump.Port))
+							}
+						case INS_SSH_JUMP_USER: ui.buff = data.insert.Jump.User
+						case INS_SSH_JUMP_PASS: break
+						case INS_SSH_JUMP_PRIV: ui.buff = data.insert.Jump.Priv
+						case INS_RDP_DOMAIN: ui.buff = data.insert.Domain
+						case INS_SSH_OK,
+							 INS_RDP_OK:
 							data.ui.insert_sel_ok = false
 							i_insert_check_ok(data, data.insert)
 							if data.insert_err != nil {
@@ -613,7 +636,7 @@ func i_events(data *HardData) {
 						ui.s.HideCursor()
 					}
 					switch data.ui.insert_sel {
-					case 0:
+					case INS_PROTOCOL:
 						if event.Rune() < '1' || event.Rune() > '4' {
 							data.ui.insert_sel_ok = false
 							ui.buff = ""
@@ -631,35 +654,57 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
-					case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10:
+					case INS_SSH_HOST,
+						 INS_SSH_PORT,
+						 INS_SSH_USER,
+						 INS_SSH_PASS,
+						 INS_SSH_PRIV,
+						 INS_SSH_JUMP_HOST,
+						 INS_SSH_JUMP_PORT,
+						 INS_SSH_JUMP_USER,
+						 INS_SSH_JUMP_PASS,
+						 INS_SSH_JUMP_PRIV,
+						 INS_RDP_HOST,
+						 INS_RDP_PORT,
+						 INS_RDP_DOMAIN,
+						 INS_RDP_USER,
+						 INS_RDP_PASS:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
-							case 1: data.insert.Host = ui.buff
-							case 2:
+							case INS_SSH_HOST,
+								 INS_RDP_HOST:
+								data.insert.Host = ui.buff
+							case INS_SSH_PORT,
+								 INS_RDP_PORT:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Port = uint16(tmp)
-							case 3: data.insert.User = ui.buff
-							case 4:
-								pass, _ := c_encrypt_str(ui.buff,
+							case INS_SSH_USER,
+								 INS_RDP_USER:
+								data.insert.User = ui.buff
+							case INS_SSH_PASS,
+								 INS_RDP_PASS:
+								data.insert.Pass, _ = c_encrypt_str(ui.buff,
 														 data.opts.GPG)
-								data.insert.Pass = pass
-							case 5: data.insert.Priv = ui.buff
-							case 6:
+							case INS_SSH_PRIV: data.insert.Priv = ui.buff
+							case INS_SSH_JUMP_HOST:
 								data.insert.Jump.Host = ui.buff
 								if len(ui.buff) > 0 {
 									data.insert.Jump.Port = 22
 								} else {
 									data.insert.Jump.Port = 0
 								}
-							case 7:
+							case INS_SSH_JUMP_PORT:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Jump.Port = uint16(tmp)
-							case 8: data.insert.Jump.User = ui.buff
-							case 9:
-								pass, _ := c_encrypt_str(ui.buff,
-														 data.opts.GPG)
-								data.insert.Jump.Pass = pass
-							case 10: data.insert.Jump.Priv = ui.buff
+							case INS_SSH_JUMP_USER:
+								data.insert.Jump.User = ui.buff
+							case INS_SSH_JUMP_PASS:
+								data.insert.Jump.Pass, _ =
+								c_encrypt_str(ui.buff, data.opts.GPG)
+							case INS_SSH_JUMP_PRIV:
+								data.insert.Jump.Priv = ui.buff
+							case INS_RDP_DOMAIN:
+								data.insert.Domain = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""

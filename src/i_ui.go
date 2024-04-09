@@ -679,19 +679,30 @@ func i_ui(data_dir string) {
 				i_draw_insert_panel(data.ui, data.insert)
 				if data.ui.insert_sel_ok == true {
 					switch data.ui.insert_sel {
-					case 0:
+					case INS_PROTOCOL:
 						i_prompt_type(data.ui)
-					case 1, 6:
+					case INS_SSH_HOST,
+						 INS_SSH_JUMP_HOST,
+						 INS_RDP_HOST:
 						i_prompt_generic(data.ui, "Host/IP: ", false, "")
-					case 2, 7:
+					case INS_SSH_PORT,
+						 INS_SSH_JUMP_PORT,
+						 INS_RDP_PORT:
 						i_prompt_generic(data.ui, "Port: ", false, "")
-					case 3, 8:
+					case INS_SSH_USER,
+						 INS_SSH_JUMP_USER,
+						 INS_RDP_USER:
 						i_prompt_generic(data.ui, "User: ", false, "")
-					case 4, 9:
+					case INS_SSH_PASS,
+						 INS_SSH_JUMP_PASS,
+						 INS_RDP_PASS:
 						i_prompt_generic(data.ui, "Pass: ", true, "")
-					case 5, 10:
+					case INS_SSH_PRIV,
+						 INS_SSH_JUMP_PRIV:
 						i_prompt_generic(data.ui, "Private key: ",
 							false, home_dir)
+					case INS_RDP_DOMAIN:
+						i_prompt_generic(data.ui, "Domain: ", false, "")
 					}
 				} else if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)
