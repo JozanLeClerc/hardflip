@@ -55,11 +55,11 @@
 
 - [ ] fuzz
 
-## v1.2 - late flip
+## v1.2 - ghetto bird
 
 - [ ] vnc
 
-## v1.3 - ghetto bird
+## v1.3 - late flip
 
 - [ ] sorting options (yea like never)
 
