@@ -97,8 +97,8 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 			if err != nil {
 				*load_err = append(*load_err, err)
 			} else if host_node != nil {
-				host_node.Filename = filename
-				host_node.Parent = &dir_node
+				host_node.filename = filename
+				host_node.parent = &dir_node
 				if len(opts.GPG) == 0 {
 					host_node.Pass = ""
 				}

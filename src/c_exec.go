@@ -204,7 +204,7 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 		var err error
 		pass, err = c_decrypt_str(host.Pass)
 		if err != nil {
-			c_error_mode(host.Parent.path() + host.Filename +
+			c_error_mode(host.parent.path() + host.filename +
 				": password decryption failed", err, ui)
 			return nil, nil
 		}

@@ -440,7 +440,7 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 		text = "Really delete this directory and all of its content?"
 	} else {
 		text = "Really delete this host?"
-		file += item.Host.Filename
+		file += item.Host.filename
 	}
 	file = file[1:]
 	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")

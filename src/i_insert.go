@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri Apr 05 14:19:38 2024
+ * Tue Apr 09 14:56:56 2024
  * Joe
  *
  * insert a new host
@@ -53,14 +53,48 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
+	"gopkg.in/yaml.v3"
 )
 
+func i_insert_format_filename(name, path string) string {
+	str := name
+
+	if len(name) == 0 {
+		return ""
+	}
+	str = strings.ToLower(str) + ".yml"
+	return str
+}
+
 func i_insert_host(data *HardData, insert *HostNode) {
-	tmp_next := data.litems.curr.next
+	data.ui.s.Fini()
+	fmt.Println(i_insert_format_filename(insert.Name,
+		data.data_dir + insert.parent.path()))
+	fmt.Println(data.data_dir + insert.parent.path())
+	os.Exit(0)
+	_, err := yaml.Marshal(insert)
+	if err != nil {
+		return
+	}
+	// err = os.WriteFile(i_insert_format_filename(insert.Name))
+	item := &ItemsNode{
+		data.litems.curr.ID + 1,
+		nil,
+		insert,
+		data.litems.curr,
+		data.litems.curr.next,
+	}
+	data.litems.curr.next = item
+	data.litems.reset_id()
+	data.litems.curr = data.litems.curr.next
+	data.ui.mode = NORMAL_MODE
+	data.insert = nil
 }
 
 func i_insert_check_ok(data *HardData, insert *HostNode) {
@@ -72,6 +106,10 @@ func i_insert_check_ok(data *HardData, insert *HostNode) {
 	}
 	if insert.Port == 0 {
 		data.insert_err = append(data.insert_err, errors.New("port can't be 0"))
+	}
+	if len(insert.Jump.Host) > 0 && insert.Jump.Port == 0 {
+		data.insert_err = append(data.insert_err,
+			errors.New("jump port can't be 0"))
 	}
 	if insert.Protocol == PROTOCOL_SSH && len(insert.Priv) != 0 {
 		file := insert.Priv

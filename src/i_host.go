@@ -114,7 +114,7 @@ func i_draw_host_panel(ui HardUI, icons bool,
 		if ptr.is_dir() == false && ptr.Host != nil  {
 			i_host_panel_host(ui,
 				icons,
-				ptr.Host.Parent.Depth,
+				ptr.Host.parent.Depth,
 				ptr.Host,
 				litems.curr.Host,
 				line)

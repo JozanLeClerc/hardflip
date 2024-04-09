@@ -53,23 +53,23 @@ package main
 
 
 type StackSettings struct {
-  UserDomainID string `yaml:"user_domain_id"`
-  ProjectID    string `yaml:"project_id"`
-  IdentityAPI  string `yaml:"identity_api_version"`
-  ImageAPI     string `yaml:"image_api_version"`
-  NetworkAPI   string `yaml:"network_api_version"`
-  VolumeAPI    string `yaml:"volume_api_version"`
-  RegionName   string `yaml:"region_name"`
-  EndpointType string `yaml:"endpoint_type"`
-  Interface    string `yaml:"interface"`
+  UserDomainID string `yaml:"user_domain_id,omitempty"`
+  ProjectID    string `yaml:"project_id,omitempty"`
+  IdentityAPI  string `yaml:"identity_api_version,omitempty"`
+  ImageAPI     string `yaml:"image_api_version,omitempty"`
+  NetworkAPI   string `yaml:"network_api_version,omitempty"`
+  VolumeAPI    string `yaml:"volume_api_version,omitempty"`
+  RegionName   string `yaml:"region_name,omitempty"`
+  EndpointType string `yaml:"endpoint_type,omitempty"`
+  Interface    string `yaml:"interface,omitempty"`
 }
 
 type JumpSettings struct {
-	Host string `yaml:"host"`
-	Port uint16 `yaml:"port"`
-	User string `yaml:"user"`
-	Pass string `yaml:"pass"`
-	Priv string `yaml:"priv"`
+	Host string `yaml:"host,omitempty"`
+	Port uint16 `yaml:"port,omitempty"`
+	User string `yaml:"user,omitempty"`
+	Pass string `yaml:"pass,omitempty"`
+	Priv string `yaml:"priv,omitempty"`
 }
 
 // 0: ssh
@@ -78,26 +78,26 @@ type JumpSettings struct {
 // 3: openstack
 type HostNode struct {
 	Protocol int8     `yaml:"type"`
-	Name     string   `yaml:"name"`
-	Host     string   `yaml:"host"`
-	Port     uint16   `yaml:"port"`
-	User     string   `yaml:"user"`
-	Pass     string   `yaml:"pass"`
-	Priv     string   `yaml:"priv"`
-	RDPFile  string   `yaml:"rdp_file"`
-	Jump     JumpSettings `yaml:"jump"`
-	Quality  uint8    `yaml:"quality"`
-	Domain   string   `yaml:"domain"`
-	Width    uint16   `yaml:"width"`
-	Height   uint16   `yaml:"height"`
-	Dynamic  bool     `yaml:"dynamic"`
-	Note     string   `yaml:"note"`
-	Drive    map[string]string `yaml:"drive"`
-	Silent   bool     `yaml:"silent"`
-	Shell    []string `yaml:"shell"`
-	Stack    StackSettings `yaml:"openstack"`
-	Filename string
-	Parent   *DirsNode
+	Name     string   `yaml:"name,omitempty"`
+	Host     string   `yaml:"host,omitempty"`
+	Port     uint16   `yaml:"port,omitempty"`
+	User     string   `yaml:"user,omitempty"`
+	Pass     string   `yaml:"pass,omitempty"`
+	Priv     string   `yaml:"priv,omitempty"`
+	RDPFile  string   `yaml:"rdp_file,omitempty"`
+	Jump     JumpSettings `yaml:"jump,omitempty"`
+	Quality  uint8    `yaml:"quality,omitempty"`
+	Domain   string   `yaml:"domain,omitempty"`
+	Width    uint16   `yaml:"width,omitempty"`
+	Height   uint16   `yaml:"height,omitempty"`
+	Dynamic  bool     `yaml:"dynamic,omitempty"`
+	Note     string   `yaml:"note,omitempty"`
+	Drive    map[string]string `yaml:"drive,omitempty"`
+	Silent   bool     `yaml:"silent,omitempty"`
+	Shell    []string `yaml:"shell,omitempty"`
+	Stack    StackSettings `yaml:"openstack,omitempty"`
+	filename string
+	parent   *DirsNode
 	next     *HostNode
 }
 

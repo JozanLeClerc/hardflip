@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_events.go
- * Thu Mar 14 10:38:55 2024
+ * Tue Apr 09 14:34:02 2024
  * Joe
  *
  * events in the code
@@ -174,8 +174,8 @@ func i_reload_data(data *HardData) {
 			tmp_name = data.litems.curr.Dirs.Name
 			tmp_parent_path = data.litems.curr.Dirs.Parent.path()
 		} else {
-			tmp_name = data.litems.curr.Host.Filename
-			tmp_parent_path = data.litems.curr.Host.Parent.path()
+			tmp_name = data.litems.curr.Host.filename
+			tmp_parent_path = data.litems.curr.Host.parent.path()
 		}
 	}
 	conf_dir  := c_get_conf_dir(&data.load_err)
@@ -205,8 +205,8 @@ func i_reload_data(data *HardData) {
 				}
 			}
 		} else {
-			if curr.Host.Filename == tmp_name {
-				if curr.Host.Parent.path() == tmp_parent_path {
+			if curr.Host.filename == tmp_name {
+				if curr.Host.parent.path() == tmp_parent_path {
 					data.litems.curr = curr
 					return
 				}
@@ -263,14 +263,14 @@ func i_delete_host(data *HardData) error {
 	if host == nil {
 		return nil
 	}
-	file_path := data.data_dir + host.Parent.path() + host.Filename
+	file_path := data.data_dir + host.parent.path() + host.filename
 
 	if err := os.Remove(file_path); err != nil {
 		c_error_mode("can't remove " + file_path, err, &data.ui)
 		return err
 	}
 	tmp := data.litems.curr.prev
-	host.Parent.lhost.del(host)
+	host.parent.lhost.del(host)
 	data.litems.del(data.litems.curr)
 	if tmp == nil {
 		tmp = data.litems.head
@@ -321,7 +321,6 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
 		in.Port = 22
-		in.Jump.Port = 22
 		data.ui.insert_sel_max = 11
 	case PROTOCOL_RDP:
 		in.Port = 3389
@@ -543,7 +542,7 @@ func i_events(data *HardData) {
 					data.insert.Name = ui.buff
 					ui.buff = ""
 					if data.litems.curr != nil {
-						data.insert.Parent = data.litems.curr.path_node()
+						data.insert.parent = data.litems.curr.path_node()
 					}
 				} else {
 					i_readline(event, data)
@@ -622,11 +621,11 @@ func i_events(data *HardData) {
 							break
 						} else {
 							name := data.insert.Name
-							parent := data.insert.Parent
+							parent := data.insert.parent
 							data.insert = nil
 							data.insert = &HostNode{}
 							data.insert.Name = name
-							data.insert.Parent = parent
+							data.insert.parent = parent
 							data.insert.Protocol = int8(event.Rune() - 48 - 1)
 							data.ui.insert_sel_ok = false
 							ui.s.HideCursor()
@@ -645,7 +644,13 @@ func i_events(data *HardData) {
 														 data.opts.GPG)
 								data.insert.Pass = pass
 							case 5: data.insert.Priv = ui.buff
-							case 6: data.insert.Jump.Host = ui.buff
+							case 6:
+								data.insert.Jump.Host = ui.buff
+								if len(ui.buff) > 0 {
+									data.insert.Jump.Port = 22
+								} else {
+									data.insert.Jump.Port = 0
+								}
 							case 7:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Jump.Port = uint16(tmp)
@@ -665,7 +670,6 @@ func i_events(data *HardData) {
 					}
 				}
 			}
-		// TODO: reset data.insert to nil on validate
 		case MKDIR_MODE:
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {

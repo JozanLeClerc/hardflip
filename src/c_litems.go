@@ -224,7 +224,7 @@ func (item *ItemsNode) path_node() *DirsNode {
 	if item.is_dir() == true {
 		return item.Dirs
 	} else {
-		return item.Host.Parent
+		return item.Host.parent
 	}
 }
 
