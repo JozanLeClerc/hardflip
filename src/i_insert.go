@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 09 15:36:02 2024
+ * Tue Apr 09 16:00:41 2024
  * Joe
  *
  * insert a new host
@@ -73,10 +73,13 @@ func i_insert_format_filename(name, path string) string {
 	replace := "_"
 	str = re.ReplaceAllString(str, replace)
 	_, err := os.Stat(path + str + ".yml")
-	for err == nil {
+	base := str
+	i := 0
+	for err == nil && i < 10000 {
 		uid := uuid.NewUUID()
-		str += "_" + string(uid[0:4])
+		str = base + "_" + string(uid[0:4])
 		_, err = os.Stat(path + str + ".yml")
+		i++
 	}
 	str = strings.ToLower(str) + ".yml"
 	return str
@@ -99,14 +102,23 @@ func i_insert_host(data *HardData, insert *HostNode) {
 		data.insert = nil
 		return
 	}
+	// HACK: not sure if this is necessary
+	// if data.litems.curr.is_dir() == true {
+	// 	data.litems.curr.Dirs.lhost.add_back(insert)
+	// } else {
+	// 	tmp_next := data.litems.curr.Host.next
+	// 	data.litems.curr.Host.next = insert
+	// 	data.litems.curr.Host.next.next = tmp_next
+	// }
 	item := &ItemsNode{
-		data.litems.curr.ID + 1,
+		0,
 		nil,
 		insert,
 		data.litems.curr,
 		data.litems.curr.next,
 	}
 	data.litems.curr.next = item
+	data.litems.curr.next.next.prev = item
 	data.litems.reset_id()
 	data.litems.curr = data.litems.curr.next
 	data.ui.mode = NORMAL_MODE
