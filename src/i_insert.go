@@ -110,17 +110,29 @@ func i_insert_host(data *HardData, insert *HostNode) {
 	// 	data.litems.curr.Host.next = insert
 	// 	data.litems.curr.Host.next.next = tmp_next
 	// }
+	var next *ItemsNode = nil
+	if data.litems.curr != nil {
+		next = data.litems.curr.next
+	}
 	item := &ItemsNode{
 		0,
 		nil,
 		insert,
 		data.litems.curr,
-		data.litems.curr.next,
+		next,
 	}
-	data.litems.curr.next = item
-	data.litems.curr.next.next.prev = item
+	curr := data.litems.curr
+	if curr != nil {
+		curr.next = item
+		if curr.next.next != nil {
+			data.litems.curr.next.next.prev = item
+		}
+		data.litems.curr = data.litems.curr.next
+	} else {
+		data.litems.add_back(item)
+		data.litems.curr = data.litems.head
+	}
 	data.litems.reset_id()
-	data.litems.curr = data.litems.curr.next
 	data.ui.mode = NORMAL_MODE
 	data.insert = nil
 }

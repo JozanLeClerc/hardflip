@@ -71,6 +71,8 @@ func (litems *ItemsList) add_back(node *ItemsNode) {
 	if litems.head == nil {
 		litems.head = node
 		litems.last = litems.head
+		litems.curr = litems.head
+		litems.draw = litems.head
 		return
 	}
 	last := litems.last

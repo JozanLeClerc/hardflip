@@ -408,7 +408,9 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
-	path = curr.path()
+	if curr != nil {
+		path = curr.path()
+	}
 	path = path[1:]
 	prompt := "Name: "
 	i_draw_text(ui.s,

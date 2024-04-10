@@ -111,13 +111,13 @@ func i_draw_host_panel(ui HardUI, icons bool,
 		return
 	}
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
-		if ptr.is_dir() == false && ptr.Host != nil  {
+		if ptr.is_dir() == false && ptr.Host != nil {
 			i_host_panel_host(ui,
-				icons,
-				ptr.Host.parent.Depth,
-				ptr.Host,
-				litems.curr.Host,
-				line)
+							  icons,
+							  ptr.Host.parent.Depth,
+							  ptr.Host,
+							  litems.curr.Host,
+							  line)
 			line++
 		} else if ptr.Dirs != nil {
 			var dir_icon uint8
@@ -125,9 +125,9 @@ func i_draw_host_panel(ui HardUI, icons bool,
 				dir_icon = 1
 			}
 			i_host_panel_dirs(ui, icons, dir_icon,
-				ptr.Dirs,
-				litems.curr.Dirs,
-				line)
+							  ptr.Dirs,
+							  litems.curr.Dirs,
+							  line)
 			line++
 		}
 	}
