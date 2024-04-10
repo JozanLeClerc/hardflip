@@ -543,6 +543,8 @@ func i_events(data *HardData) {
 					ui.buff = ""
 					if data.litems.curr != nil {
 						data.insert.parent = data.litems.curr.path_node()
+					} else {
+						data.insert.parent = data.ldirs.head
 					}
 				} else {
 					i_readline(event, data)
