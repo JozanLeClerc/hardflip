@@ -142,8 +142,9 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 		data.insert_err = append(data.insert_err, errors.New("no name"))
 	}
 	if len(in.Host) == 0 {
-		// TODO: here rdpfile
-		data.insert_err = append(data.insert_err, errors.New("no host"))
+		if (in.Protocol == PROTOCOL_RDP && len(in.RDPFile) > 0) == false {
+			data.insert_err = append(data.insert_err, errors.New("no host"))
+		}
 	}
 	if in.Port == 0 {
 		data.insert_err = append(data.insert_err, errors.New("port can't be 0"))
