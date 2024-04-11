@@ -53,6 +53,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -85,7 +86,25 @@ func i_insert_format_filename(name, path string) string {
 	return str
 }
 
+func i_insert_abs_files(insert *HostNode) {
+	files := [3]*string{
+		&insert.Priv,
+		&insert.Jump.Priv,
+		&insert.RDPFile,
+	}
+
+	for _, v := range files {
+		if len(*v) > 0 {
+			tmp := *v
+		}
+	}
+}
+
 func i_insert_host(data *HardData, insert *HostNode) {
+	i_insert_abs_files(insert)
+	data.ui.s.Fini()
+	fmt.Println(insert.RDPFile)
+	os.Exit(1)
 	filename := i_insert_format_filename(insert.Name,
 		data.data_dir + insert.parent.path())
 	insert.filename = filename
