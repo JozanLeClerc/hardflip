@@ -287,6 +287,13 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
 		INS_RDP_PASS, ui.insert_sel, false)
 	if line += 2; win.T + line >= win.B { return line }
+	text = "---- RDP File ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.RDPFile,
+		INS_RDP_FILE, ui.insert_sel, false)
+	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK, ui.insert_sel)
 	return line
 }

@@ -705,6 +705,8 @@ func i_ui(data_dir string) {
 							false, home_dir)
 					case INS_RDP_DOMAIN:
 						i_prompt_generic(data.ui, "Domain: ", false, "")
+					case INS_RDP_FILE:
+						i_prompt_generic(data.ui, "RDP file: ", false, home_dir)
 					}
 				} else if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)
