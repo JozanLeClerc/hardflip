@@ -107,8 +107,23 @@ func i_insert_abs_files(insert *HostNode) {
 	}
 }
 
+func i_insert_default_users(insert *HostNode) {
+	switch insert.Protocol {
+	case PROTOCOL_SSH:
+		if len(insert.User) == 0 {
+			insert.User = "root"
+		}
+	case PROTOCOL_RDP:
+		if len(insert.User) == 0 {
+			insert.User = "Administrator"
+		}
+	default: return
+	}
+}
+
 func i_insert_host(data *HardData, insert *HostNode) {
 	i_insert_abs_files(insert)
+	i_insert_default_users(insert)
 	filename := i_insert_format_filename(insert.Name,
 		data.data_dir + insert.parent.path())
 	insert.filename = filename

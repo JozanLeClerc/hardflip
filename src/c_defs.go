@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Wed Feb 21 19:40:07 2024
+ * Thu Apr 11 17:55:54 2024
  * Joe
  *
  * constants
@@ -127,6 +127,7 @@ const (
 	INS_RDP_USER
 	INS_RDP_PASS
 	INS_RDP_FILE
+	INS_RDP_QUALITY
 	// TODO: here
 	INS_RDP_OK
 )
