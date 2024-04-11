@@ -137,36 +137,44 @@ func i_insert_host(data *HardData, insert *HostNode) {
 	data.insert = nil
 }
 
-func i_insert_check_ok(data *HardData, insert *HostNode) {
-	if len(insert.Name) == 0 {
+func i_insert_check_ok(data *HardData, in *HostNode) {
+	if len(in.Name) == 0 {
 		data.insert_err = append(data.insert_err, errors.New("no name"))
 	}
-	if len(insert.Host) == 0 {
+	if len(in.Host) == 0 {
+		// TODO: here rdpfile
 		data.insert_err = append(data.insert_err, errors.New("no host"))
 	}
-	if insert.Port == 0 {
+	if in.Port == 0 {
 		data.insert_err = append(data.insert_err, errors.New("port can't be 0"))
 	}
-	if len(insert.Jump.Host) > 0 && insert.Jump.Port == 0 {
+	if len(in.Jump.Host) > 0 && in.Jump.Port == 0 {
 		data.insert_err = append(data.insert_err,
 			errors.New("jump port can't be 0"))
 	}
-	if insert.Protocol == PROTOCOL_SSH && len(insert.Priv) != 0 {
-		file := insert.Priv
-		if file[0] == '~' {
-			home_dir, err := os.UserHomeDir()
-			if err != nil {
-				return
+	var file [2]string
+	switch in.Protocol {
+	case PROTOCOL_SSH: file[0], file[1] = in.Priv, in.Jump.Priv
+	case PROTOCOL_RDP: file[0] = in.RDPFile
+	default: return
+	}
+	for _, v := range file {
+		if len(v) > 0 {
+			if v[0] == '~' {
+				home_dir, err := os.UserHomeDir()
+				if err != nil {
+					return
+				}
+				v = home_dir + v[1:]
 			}
-			file = home_dir + file[1:]
-		}
-		if stat, err := os.Stat(file);
-		err != nil {
-			data.insert_err = append(data.insert_err, errors.New(file +
-				": file does not exist"))
-		} else if stat.IsDir() == true {
-			data.insert_err = append(data.insert_err, errors.New(file +
-				": file is a directory"))
+			if stat, err := os.Stat(v);
+			err != nil {
+				data.insert_err = append(data.insert_err, errors.New(v +
+					": file does not exist"))
+			} else if stat.IsDir() == true {
+				data.insert_err = append(data.insert_err, errors.New(v +
+					": file is a directory"))
+			}
 		}
 	}
 }
@@ -266,7 +274,7 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
 }
 
 func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
-	// red := false
+	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -291,8 +299,25 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.RDPFile,
-		INS_RDP_FILE, ui.insert_sel, false)
+	if file := in.RDPFile; len(file) > 0 {
+		if file[0] == '~' {
+			home, _ := os.UserHomeDir()
+			file = home + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		   err != nil || stat.IsDir() == true {
+			red = true
+		}
+	}
+	i_draw_text_box(ui, win.T + line, win, "RDP file", in.RDPFile,
+		INS_RDP_FILE, ui.insert_sel, red)
+	if red == true {
+		if line += 1; win.T + line >= win.B { return line }
+		text := "file does not exist"
+		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+	}
+	red = false
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK, ui.insert_sel)
 	return line
@@ -317,8 +342,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
 		INS_SSH_PASS, ui.insert_sel, false)
 	if line += 1; win.T + line >= win.B { return line }
-	if len(in.Priv) > 0 {
-		file := in.Priv
+	if file := in.Priv; len(file) > 0 {
 		if file[0] == '~' {
 			home, _ := os.UserHomeDir()
 			file = home + file[1:]

@@ -620,6 +620,7 @@ func i_events(data *HardData) {
 						case INS_SSH_JUMP_PASS: break
 						case INS_SSH_JUMP_PRIV: ui.buff = data.insert.Jump.Priv
 						case INS_RDP_DOMAIN: ui.buff = data.insert.Domain
+						case INS_RDP_FILE: ui.buff = data.insert.RDPFile
 						case INS_SSH_OK,
 							 INS_RDP_OK:
 							data.ui.insert_sel_ok = false
@@ -670,7 +671,8 @@ func i_events(data *HardData) {
 						 INS_RDP_PORT,
 						 INS_RDP_DOMAIN,
 						 INS_RDP_USER,
-						 INS_RDP_PASS:
+						 INS_RDP_PASS,
+						 INS_RDP_FILE:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -707,6 +709,8 @@ func i_events(data *HardData) {
 								data.insert.Jump.Priv = ui.buff
 							case INS_RDP_DOMAIN:
 								data.insert.Domain = ui.buff
+							case INS_RDP_FILE:
+								data.insert.RDPFile = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""
