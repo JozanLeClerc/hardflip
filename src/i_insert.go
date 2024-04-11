@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 09 16:00:41 2024
+ * Thu Apr 11 17:52:13 2024
  * Joe
  *
  * insert a new host
@@ -53,8 +53,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -95,16 +95,20 @@ func i_insert_abs_files(insert *HostNode) {
 
 	for _, v := range files {
 		if len(*v) > 0 {
-			tmp := *v
+			if (*v)[0] == '~' {
+				home_dir, err := os.UserHomeDir()
+				if err != nil {
+					return
+				}
+				*v = home_dir + (*v)[1:]
+			}
+			*v, _ = filepath.Abs(*v)
 		}
 	}
 }
 
 func i_insert_host(data *HardData, insert *HostNode) {
 	i_insert_abs_files(insert)
-	data.ui.s.Fini()
-	fmt.Println(insert.RDPFile)
-	os.Exit(1)
 	filename := i_insert_format_filename(insert.Name,
 		data.data_dir + insert.parent.path())
 	insert.filename = filename
