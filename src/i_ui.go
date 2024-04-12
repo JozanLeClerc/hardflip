@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Wed Mar 27 15:48:56 2024
+ * Fri Apr 12 13:53:42 2024
  * Joe
  *
  * interfacing with the user
@@ -358,21 +358,19 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
-func i_prompt_type(ui HardUI) {
-	i_draw_msg(ui.s, 4, ui.style[BOX_STYLE], ui.dim, " Connection type ")
-	i_draw_text(ui.s, 2, ui.dim[H] - 6, ui.dim[W] - 2, ui.dim[H] - 6,
-		ui.style[DEF_STYLE], "[1] SSH")
-	i_draw_text(ui.s, 2, ui.dim[H] - 5, ui.dim[W] - 2, ui.dim[H] - 5,
-		ui.style[DEF_STYLE], "[2] RDP")
-	i_draw_text(ui.s, 2, ui.dim[H] - 4, ui.dim[W] - 2, ui.dim[H] - 4,
-		ui.style[DEF_STYLE], "[3] Single command")
-	i_draw_text(ui.s, 2, ui.dim[H] - 3, ui.dim[W] - 2, ui.dim[H] - 3,
-		ui.style[DEF_STYLE], "[4] OpenStack CLI")
-	text := "Type: "
-	i_draw_text(ui.s, 0,
-		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE], text)
-	ui.s.ShowCursor(len(text), ui.dim[H] - 1)
+func i_prompt_list(ui HardUI, name, prompt string, list []string) {
+	i := len(list)
+	i_draw_msg(ui.s, i, ui.style[BOX_STYLE], ui.dim, " " + name + " ")
+	for k, v := range list {
+		i_draw_text(ui.s, 2, ui.dim[H] - 2 - i,
+					ui.dim[W] - 2, ui.dim[H] - 2 - i,
+					ui.style[DEF_STYLE], "[" + strconv.Itoa(k + 1) + "] " + v)
+		i -= 1
+	}
+	i_draw_text(ui.s, 1,
+				ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+				ui.style[DEF_STYLE], prompt)
+	ui.s.ShowCursor(len(prompt) + 2, ui.dim[H] - 1)
 }
 
 func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
@@ -647,7 +645,7 @@ func i_ui(data_dir string) {
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE
-		data.keys = c_get_secret_gpg_keyring(&data.ui)
+		data.keys = c_get_secret_gpg_keyring()
 	}
 	for {
 		data.ui.s.Clear()
@@ -682,7 +680,8 @@ func i_ui(data_dir string) {
 				if data.ui.insert_sel_ok == true {
 					switch data.ui.insert_sel {
 					case INS_PROTOCOL:
-						i_prompt_type(data.ui)
+						i_prompt_list(data.ui, "Connection type", "Type:",
+									  PROTOCOL_STR[:])
 					case INS_SSH_HOST,
 						 INS_SSH_JUMP_HOST,
 						 INS_RDP_HOST:
@@ -707,6 +706,9 @@ func i_ui(data_dir string) {
 						i_prompt_generic(data.ui, "Domain: ", false, "")
 					case INS_RDP_FILE:
 						i_prompt_generic(data.ui, "RDP file: ", false, home_dir)
+					case INS_RDP_QUALITY:
+						i_prompt_list(data.ui, "hey", "Quality:",
+									  RDP_QUALITY[:])
 					}
 				} else if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)

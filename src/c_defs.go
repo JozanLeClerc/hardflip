@@ -135,6 +135,13 @@ const (
 var (
 	HOST_ICONS = [4]string{" ", " ", " ", "󰅟 "}
 	DIRS_ICONS = [2]string{" ", " "}
+	RDP_QUALITY = [3]string{"Low", "Medium", "High"}
+	PROTOCOL_STR = [PROTOCOL_MAX + 1]string{
+		"SSH",
+		"RDP",
+		"Single command",
+		"OpenStack CLI",
+	}
 )
 
 var DEFAULT_OPTS = HardOpts{

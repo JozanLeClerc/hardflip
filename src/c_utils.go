@@ -175,7 +175,7 @@ func c_decrypt_str(str string) (string, error) {
 	return string(out), err
 }
 
-func c_get_secret_gpg_keyring(ui *HardUI) [][2]string {
+func c_get_secret_gpg_keyring() [][2]string {
 	var keys [][2]string
 	var sed_out bytes.Buffer
 	gpg_fmt := []string{

@@ -160,11 +160,8 @@ func (lhost *HostList) count() int {
 }
 
 func (host *HostNode) protocol_str() string {
-	switch host.Protocol {
-	case PROTOCOL_SSH: return "SSH"
-	case PROTOCOL_RDP: return "RDP"
-	case PROTOCOL_CMD: return "Single command"
-	case PROTOCOL_OS:  return "OpenStack CLI"
-	default: return ""
+	if host.Protocol > PROTOCOL_MAX {
+		return ""
 	}
+	return PROTOCOL_STR[host.Protocol]
 }

@@ -255,7 +255,6 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 	}
 	if line += 1; line > ui.dim[H] - 3 { return line }
 	// rdp shit
-	qual := [3]string{"Low", "Medium", "High"}
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
 		ui.style[TITLE_STYLE], "Screen size: ")
@@ -277,7 +276,7 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 		ui.style[TITLE_STYLE], "Quality: ")
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
-		ui.style[DEF_STYLE], qual[host.Quality])
+		ui.style[DEF_STYLE], RDP_QUALITY[host.Quality])
 	if line += 2; line > ui.dim[H] - 3 { return line }
 	if host.Drive != nil {
 		i_draw_text(ui.s,
