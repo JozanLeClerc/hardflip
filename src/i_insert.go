@@ -287,8 +287,8 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 		" Insert - " + in.Name + " ", true)
 	line := 2
 	if win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "Connection type", in.protocol_str(),
-		0, ui.insert_sel, false)
+	i_draw_text_box(ui, win.T + line, win, "Connection type",
+		PROTOCOL_STR[in.Protocol], 0, ui.insert_sel, false)
 	line += 2
 	var end_line int
 	fp := [PROTOCOL_MAX + 1]draw_insert_func{

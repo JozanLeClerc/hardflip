@@ -158,10 +158,3 @@ func (lhost *HostList) count() int {
 	}
 	return count
 }
-
-func (host *HostNode) protocol_str() string {
-	if host.Protocol > PROTOCOL_MAX {
-		return ""
-	}
-	return PROTOCOL_STR[host.Protocol]
-}

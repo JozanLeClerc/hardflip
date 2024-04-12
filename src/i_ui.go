@@ -707,7 +707,7 @@ func i_ui(data_dir string) {
 					case INS_RDP_FILE:
 						i_prompt_generic(data.ui, "RDP file: ", false, home_dir)
 					case INS_RDP_QUALITY:
-						i_prompt_list(data.ui, "hey", "Quality:",
+						i_prompt_list(data.ui, "Quality", "Quality:",
 									  RDP_QUALITY[:])
 					}
 				} else if data.insert_err != nil {

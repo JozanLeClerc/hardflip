@@ -86,7 +86,7 @@ func i_info_dirs(ui HardUI, dir *DirsNode) {
 func i_info_name_type(ui HardUI, host *HostNode) int {
 	line := 2
 	if line > ui.dim[H] - 3 { return line }
-	host_type := host.protocol_str()
+	host_type := PROTOCOL_STR[host.Protocol]
 	// name, type
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,

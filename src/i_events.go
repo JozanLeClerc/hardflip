@@ -658,6 +658,19 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
+					case INS_RDP_QUALITY:
+						if event.Rune() < '1' || event.Rune() > '3' {
+							data.ui.insert_sel_ok = false
+							ui.buff = ""
+							ui.s.HideCursor()
+							break
+						} else {
+							data.insert.Quality = uint8(event.Rune() - 48 - 1)
+							data.ui.insert_sel_ok = false
+							ui.s.HideCursor()
+						}
+						// tmp, _ := strconv.Atoi(ui.buff)
+						// data.insert.Quality = uint8(tmp)
 					case INS_SSH_HOST,
 						 INS_SSH_PORT,
 						 INS_SSH_USER,
@@ -673,8 +686,7 @@ func i_events(data *HardData) {
 						 INS_RDP_DOMAIN,
 						 INS_RDP_USER,
 						 INS_RDP_PASS,
-						 INS_RDP_FILE,
-						 INS_RDP_QUALITY:
+						 INS_RDP_FILE:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -713,9 +725,6 @@ func i_events(data *HardData) {
 								data.insert.Domain = ui.buff
 							case INS_RDP_FILE:
 								data.insert.RDPFile = ui.buff
-							case INS_RDP_QUALITY:
-								tmp, _ := strconv.Atoi(ui.buff)
-								data.insert.Quality = uint8(tmp)
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""
