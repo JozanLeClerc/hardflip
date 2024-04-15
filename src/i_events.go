@@ -52,7 +52,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -324,6 +323,7 @@ func i_set_drive_keys(data *HardData) {
 	for key := range data.insert.Drive {
 		data.insert.drive_keys = append(data.insert.drive_keys, key)
 	}
+	data.ui.insert_sel_max = INS_RDP_OK + len(data.insert.Drive)
 }
 
 func i_set_protocol_defaults(data *HardData, in *HostNode) {
@@ -341,9 +341,9 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 			"qwe": "a",
 			"asd": "aaaa",
 			"zxc": "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			"azxc": "aaaaa",
 		}
 		i_set_drive_keys(data)
-		data.ui.insert_sel_max = INS_RDP_OK + len(data.insert.Drive)
 	case PROTOCOL_CMD:
 		in.Shell = []string{"/bin/sh", "-c"}
 		data.ui.insert_sel_max = 2
@@ -748,15 +748,11 @@ func i_events(data *HardData) {
 									data.insert.Drive = make(map[string]string)
 								}
 								data.insert.Drive[ui.drives_buff] = ui.buff
-								ui.s.Fini()
-								fmt.Println(data.insert.Drive)
-								os.Exit(0)
 								i_set_drive_keys(data)
-								data.ui.insert_sel_max = INS_RDP_OK +
-														 len(data.insert.Drive)
 								ui.drives_buff = ""
 								ui.buff = ""
 								ui.s.HideCursor()
+								// FIX: can't add shit anymore
 							} else {
 								i_readline(event, &data.ui.buff)
 							}
@@ -824,17 +820,18 @@ func i_events(data *HardData) {
 						}
 					}
 					if len(data.insert.Drive) > 0 &&
-					   data.ui.insert_sel >= INS_RDP_DRIVE &&
-					   data.ui.insert_sel < INS_RDP_DRIVE +
-					   len(data.insert.Drive) {
+					   (data.ui.insert_sel >= INS_RDP_DRIVE &&
+					    data.ui.insert_sel < INS_RDP_DRIVE +
+					    len(data.insert.Drive)) {
 						if event.Rune() == 'y' ||
 						   event.Rune() == 'Y' ||
 						   event.Key() == tcell.KeyEnter {
 							delete(data.insert.Drive,
 								   data.insert.drive_keys[data.ui.insert_sel -
 								   INS_RDP_DRIVE])
-							data.ui.insert_sel_max = INS_RDP_OK +
-								len(data.insert.Drive)
+							if len(data.insert.Drive) == 0 {
+								data.insert.Drive = nil
+							}
 							i_set_drive_keys(data)
 						}
 						data.ui.insert_sel_ok = false
