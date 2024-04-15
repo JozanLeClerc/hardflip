@@ -127,14 +127,24 @@ const (
 	INS_RDP_USER
 	INS_RDP_PASS
 	INS_RDP_FILE
+	INS_RDP_SCREENSIZE
+	// TODO: here (dynamic)
 	INS_RDP_QUALITY
-	// TODO: here
 	INS_RDP_OK
 )
 
 var (
 	HOST_ICONS = [4]string{" ", " ", " ", "󰅟 "}
 	DIRS_ICONS = [2]string{" ", " "}
+	RDP_SCREENSIZE = [7]string{
+		"800x600",
+		"1280x720",
+		"1360x768",
+		"1600x900",
+		"1600x1200",
+		"1920x1080",
+		"2560x1440",
+	}
 	RDP_QUALITY = [3]string{"Low", "Medium", "High"}
 	PROTOCOL_STR = [PROTOCOL_MAX + 1]string{
 		"SSH",

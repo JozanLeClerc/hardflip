@@ -362,6 +362,11 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
+	screensize := strconv.Itoa(int(in.Width)) + "x" +
+				  strconv.Itoa(int(in.Height))
+	i_draw_text_box(ui, win.T + line, win, "Window size", screensize,
+		INS_RDP_SCREENSIZE, ui.insert_sel, red)
+	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
 		INS_RDP_QUALITY, ui.insert_sel, red)
 	if line += 2; win.T + line >= win.B { return line }
