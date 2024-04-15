@@ -87,7 +87,7 @@ func i_insert_format_filename(name, path string) string {
 }
 
 func i_insert_abs_files(insert *HostNode) {
-	files := [3]*string{
+	files := []*string{
 		&insert.Priv,
 		&insert.Jump.Priv,
 		&insert.RDPFile,
@@ -103,6 +103,19 @@ func i_insert_abs_files(insert *HostNode) {
 				*v = home_dir + (*v)[1:]
 			}
 			*v, _ = filepath.Abs(*v)
+		}
+	}
+	for k, v := range insert.Drive {
+		if len(v) > 0 {
+			if (v)[0] == '~' {
+				home_dir, err := os.UserHomeDir()
+				if err != nil {
+					return
+				}
+				v = home_dir + (v)[1:]
+			}
+			v, _ = filepath.Abs(v)
+			insert.Drive[k] = v
 		}
 	}
 }
@@ -124,6 +137,9 @@ func i_insert_default_users(insert *HostNode) {
 func i_insert_host(data *HardData, insert *HostNode) {
 	i_insert_abs_files(insert)
 	i_insert_default_users(insert)
+	if len(insert.Drive) == 0 {
+		insert.Drive = nil
+	}
 	filename := i_insert_format_filename(insert.Name,
 		data.data_dir + insert.parent.path())
 	insert.filename = filename
@@ -207,13 +223,30 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 				v = home_dir + v[1:]
 			}
 			if stat, err := os.Stat(v);
-			err != nil {
+			   err != nil {
 				data.insert_err = append(data.insert_err, errors.New(v +
 					": file does not exist"))
 			} else if stat.IsDir() == true {
 				data.insert_err = append(data.insert_err, errors.New(v +
 					": file is a directory"))
 			}
+		}
+	}
+	for _, v := range in.Drive {
+		if v[0] == '~' {
+			home_dir, err := os.UserHomeDir()
+			if err != nil {
+				return
+			}
+			v = home_dir + v[1:]
+		}
+		if stat, err := os.Stat(v);
+		   err != nil {
+			data.insert_err = append(data.insert_err, errors.New(v +
+				": path does not exist"))
+		} else if stat.IsDir() == false {
+			data.insert_err = append(data.insert_err, errors.New(v +
+				": path is not a directory"))
 		}
 	}
 }

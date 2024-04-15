@@ -450,6 +450,15 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
 }
 
+func i_draw_remove_share(ui HardUI) {
+	text := "Really remove this share?"
+
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Remove share ")
+	left, right := i_left_right(len(text), &ui)
+	line := ui.dim[H] - 2 - 1
+	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
+}
+
 func i_draw_zhosts_box(ui HardUI) {
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
@@ -745,6 +754,12 @@ func i_ui(data_dir string) {
 						} else {
 							i_prompt_dir(data.ui, "Local directory: ", home_dir)
 						}
+					}
+					if len(data.insert.Drive) > 0 &&
+					   data.ui.insert_sel >= INS_RDP_DRIVE &&
+					   data.ui.insert_sel < INS_RDP_DRIVE +
+					   len(data.insert.Drive) {
+						i_draw_remove_share(data.ui)
 					}
 				} else if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)

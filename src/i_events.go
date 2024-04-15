@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -619,13 +620,6 @@ func i_events(data *HardData) {
 							break
 						}
 						data.ui.insert_sel_ok = true
-						if len(data.insert.Drive) > 0 &&
-						   data.ui.insert_sel >= INS_RDP_DRIVE &&
-						   data.ui.insert_sel < INS_RDP_DRIVE +
-							len(data.insert.Drive) {
-							// TODO: here
-							data.ui.insert_sel_ok = false
-						}
 						switch data.ui.insert_sel {
 						case INS_SSH_HOST,
 							 INS_RDP_HOST:
@@ -725,6 +719,48 @@ func i_events(data *HardData) {
 							data.ui.insert_sel_ok = false
 							ui.s.HideCursor()
 						}
+					case INS_RDP_DRIVE + len(data.insert.Drive):
+						if len(data.ui.drives_buff) == 0 {
+							if event.Key() == tcell.KeyEnter {
+								if len(ui.buff) == 0 {
+									data.ui.insert_sel_ok = false
+									data.ui.drives_buff = ""
+									ui.buff = ""
+									ui.s.HideCursor()
+									break
+								}
+								data.ui.drives_buff = ui.buff
+								ui.buff = ""
+							} else {
+								i_readline(event, &data.ui.buff)
+							}
+						} else {
+							if event.Key() == tcell.KeyEnter {
+								if len(ui.buff) == 0 {
+									data.ui.insert_sel_ok = false
+									data.ui.drives_buff = ""
+									ui.buff = ""
+									ui.s.HideCursor()
+									break
+								}
+								data.ui.insert_sel_ok = false
+								if len(data.insert.Drive) == 0 {
+									data.insert.Drive = make(map[string]string)
+								}
+								data.insert.Drive[ui.drives_buff] = ui.buff
+								ui.s.Fini()
+								fmt.Println(data.insert.Drive)
+								os.Exit(0)
+								i_set_drive_keys(data)
+								data.ui.insert_sel_max = INS_RDP_OK +
+														 len(data.insert.Drive)
+								ui.drives_buff = ""
+								ui.buff = ""
+								ui.s.HideCursor()
+							} else {
+								i_readline(event, &data.ui.buff)
+							}
+						}
 					case INS_SSH_HOST,
 						 INS_SSH_PORT,
 						 INS_SSH_USER,
@@ -786,45 +822,22 @@ func i_events(data *HardData) {
 						} else {
 							i_readline(event, &data.ui.buff)
 						}
-					case INS_RDP_DRIVE + len(data.insert.Drive):
-						if len(data.ui.drives_buff) == 0 {
-							if event.Key() == tcell.KeyEnter {
-								if len(ui.buff) == 0 {
-									data.ui.insert_sel_ok = false
-									data.ui.drives_buff = ""
-									ui.buff = ""
-									ui.s.HideCursor()
-									break
-								}
-								data.ui.drives_buff = ui.buff
-								ui.buff = ""
-							} else {
-								i_readline(event, &data.ui.buff)
-							}
-						} else {
-							if event.Key() == tcell.KeyEnter {
-								if len(ui.buff) == 0 {
-									data.ui.insert_sel_ok = false
-									data.ui.drives_buff = ""
-									ui.buff = ""
-									ui.s.HideCursor()
-									break
-								}
-								data.ui.insert_sel_ok = false
-								if len(data.insert.Drive) == 0 {
-									data.insert.Drive = make(map[string]string)
-								}
-								data.insert.Drive[ui.drives_buff] = ui.buff
-								i_set_drive_keys(data)
-								data.ui.insert_sel_max = INS_RDP_OK +
-														 len(data.insert.Drive)
-								ui.drives_buff = ""
-								ui.buff = ""
-								ui.s.HideCursor()
-							} else {
-								i_readline(event, &data.ui.buff)
-							}
+					}
+					if len(data.insert.Drive) > 0 &&
+					   data.ui.insert_sel >= INS_RDP_DRIVE &&
+					   data.ui.insert_sel < INS_RDP_DRIVE +
+					   len(data.insert.Drive) {
+						if event.Rune() == 'y' ||
+						   event.Rune() == 'Y' ||
+						   event.Key() == tcell.KeyEnter {
+							delete(data.insert.Drive,
+								   data.insert.drive_keys[data.ui.insert_sel -
+								   INS_RDP_DRIVE])
+							data.ui.insert_sel_max = INS_RDP_OK +
+								len(data.insert.Drive)
+							i_set_drive_keys(data)
 						}
+						data.ui.insert_sel_ok = false
 					}
 				}
 			}
