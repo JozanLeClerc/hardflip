@@ -58,6 +58,7 @@
 ## v1.2 - ghetto bird
 
 - [ ] vnc
+- [ ] ssh jump for rdp
 
 ## v1.3 - late flip
 
