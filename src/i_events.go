@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -743,16 +744,21 @@ func i_events(data *HardData) {
 									ui.s.HideCursor()
 									break
 								}
-								data.ui.insert_sel_ok = false
 								if len(data.insert.Drive) == 0 {
 									data.insert.Drive = make(map[string]string)
 								}
 								data.insert.Drive[ui.drives_buff] = ui.buff
 								i_set_drive_keys(data)
+								data.ui.insert_sel_ok = false
 								ui.drives_buff = ""
 								ui.buff = ""
 								ui.s.HideCursor()
 								// FIX: can't add shit anymore
+								// FIX: data good tho
+								ui.s.Fini()
+								fmt.Println(data.insert.Drive)
+								fmt.Println(data.insert.drive_keys)
+								os.Exit(0)
 							} else {
 								i_readline(event, &data.ui.buff)
 							}
