@@ -706,6 +706,9 @@ func i_ui(data_dir string) {
 						i_prompt_generic(data.ui, "Domain: ", false, "")
 					case INS_RDP_FILE:
 						i_prompt_generic(data.ui, "RDP file: ", false, home_dir)
+					case INS_RDP_SCREENSIZE:
+						i_prompt_list(data.ui, "Window size", "Size:",
+									  RDP_SCREENSIZE[:])
 					case INS_RDP_QUALITY:
 						i_prompt_list(data.ui, "Quality", "Quality:",
 									  RDP_QUALITY[:])

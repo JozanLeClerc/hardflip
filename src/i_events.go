@@ -54,6 +54,7 @@ package main
 import (
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"golang.org/x/term"
@@ -593,6 +594,16 @@ func i_events(data *HardData) {
 					} else if event.Rune() == 'i' ||
 							  event.Rune() == 'a' ||
 							  event.Key() == tcell.KeyEnter {
+						if data.ui.insert_sel == INS_RDP_DYNAMIC {
+							if data.insert.Dynamic == true {
+								data.insert.Dynamic = false
+							} else {
+								data.insert.Dynamic = true
+							}
+							ui.buff = ""
+							ui.s.HideCursor()
+							break
+						}
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
 						case INS_SSH_HOST,
@@ -621,6 +632,8 @@ func i_events(data *HardData) {
 						case INS_SSH_JUMP_PRIV: ui.buff = data.insert.Jump.Priv
 						case INS_RDP_DOMAIN: ui.buff = data.insert.Domain
 						case INS_RDP_FILE: ui.buff = data.insert.RDPFile
+						case INS_RDP_SCREENSIZE: break
+						case INS_RDP_DYNAMIC: break
 						case INS_RDP_QUALITY: break
 						case INS_SSH_OK,
 							 INS_RDP_OK:
@@ -658,6 +671,26 @@ func i_events(data *HardData) {
 							ui.s.HideCursor()
 							i_set_protocol_defaults(data, data.insert)
 						}
+					case INS_RDP_SCREENSIZE:
+						if event.Rune() < '1' || event.Rune() > '7' {
+							data.ui.insert_sel_ok = false
+							ui.buff = ""
+							ui.s.HideCursor()
+							break
+						} else {
+							s := strings.Split(
+								RDP_SCREENSIZE[uint8(event.Rune() - 48 - 1)],
+								"x")
+							if len(s) != 2 {
+								return
+							}
+							tmp, _ := strconv.Atoi(s[W])
+							data.insert.Width = uint16(tmp)
+							tmp, _ = strconv.Atoi(s[H])
+							data.insert.Height = uint16(tmp)
+							data.ui.insert_sel_ok = false
+							ui.s.HideCursor()
+						}
 					case INS_RDP_QUALITY:
 						if event.Rune() < '1' || event.Rune() > '3' {
 							data.ui.insert_sel_ok = false
@@ -669,8 +702,6 @@ func i_events(data *HardData) {
 							data.ui.insert_sel_ok = false
 							ui.s.HideCursor()
 						}
-						// tmp, _ := strconv.Atoi(ui.buff)
-						// data.insert.Quality = uint8(tmp)
 					case INS_SSH_HOST,
 						 INS_SSH_PORT,
 						 INS_SSH_USER,

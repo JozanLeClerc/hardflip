@@ -128,8 +128,9 @@ const (
 	INS_RDP_PASS
 	INS_RDP_FILE
 	INS_RDP_SCREENSIZE
-	// TODO: here (dynamic)
+	INS_RDP_DYNAMIC
 	INS_RDP_QUALITY
+	// TODO: here
 	INS_RDP_OK
 )
 

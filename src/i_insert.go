@@ -218,6 +218,26 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	}
 }
 
+func i_draw_tick_box(ui HardUI, line int, dim Quad, label string, content bool,
+					 id, selected int, red bool) {
+	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
+
+	if id == selected {
+		tbox_style = tbox_style.Reverse(true).Dim(false)
+	}
+	l := ui.dim[W] / 2 - len(label) - 2
+	if l <= dim.L { l = dim.L + 1 }
+	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
+		ui.style[DEF_STYLE], label)
+	x := " "
+	if content == true {
+		x = "x"
+	}
+	i_draw_text(ui.s, ui.dim[W] / 2, line, dim.R, line,
+		tbox_style,
+		"[" + x + "]")
+}
+
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 					 id, selected int, red bool) {
 	const tbox_size int = 14
@@ -366,6 +386,9 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 				  strconv.Itoa(int(in.Height))
 	i_draw_text_box(ui, win.T + line, win, "Window size", screensize,
 		INS_RDP_SCREENSIZE, ui.insert_sel, red)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_tick_box(ui, win.T + line, win, "Dynamic window", in.Dynamic,
+		INS_RDP_DYNAMIC, ui.insert_sel, red)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
 		INS_RDP_QUALITY, ui.insert_sel, red)
