@@ -219,7 +219,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 }
 
 func i_draw_tick_box(ui HardUI, line int, dim Quad, label string, content bool,
-					 id, selected int, red bool) {
+					 id, selected int) {
 	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
 	if id == selected {
@@ -324,79 +324,6 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 	}
 }
 
-func i_draw_insert_os(ui HardUI, line int, win Quad, in *HostNode) int {
-	return 0
-}
-
-func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
-	return 0
-}
-
-func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
-	red := false
-	if win.T + line >= win.B { return line }
-	text := "---- Host settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
-	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
-		INS_RDP_HOST, ui.insert_sel, false)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		INS_RDP_PORT, ui.insert_sel, false);
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Domain", in.Domain,
-		INS_RDP_DOMAIN, ui.insert_sel, false);
-	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "User", in.User,
-		INS_RDP_USER, ui.insert_sel, false)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
-		INS_RDP_PASS, ui.insert_sel, false)
-	if line += 2; win.T + line >= win.B { return line }
-	text = "---- RDP File ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
-	if line += 2; win.T + line >= win.B { return line }
-	if file := in.RDPFile; len(file) > 0 {
-		if file[0] == '~' {
-			home, _ := os.UserHomeDir()
-			file = home + file[1:]
-		}
-		if stat, err := os.Stat(file);
-		   err != nil || stat.IsDir() == true {
-			red = true
-		}
-	}
-	i_draw_text_box(ui, win.T + line, win, "RDP file", in.RDPFile,
-		INS_RDP_FILE, ui.insert_sel, red)
-	if red == true {
-		if line += 1; win.T + line >= win.B { return line }
-		text := "file does not exist"
-		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
-	}
-	red = false
-	if line += 2; win.T + line >= win.B { return line }
-	text = "---- Window settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
-	if line += 2; win.T + line >= win.B { return line }
-	screensize := strconv.Itoa(int(in.Width)) + "x" +
-				  strconv.Itoa(int(in.Height))
-	i_draw_text_box(ui, win.T + line, win, "Window size", screensize,
-		INS_RDP_SCREENSIZE, ui.insert_sel, red)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_tick_box(ui, win.T + line, win, "Dynamic window", in.Dynamic,
-		INS_RDP_DYNAMIC, ui.insert_sel, red)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
-		INS_RDP_QUALITY, ui.insert_sel, red)
-	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK, ui.insert_sel)
-	return line
-}
-
 func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	red := false
 	if win.T + line >= win.B { return line }
@@ -475,4 +402,106 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_SSH_OK, ui.insert_sel)
 	return line
+}
+
+func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
+	red := false
+	if win.T + line >= win.B { return line }
+	text := "---- Host settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
+		INS_RDP_HOST, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
+		INS_RDP_PORT, ui.insert_sel, false);
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Domain", in.Domain,
+		INS_RDP_DOMAIN, ui.insert_sel, false);
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "User", in.User,
+		INS_RDP_USER, ui.insert_sel, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
+		INS_RDP_PASS, ui.insert_sel, false)
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- RDP File ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	if file := in.RDPFile; len(file) > 0 {
+		if file[0] == '~' {
+			home, _ := os.UserHomeDir()
+			file = home + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		   err != nil || stat.IsDir() == true {
+			red = true
+		}
+	}
+	i_draw_text_box(ui, win.T + line, win, "RDP file", in.RDPFile,
+		INS_RDP_FILE, ui.insert_sel, red)
+	if red == true {
+		if line += 1; win.T + line >= win.B { return line }
+		text := "file does not exist"
+		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+	}
+	red = false
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- Window settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	screensize := strconv.Itoa(int(in.Width)) + "x" +
+				  strconv.Itoa(int(in.Height))
+	i_draw_text_box(ui, win.T + line, win, "Window size", screensize,
+		INS_RDP_SCREENSIZE, ui.insert_sel, red)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_tick_box(ui, win.T + line, win, "Dynamic window", in.Dynamic,
+		INS_RDP_DYNAMIC, ui.insert_sel)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
+		INS_RDP_QUALITY, ui.insert_sel, red)
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- Share mounts ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	for k, v := range in.drive_keys {
+		if dir := in.Drive[v]; len(dir) > 0 {
+			if dir[0] == '~' {
+				home, _ := os.UserHomeDir()
+				dir = home + dir[1:]
+			}
+			if stat, err := os.Stat(dir);
+			   err != nil || stat.IsDir() == false {
+				red = true
+			}
+		}
+		i_draw_text_box(ui, win.T + line, win, "Share " + strconv.Itoa(k + 1),
+			"(" + v + "): " + in.Drive[v],
+			INS_RDP_DRIVE + k, ui.insert_sel, red)
+		if red == true {
+			if line += 1; win.T + line >= win.B { return line }
+			text := "path is not a directory"
+			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
+		if line += 1; win.T + line >= win.B { return line }
+	}
+	i_draw_text_box(ui, win.T + line, win, "Add share", "",
+		INS_RDP_DRIVE + len(in.Drive), ui.insert_sel, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK + len(in.Drive), ui.insert_sel)
+	return line
+}
+
+func i_draw_insert_os(ui HardUI, line int, win Quad, in *HostNode) int {
+	return 0
+}
+
+func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
+	return 0
 }

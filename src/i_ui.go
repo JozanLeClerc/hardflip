@@ -67,6 +67,7 @@ type HardUI struct {
 	dim   [2]int
 	err   [2]string
 	buff  string
+	drives_buff string
 	insert_sel int
 	insert_sel_max int
 	insert_sel_ok bool
@@ -404,6 +405,32 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
 }
 
+func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE], prompt)
+	style := ui.style[DEF_STYLE].Bold(true)
+	if len(home_dir) > 0 && len(ui.buff) > 0 {
+		file := ui.buff
+		if file[0] == '~' {
+			file = home_dir + file[1:]
+		}
+		if stat, err := os.Stat(file);
+		   err != nil {
+			style = style.Foreground(tcell.ColorRed)
+		} else if stat.IsDir() == true {
+			style = style.Foreground(tcell.ColorGreen).
+				Bold(true)
+		} else {
+			style = style.Foreground(tcell.ColorRed)
+		}
+	}
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		style, ui.buff)
+	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
+}
+
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
@@ -712,6 +739,12 @@ func i_ui(data_dir string) {
 					case INS_RDP_QUALITY:
 						i_prompt_list(data.ui, "Quality", "Quality:",
 									  RDP_QUALITY[:])
+					case INS_RDP_DRIVE + len(data.insert.Drive):
+						if len(data.ui.drives_buff) == 0 {
+							i_prompt_generic(data.ui, "Name: ", false, "")
+						} else {
+							i_prompt_dir(data.ui, "Local directory: ", home_dir)
+						}
 					}
 				} else if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)

@@ -280,15 +280,15 @@ func i_delete_host(data *HardData) error {
 	return nil
 }
 
-func i_readline(event *tcell.EventKey, data *HardData) {
-	if len(data.ui.buff) > 0 &&
+func i_readline(event *tcell.EventKey, buffer *string) {
+	if len(*buffer) > 0 &&
 	(event.Key() == tcell.KeyBackspace ||
 	event.Key() == tcell.KeyBackspace2) {
-		data.ui.buff = data.ui.buff[:len(data.ui.buff) - 1]
+		*buffer = (*buffer)[:len(*buffer) - 1]
 	} else if event.Key() == tcell.KeyCtrlU {
-		data.ui.buff = ""
+		*buffer = ""
 	} else if event.Rune() >= 32 && event.Rune() <= 126 {
-		data.ui.buff += string(event.Rune())
+		*buffer += string(event.Rune())
 	}
 }
 
@@ -318,6 +318,13 @@ func i_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
+func i_set_drive_keys(data *HardData) {
+	data.insert.drive_keys = nil
+	for key := range data.insert.Drive {
+		data.insert.drive_keys = append(data.insert.drive_keys, key)
+	}
+}
+
 func i_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
@@ -329,7 +336,13 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
-		data.ui.insert_sel_max = INS_RDP_OK
+		data.insert.Drive = map[string]string{ // WARN: this is a test
+			"qwe": "a",
+			"asd": "aaaa",
+			"zxc": "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		}
+		i_set_drive_keys(data)
+		data.ui.insert_sel_max = INS_RDP_OK + len(data.insert.Drive)
 	case PROTOCOL_CMD:
 		in.Shell = []string{"/bin/sh", "-c"}
 		data.ui.insert_sel_max = 2
@@ -539,6 +552,7 @@ func i_events(data *HardData) {
 					}
 					ui.s.HideCursor()
 					data.insert = &HostNode{}
+					data.insert.Protocol = 1 // WARN: tests only, remove this
 					i_set_protocol_defaults(data, data.insert)
 					data.insert.Name = ui.buff
 					ui.buff = ""
@@ -548,7 +562,7 @@ func i_events(data *HardData) {
 						data.insert.parent = data.ldirs.head
 					}
 				} else {
-					i_readline(event, data)
+					i_readline(event, &data.ui.buff)
 				}
 			} else if data.insert != nil {
 				if data.insert_err != nil {
@@ -605,6 +619,13 @@ func i_events(data *HardData) {
 							break
 						}
 						data.ui.insert_sel_ok = true
+						if len(data.insert.Drive) > 0 &&
+						   data.ui.insert_sel >= INS_RDP_DRIVE &&
+						   data.ui.insert_sel < INS_RDP_DRIVE +
+							len(data.insert.Drive) {
+							// TODO: here
+							data.ui.insert_sel_ok = false
+						}
 						switch data.ui.insert_sel {
 						case INS_SSH_HOST,
 							 INS_RDP_HOST:
@@ -635,8 +656,9 @@ func i_events(data *HardData) {
 						case INS_RDP_SCREENSIZE: break
 						case INS_RDP_DYNAMIC: break
 						case INS_RDP_QUALITY: break
+						case INS_RDP_DRIVE + len(data.insert.Drive): break
 						case INS_SSH_OK,
-							 INS_RDP_OK:
+							 INS_RDP_OK + len(data.insert.Drive):
 							data.ui.insert_sel_ok = false
 							i_insert_check_ok(data, data.insert)
 							if data.insert_err != nil {
@@ -650,6 +672,7 @@ func i_events(data *HardData) {
 					   event.Key() == tcell.KeyCtrlC {
 						data.ui.insert_sel_ok = false
 						ui.buff = ""
+						ui.drives_buff = ""
 						ui.s.HideCursor()
 					}
 					switch data.ui.insert_sel {
@@ -761,7 +784,46 @@ func i_events(data *HardData) {
 							ui.buff = ""
 							ui.s.HideCursor()
 						} else {
-							i_readline(event, data)
+							i_readline(event, &data.ui.buff)
+						}
+					case INS_RDP_DRIVE + len(data.insert.Drive):
+						if len(data.ui.drives_buff) == 0 {
+							if event.Key() == tcell.KeyEnter {
+								if len(ui.buff) == 0 {
+									data.ui.insert_sel_ok = false
+									data.ui.drives_buff = ""
+									ui.buff = ""
+									ui.s.HideCursor()
+									break
+								}
+								data.ui.drives_buff = ui.buff
+								ui.buff = ""
+							} else {
+								i_readline(event, &data.ui.buff)
+							}
+						} else {
+							if event.Key() == tcell.KeyEnter {
+								if len(ui.buff) == 0 {
+									data.ui.insert_sel_ok = false
+									data.ui.drives_buff = ""
+									ui.buff = ""
+									ui.s.HideCursor()
+									break
+								}
+								data.ui.insert_sel_ok = false
+								if len(data.insert.Drive) == 0 {
+									data.insert.Drive = make(map[string]string)
+								}
+								data.insert.Drive[ui.drives_buff] = ui.buff
+								i_set_drive_keys(data)
+								data.ui.insert_sel_max = INS_RDP_OK +
+														 len(data.insert.Drive)
+								ui.drives_buff = ""
+								ui.buff = ""
+								ui.s.HideCursor()
+							} else {
+								i_readline(event, &data.ui.buff)
+							}
 						}
 					}
 				}
@@ -779,7 +841,7 @@ func i_events(data *HardData) {
 				ui.mode = NORMAL_MODE
 				ui.buff = ""
 			} else {
-				i_readline(event, data)
+				i_readline(event, &data.ui.buff)
 			}
 		}
 	}

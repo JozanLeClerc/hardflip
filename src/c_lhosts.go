@@ -96,6 +96,7 @@ type HostNode struct {
 	Silent   bool     `yaml:"silent,omitempty"`
 	Shell    []string `yaml:"shell,omitempty"`
 	Stack    StackSettings `yaml:"openstack,omitempty"`
+	drive_keys []string
 	filename string
 	parent   *DirsNode
 	next     *HostNode
