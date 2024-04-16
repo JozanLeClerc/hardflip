@@ -738,7 +738,8 @@ func i_ui(data_dir string) {
 						i_prompt_generic(data.ui, "Private key: ",
 							false, home_dir)
 					case INS_SSH_NOTE,
-						 INS_RDP_NOTE + len(data.insert.Drive):
+						 INS_RDP_NOTE + len(data.insert.Drive),
+						 INS_CMD_NOTE:
 						i_prompt_generic(data.ui, "Note: ", false, "")
 					case INS_RDP_DOMAIN:
 						i_prompt_generic(data.ui, "Domain: ", false, "")

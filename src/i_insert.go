@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 16 15:42:45 2024
+ * Tue Apr 16 16:32:29 2024
  * Joe
  *
  * insert a new host
@@ -197,10 +197,15 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	}
 	if len(in.Host) == 0 {
 		if (in.Protocol == PROTOCOL_RDP && len(in.RDPFile) > 0) == false {
-			data.insert_err = append(data.insert_err, errors.New("no host"))
+			text := "no host"
+			if in.Protocol == PROTOCOL_CMD {
+				text = "no command"
+			}
+			data.insert_err = append(data.insert_err, errors.New(text))
 		}
 	}
-	if in.Port == 0 {
+	if (in.Protocol == PROTOCOL_SSH || in.Protocol == PROTOCOL_RDP) &&
+	   in.Port == 0 {
 		data.insert_err = append(data.insert_err, errors.New("port can't be 0"))
 	}
 	if len(in.Jump.Host) > 0 && in.Jump.Port == 0 {
@@ -576,6 +581,18 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
 			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 	}
 	red = false
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_tick_box(ui, win.T + line, win, "Silent", in.Silent,
+		INS_CMD_SILENT, ui.insert_sel)
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- Note ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
+		INS_CMD_NOTE, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_ok_butt(ui, win.T + line, INS_CMD_OK, ui.insert_sel)
 	return line
 }
 

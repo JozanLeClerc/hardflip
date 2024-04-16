@@ -651,11 +651,21 @@ func i_events(data *HardData) {
 						case INS_RDP_DRIVE + len(data.insert.Drive): break
 						case INS_CMD_CMD: ui.buff = data.insert.Host
 						case INS_CMD_SHELL: ui.buff = data.insert.Shell[0]
+						case INS_CMD_SILENT:
+							data.ui.insert_sel_ok = false
+							if data.insert.Silent == true {
+								data.insert.Silent = false
+							} else {
+								data.insert.Silent = true
+							}
+							break
 						case INS_SSH_NOTE,
-							 INS_RDP_NOTE + len(data.insert.Drive):
+							 INS_RDP_NOTE + len(data.insert.Drive),
+							 INS_CMD_NOTE:
 							ui.buff = data.insert.Note
 						case INS_SSH_OK,
-							 INS_RDP_OK + len(data.insert.Drive):
+							 INS_RDP_OK + len(data.insert.Drive),
+							 INS_CMD_OK:
 							data.ui.insert_sel_ok = false
 							i_insert_check_ok(data, data.insert)
 							if data.insert_err != nil {
@@ -796,7 +806,8 @@ func i_events(data *HardData) {
 						 INS_RDP_FILE,
 						 INS_RDP_NOTE + len(data.insert.Drive),
 						 INS_CMD_CMD,
-						 INS_CMD_SHELL:
+						 INS_CMD_SHELL,
+						 INS_CMD_NOTE:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -840,7 +851,8 @@ func i_events(data *HardData) {
 							case INS_CMD_SHELL:
 								data.insert.Shell[0] = ui.buff
 							case INS_SSH_NOTE,
-								 INS_RDP_NOTE + len(data.insert.Drive):
+								 INS_RDP_NOTE + len(data.insert.Drive),
+								 INS_CMD_NOTE:
 								data.insert.Note = ui.buff
 							}
 							data.ui.insert_sel_ok = false
