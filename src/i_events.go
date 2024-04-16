@@ -642,6 +642,9 @@ func i_events(data *HardData) {
 							break
 						case INS_RDP_QUALITY: break
 						case INS_RDP_DRIVE + len(data.insert.Drive): break
+						case INS_SSH_NOTE,
+							 INS_RDP_NOTE + len(data.insert.Drive):
+							ui.buff = data.insert.Note
 						case INS_SSH_OK,
 							 INS_RDP_OK + len(data.insert.Drive):
 							data.ui.insert_sel_ok = false
@@ -775,12 +778,14 @@ func i_events(data *HardData) {
 						 INS_SSH_JUMP_USER,
 						 INS_SSH_JUMP_PASS,
 						 INS_SSH_JUMP_PRIV,
+						 INS_SSH_NOTE,
 						 INS_RDP_HOST,
 						 INS_RDP_PORT,
 						 INS_RDP_DOMAIN,
 						 INS_RDP_USER,
 						 INS_RDP_PASS,
-						 INS_RDP_FILE:
+						 INS_RDP_FILE,
+						 INS_RDP_NOTE + len(data.insert.Drive):
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -819,6 +824,9 @@ func i_events(data *HardData) {
 								data.insert.Domain = ui.buff
 							case INS_RDP_FILE:
 								data.insert.RDPFile = ui.buff
+							case INS_SSH_NOTE,
+								 INS_RDP_NOTE + len(data.insert.Drive):
+								data.insert.Note = ui.buff
 							}
 							data.ui.insert_sel_ok = false
 							ui.buff = ""

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Fri Apr 12 13:53:42 2024
+ * Tue Apr 16 15:42:37 2024
  * Joe
  *
  * interfacing with the user
@@ -738,6 +738,9 @@ func i_ui(data_dir string) {
 						 INS_SSH_JUMP_PRIV:
 						i_prompt_generic(data.ui, "Private key: ",
 							false, home_dir)
+					case INS_SSH_NOTE,
+						 INS_RDP_NOTE + len(data.insert.Drive):
+						i_prompt_generic(data.ui, "Note: ", false, "")
 					case INS_RDP_DOMAIN:
 						i_prompt_generic(data.ui, "Domain: ", false, "")
 					case INS_RDP_FILE:
