@@ -52,7 +52,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -338,13 +337,8 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
-		data.insert.Drive = map[string]string{ // WARN: this is a test
-			"qwe": "a",
-			"asd": "aaaa",
-			"zxc": "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-			"azxc": "aaaaa",
-		}
-		i_set_drive_keys(data)
+		data.ui.insert_sel_max = INS_RDP_OK + len(in.Drive)
+		in.drive_keys = nil
 	case PROTOCOL_CMD:
 		in.Shell = []string{"/bin/sh", "-c"}
 		data.ui.insert_sel_max = 2
@@ -554,7 +548,6 @@ func i_events(data *HardData) {
 					}
 					ui.s.HideCursor()
 					data.insert = &HostNode{}
-					data.insert.Protocol = 1 // WARN: tests only, remove this
 					i_set_protocol_defaults(data, data.insert)
 					data.insert.Name = ui.buff
 					ui.buff = ""
@@ -610,16 +603,6 @@ func i_events(data *HardData) {
 					} else if event.Rune() == 'i' ||
 							  event.Rune() == 'a' ||
 							  event.Key() == tcell.KeyEnter {
-						if data.ui.insert_sel == INS_RDP_DYNAMIC {
-							if data.insert.Dynamic == true {
-								data.insert.Dynamic = false
-							} else {
-								data.insert.Dynamic = true
-							}
-							ui.buff = ""
-							ui.s.HideCursor()
-							break
-						}
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
 						case INS_SSH_HOST,
@@ -649,7 +632,14 @@ func i_events(data *HardData) {
 						case INS_RDP_DOMAIN: ui.buff = data.insert.Domain
 						case INS_RDP_FILE: ui.buff = data.insert.RDPFile
 						case INS_RDP_SCREENSIZE: break
-						case INS_RDP_DYNAMIC: break
+						case INS_RDP_DYNAMIC:
+							data.ui.insert_sel_ok = false
+							if data.insert.Dynamic == true {
+								data.insert.Dynamic = false
+							} else {
+								data.insert.Dynamic = true
+							}
+							break
 						case INS_RDP_QUALITY: break
 						case INS_RDP_DRIVE + len(data.insert.Drive): break
 						case INS_SSH_OK,
@@ -669,6 +659,24 @@ func i_events(data *HardData) {
 						ui.buff = ""
 						ui.drives_buff = ""
 						ui.s.HideCursor()
+					}
+					if len(data.insert.Drive) > 0 &&
+					   (data.ui.insert_sel >= INS_RDP_DRIVE &&
+					   data.ui.insert_sel < INS_RDP_DRIVE +
+					   len(data.insert.Drive)) {
+						if event.Rune() == 'y' ||
+						event.Rune() == 'Y' ||
+						event.Key() == tcell.KeyEnter {
+							delete(data.insert.Drive,
+								   data.insert.drive_keys[
+								   data.ui.insert_sel - INS_RDP_DRIVE])
+							if len(data.insert.Drive) == 0 {
+								data.insert.Drive = nil
+							}
+							i_set_drive_keys(data)
+						}
+						data.ui.insert_sel_ok = false
+						break
 					}
 					switch data.ui.insert_sel {
 					case INS_PROTOCOL:
@@ -753,12 +761,6 @@ func i_events(data *HardData) {
 								ui.drives_buff = ""
 								ui.buff = ""
 								ui.s.HideCursor()
-								// FIX: can't add shit anymore
-								// FIX: data good tho
-								ui.s.Fini()
-								fmt.Println(data.insert.Drive)
-								fmt.Println(data.insert.drive_keys)
-								os.Exit(0)
 							} else {
 								i_readline(event, &data.ui.buff)
 							}
@@ -824,23 +826,6 @@ func i_events(data *HardData) {
 						} else {
 							i_readline(event, &data.ui.buff)
 						}
-					}
-					if len(data.insert.Drive) > 0 &&
-					   (data.ui.insert_sel >= INS_RDP_DRIVE &&
-					    data.ui.insert_sel < INS_RDP_DRIVE +
-					    len(data.insert.Drive)) {
-						if event.Rune() == 'y' ||
-						   event.Rune() == 'Y' ||
-						   event.Key() == tcell.KeyEnter {
-							delete(data.insert.Drive,
-								   data.insert.drive_keys[data.ui.insert_sel -
-								   INS_RDP_DRIVE])
-							if len(data.insert.Drive) == 0 {
-								data.insert.Drive = nil
-							}
-							i_set_drive_keys(data)
-						}
-						data.ui.insert_sel_ok = false
 					}
 				}
 			}

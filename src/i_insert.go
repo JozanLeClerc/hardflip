@@ -503,6 +503,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	for k, v := range in.drive_keys {
+		red = false
 		if dir := in.Drive[v]; len(dir) > 0 {
 			if dir[0] == '~' {
 				home, _ := os.UserHomeDir()
