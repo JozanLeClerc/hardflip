@@ -569,6 +569,13 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
 	}
 	i_draw_text_box(ui, win.T + line, win, "Shell", in.Shell[0],
 		INS_CMD_SHELL, red);
+	if red == true {
+		if line += 1; win.T + line >= win.B { return line }
+		text := "file does not exist"
+		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+	}
+	red = false
 	return line
 }
 

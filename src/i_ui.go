@@ -419,8 +419,7 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 		   err != nil {
 			style = style.Foreground(tcell.ColorRed)
 		} else if stat.IsDir() == true {
-			style = style.Foreground(tcell.ColorGreen).
-				Bold(true)
+			style = style.Foreground(tcell.ColorGreen).Bold(false)
 		} else {
 			style = style.Foreground(tcell.ColorRed)
 		}
@@ -757,6 +756,10 @@ func i_ui(data_dir string) {
 						} else {
 							i_prompt_dir(data.ui, "Local directory: ", home_dir)
 						}
+					case INS_CMD_CMD:
+						i_prompt_generic(data.ui, "Command: ", false, "")
+					case INS_CMD_SHELL:
+						i_prompt_generic(data.ui, "Shell: ", false, home_dir)
 					}
 					if len(data.insert.Drive) > 0 &&
 					   data.ui.insert_sel >= INS_RDP_DRIVE &&

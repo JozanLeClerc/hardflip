@@ -582,6 +582,9 @@ func i_events(data *HardData) {
 						if data.insert.Protocol == PROTOCOL_RDP &&
 						   data.ui.insert_sel == INS_PROTOCOL {
 							data.ui.insert_sel = INS_RDP_HOST
+						} else if data.insert.Protocol == PROTOCOL_CMD &&
+								  data.ui.insert_sel == INS_PROTOCOL {
+							data.ui.insert_sel = INS_CMD_CMD
 						} else if data.ui.insert_sel < data.ui.insert_sel_max {
 							data.ui.insert_sel += 1
 						}
@@ -589,6 +592,9 @@ func i_events(data *HardData) {
 							  event.Key() == tcell.KeyUp {
 						if data.insert.Protocol == PROTOCOL_RDP &&
 						   data.ui.insert_sel == INS_RDP_HOST {
+							data.ui.insert_sel = INS_PROTOCOL
+						} else if data.insert.Protocol == PROTOCOL_CMD &&
+								  data.ui.insert_sel == INS_CMD_CMD {
 							data.ui.insert_sel = INS_PROTOCOL
 						} else if data.ui.insert_sel > INS_PROTOCOL {
 							data.ui.insert_sel -= 1
@@ -643,6 +649,8 @@ func i_events(data *HardData) {
 							break
 						case INS_RDP_QUALITY: break
 						case INS_RDP_DRIVE + len(data.insert.Drive): break
+						case INS_CMD_CMD: ui.buff = data.insert.Host
+						case INS_CMD_SHELL: ui.buff = data.insert.Shell[0]
 						case INS_SSH_NOTE,
 							 INS_RDP_NOTE + len(data.insert.Drive):
 							ui.buff = data.insert.Note
@@ -786,7 +794,9 @@ func i_events(data *HardData) {
 						 INS_RDP_USER,
 						 INS_RDP_PASS,
 						 INS_RDP_FILE,
-						 INS_RDP_NOTE + len(data.insert.Drive):
+						 INS_RDP_NOTE + len(data.insert.Drive),
+						 INS_CMD_CMD,
+						 INS_CMD_SHELL:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -825,6 +835,10 @@ func i_events(data *HardData) {
 								data.insert.Domain = ui.buff
 							case INS_RDP_FILE:
 								data.insert.RDPFile = ui.buff
+							case INS_CMD_CMD:
+								data.insert.Host = ui.buff
+							case INS_CMD_SHELL:
+								data.insert.Shell[0] = ui.buff
 							case INS_SSH_NOTE,
 								 INS_RDP_NOTE + len(data.insert.Drive):
 								data.insert.Note = ui.buff
