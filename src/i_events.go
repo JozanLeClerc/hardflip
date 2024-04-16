@@ -340,8 +340,9 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 		data.ui.insert_sel_max = INS_RDP_OK + len(in.Drive)
 		in.drive_keys = nil
 	case PROTOCOL_CMD:
+		in.Silent = false
 		in.Shell = []string{"/bin/sh", "-c"}
-		data.ui.insert_sel_max = 2
+		data.ui.insert_sel_max = INS_CMD_OK
 	case PROTOCOL_OS:
 		in.Stack.RegionName = "eu-west-0"
 		in.Stack.IdentityAPI = "3"
