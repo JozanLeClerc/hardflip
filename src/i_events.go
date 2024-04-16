@@ -609,6 +609,7 @@ func i_events(data *HardData) {
 							data.ui.insert_sel = data.ui.insert_sel_max
 					} else if event.Rune() == 'i' ||
 							  event.Rune() == 'a' ||
+							  event.Rune() == ' ' ||
 							  event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {

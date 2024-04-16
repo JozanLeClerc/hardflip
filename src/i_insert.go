@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 16 16:32:29 2024
+ * Tue Apr 16 17:11:12 2024
  * Joe
  *
  * insert a new host
@@ -216,6 +216,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH: file[0], file[1] = in.Priv, in.Jump.Priv
 	case PROTOCOL_RDP: file[0] = in.RDPFile
+	case PROTOCOL_CMD: file[0] = in.Shell[0]
 	default: return
 	}
 	for _, v := range file {

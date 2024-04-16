@@ -37,8 +37,8 @@
 
 ## v0.7
 
+- [ ] scroll insert
 - [ ] help
-- [ ] ssh jump rdp
 - [ ] better readline
 
 ## v0.8
