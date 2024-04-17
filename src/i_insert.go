@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Tue Apr 16 17:11:12 2024
+ * Wed Apr 17 14:00:27 2024
  * Joe
  *
  * insert a new host
@@ -86,7 +86,7 @@ func i_insert_format_filename(name, path string) string {
 	return str
 }
 
-func i_insert_abs_files(insert *HostNode) {
+func i_insert_abs_files(insert *HostNode, home_dir string) {
 	files := []*string{
 		&insert.Priv,
 		&insert.Jump.Priv,
@@ -96,10 +96,6 @@ func i_insert_abs_files(insert *HostNode) {
 	for _, v := range files {
 		if len(*v) > 0 {
 			if (*v)[0] == '~' {
-				home_dir, err := os.UserHomeDir()
-				if err != nil {
-					return
-				}
 				*v = home_dir + (*v)[1:]
 			}
 			*v, _ = filepath.Abs(*v)
@@ -108,10 +104,6 @@ func i_insert_abs_files(insert *HostNode) {
 	for k, v := range insert.Drive {
 		if len(v) > 0 {
 			if (v)[0] == '~' {
-				home_dir, err := os.UserHomeDir()
-				if err != nil {
-					return
-				}
 				v = home_dir + (v)[1:]
 			}
 			v, _ = filepath.Abs(v)
@@ -135,7 +127,7 @@ func i_insert_default_users(insert *HostNode) {
 }
 
 func i_insert_host(data *HardData, insert *HostNode) {
-	i_insert_abs_files(insert)
+	i_insert_abs_files(insert, data.home_dir)
 	i_insert_default_users(insert)
 	if len(insert.Drive) == 0 {
 		insert.Drive = nil
@@ -222,11 +214,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	for _, v := range file {
 		if len(v) > 0 {
 			if v[0] == '~' {
-				home_dir, err := os.UserHomeDir()
-				if err != nil {
-					return
-				}
-				v = home_dir + v[1:]
+				v = data.home_dir + v[1:]
 			}
 			if stat, err := os.Stat(v);
 			   err != nil {
@@ -240,11 +228,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	}
 	for _, v := range in.Drive {
 		if v[0] == '~' {
-			home_dir, err := os.UserHomeDir()
-			if err != nil {
-				return
-			}
-			v = home_dir + v[1:]
+			v = data.home_dir + v[1:]
 		}
 		if stat, err := os.Stat(v);
 		   err != nil {
@@ -291,7 +275,8 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
 		ui.style[DEF_STYLE], label)
-	if (id == INS_SSH_PASS || id == INS_SSH_JUMP_PASS || id == INS_RDP_PASS) &&
+	if (id == INS_SSH_PASS || id == INS_SSH_JUMP_PASS ||
+		id == INS_RDP_PASS || id == INS_OS_PASS) &&
 		len(content) > 0 {
 		content = "***"
 	}
@@ -330,8 +315,86 @@ func i_draw_ok_butt(ui HardUI, line int, id, selected int) {
 		(ui.dim[W] / 2) + (butt_size / 2), line, style, buff)
 }
 
-func i_draw_insert_panel(ui HardUI, in *HostNode) {
-	type draw_insert_func func(ui HardUI, line int, win Quad, in *HostNode) int
+func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
+	if ui.insert_sel_ok == false {
+		return
+	}
+	switch ui.insert_sel {
+	case INS_PROTOCOL:
+		i_prompt_list(ui, "Connection type", "Type:",
+					  PROTOCOL_STR[:])
+	case INS_SSH_HOST,
+		 INS_SSH_JUMP_HOST,
+		 INS_RDP_HOST:
+		i_prompt_generic(ui, "Host/IP: ", false, "")
+	case INS_SSH_PORT,
+		 INS_SSH_JUMP_PORT,
+		 INS_RDP_PORT:
+		i_prompt_generic(ui, "Port: ", false, "")
+	case INS_SSH_USER,
+		 INS_SSH_JUMP_USER,
+		 INS_RDP_USER,
+		 INS_OS_USER:
+		i_prompt_generic(ui, "User: ", false, "")
+	case INS_SSH_PASS,
+		 INS_SSH_JUMP_PASS,
+		 INS_RDP_PASS,
+		 INS_OS_PASS:
+		i_prompt_generic(ui, "Pass: ", true, "")
+	case INS_SSH_PRIV,
+		 INS_SSH_JUMP_PRIV:
+		i_prompt_generic(ui, "Private key: ",
+			false, home_dir)
+	case INS_SSH_NOTE,
+		 INS_RDP_NOTE + len(in.Drive),
+		 INS_CMD_NOTE:
+		i_prompt_generic(ui, "Note: ", false, "")
+	case INS_RDP_DOMAIN:
+		i_prompt_generic(ui, "Domain: ", false, "")
+	case INS_RDP_FILE:
+		i_prompt_generic(ui, "RDP file: ", false, home_dir)
+	case INS_RDP_SCREENSIZE:
+		i_prompt_list(ui, "Window size", "Size:",
+					  RDP_SCREENSIZE[:])
+	case INS_RDP_QUALITY:
+		i_prompt_list(ui, "Quality", "Quality:",
+					  RDP_QUALITY[:])
+	case INS_RDP_DRIVE + len(in.Drive):
+		if len(ui.drives_buff) == 0 {
+			i_prompt_generic(ui, "Name: ", false, "")
+		} else {
+			i_prompt_dir(ui, "Local directory: ", home_dir)
+		}
+	case INS_CMD_CMD:
+		i_prompt_generic(ui, "Command: ", false, "")
+	case INS_CMD_SHELL:
+		i_prompt_generic(ui, "Shell: ", false, home_dir)
+	case INS_OS_HOST:
+		i_prompt_generic(ui, "Endpoint: ", false, "")
+	case INS_OS_USERDOMAINID:
+		i_prompt_generic(ui, "UserDomainID: ", false, "")
+	case INS_OS_PROJECTID:
+		i_prompt_generic(ui, "ProjectID: ", false, "")
+	case INS_OS_REGION:
+		i_prompt_generic(ui, "Region name: ", false, "")
+	case INS_OS_ENDTYPE:
+		i_prompt_generic(ui, "Endpoint type: ", false, "")
+	case INS_OS_INTERFACE:
+		i_prompt_generic(ui, "Interface: ", false, "")
+	case INS_OS_IDAPI:
+		i_prompt_generic(ui, "Identity API version: ", false, "")
+	}
+	if len(in.Drive) > 0 &&
+	   ui.insert_sel >= INS_RDP_DRIVE &&
+	   ui.insert_sel < INS_RDP_DRIVE +
+	   len(in.Drive) {
+		i_draw_remove_share(ui)
+	}
+}
+
+func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
+	type draw_insert_func func(ui HardUI, line int, win Quad,
+							   in *HostNode, home string) int
 
 	if len(in.Name) == 0 {
 		return
@@ -357,14 +420,16 @@ func i_draw_insert_panel(ui HardUI, in *HostNode) {
 		i_draw_insert_cmd,
 		i_draw_insert_os,
 	}
-	end_line = fp[in.Protocol](ui, line, win, in)
+	end_line = fp[in.Protocol](ui, line, win, in, home_dir)
 	if win.T + end_line >= win.B {
 		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
 		// TODO: scroll or something
 	}
+	i_draw_insert_inputs(ui, in, home_dir)
 }
 
-func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
+func i_draw_insert_ssh(ui HardUI, line int, win Quad,
+					   in *HostNode, home string) int {
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
@@ -385,7 +450,6 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	if line += 1; win.T + line >= win.B { return line }
 	if file := in.Priv; len(file) > 0 {
 		if file[0] == '~' {
-			home, _ := os.UserHomeDir()
 			file = home + file[1:]
 		}
 		if stat, err := os.Stat(file);
@@ -409,35 +473,36 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
 		INS_SSH_JUMP_HOST, false)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Port",
-		strconv.Itoa(int(in.Jump.Port)),
-		INS_SSH_JUMP_PORT, false)
-	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
-		INS_SSH_JUMP_USER, false)
-	if line += 1; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
-		INS_SSH_JUMP_PASS, false)
-	if line += 1; win.T + line >= win.B { return line}
-	if len(in.Jump.Priv) > 0 {
-		file := in.Jump.Priv
-		if file[0] == '~' {
-			home, _ := os.UserHomeDir()
-			file = home + file[1:]
-		}
-		if stat, err := os.Stat(file);
-		   err != nil || stat.IsDir() == true {
-			red = true
-		}
-	}
-	i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
-		INS_SSH_JUMP_PRIV, red)
-	if red == true {
+	if len(in.Jump.Host) > 0 {
 		if line += 1; win.T + line >= win.B { return line }
-		text := "file does not exist"
-		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		i_draw_text_box(ui, win.T + line, win, "Port",
+			strconv.Itoa(int(in.Jump.Port)),
+			INS_SSH_JUMP_PORT, false)
+		if line += 2; win.T + line >= win.B { return line }
+		i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
+			INS_SSH_JUMP_USER, false)
+		if line += 1; win.T + line >= win.B { return line }
+		i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
+			INS_SSH_JUMP_PASS, false)
+		if line += 1; win.T + line >= win.B { return line}
+		if len(in.Jump.Priv) > 0 {
+			file := in.Jump.Priv
+			if file[0] == '~' {
+				file = home + file[1:]
+			}
+			if stat, err := os.Stat(file);
+			   err != nil || stat.IsDir() == true {
+				red = true
+			}
+		}
+		i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
+			INS_SSH_JUMP_PRIV, red)
+		if red == true {
+			if line += 1; win.T + line >= win.B { return line }
+			text := "file does not exist"
+			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
 	}
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
@@ -451,7 +516,8 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad, in *HostNode) int {
 	return line
 }
 
-func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
+func i_draw_insert_rdp(ui HardUI, line int, win Quad,
+					   in *HostNode, home string) int {
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
@@ -479,7 +545,6 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 	if line += 2; win.T + line >= win.B { return line }
 	if file := in.RDPFile; len(file) > 0 {
 		if file[0] == '~' {
-			home, _ := os.UserHomeDir()
 			file = home + file[1:]
 		}
 		if stat, err := os.Stat(file);
@@ -520,7 +585,6 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 		red = false
 		if dir := in.Drive[v]; len(dir) > 0 {
 			if dir[0] == '~' {
-				home, _ := os.UserHomeDir()
 				dir = home + dir[1:]
 			}
 			if stat, err := os.Stat(dir);
@@ -553,7 +617,8 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad, in *HostNode) int {
 	return line
 }
 
-func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
+func i_draw_insert_cmd(ui HardUI, line int, win Quad,
+					   in *HostNode, home string) int {
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Settings ----"
@@ -565,7 +630,6 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
 	if line += 1; win.T + line >= win.B { return line }
 	if shell := in.Shell[0]; len(shell) > 0 {
 		if shell[0] == '~' {
-			home, _ := os.UserHomeDir()
 			shell = home + shell[1:]
 		}
 		if stat, err := os.Stat(shell);
@@ -597,6 +661,45 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad, in *HostNode) int {
 	return line
 }
 
-func i_draw_insert_os(ui HardUI, line int, win Quad, in *HostNode) int {
+func i_draw_insert_os(ui HardUI, line int, win Quad,
+					  in *HostNode, home string) int {
+	if win.T + line >= win.B { return line }
+	text := "---- Host settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Endpoint", in.Host,
+		INS_OS_HOST, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "User", in.User,
+		INS_OS_USER, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
+		INS_OS_PASS, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "User domain ID",
+		in.Stack.UserDomainID,
+		INS_OS_USERDOMAINID, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Project ID", in.Stack.ProjectID,
+		INS_OS_PROJECTID, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Region name", in.Stack.RegionName,
+		INS_OS_REGION, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Endpoint type",
+		in.Stack.EndpointType,
+		INS_OS_ENDTYPE, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Interface", in.Stack.Interface,
+		INS_OS_INTERFACE, false)
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- API settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Identity API version",
+		in.Stack.IdentityAPI,
+		INS_OS_IDAPI, false)
 	return line
 }

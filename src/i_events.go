@@ -351,7 +351,7 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Stack.VolumeAPI   = "3.42"
 		in.Stack.EndpointType = "publicURL"
 		in.Stack.Interface = "public"
-		data.ui.insert_sel_max = 2
+		data.ui.insert_sel_max = INS_OS_OK
 	}
 }
 
@@ -585,6 +585,13 @@ func i_events(data *HardData) {
 						} else if data.insert.Protocol == PROTOCOL_CMD &&
 								  data.ui.insert_sel == INS_PROTOCOL {
 							data.ui.insert_sel = INS_CMD_CMD
+						} else if data.insert.Protocol == PROTOCOL_OS &&
+								  data.ui.insert_sel == INS_PROTOCOL {
+							data.ui.insert_sel = INS_OS_HOST
+						} else if data.insert.Protocol == PROTOCOL_SSH &&
+								  data.ui.insert_sel == INS_SSH_JUMP_HOST &&
+								  len(data.insert.Jump.Host) == 0 {
+							data.ui.insert_sel = INS_SSH_NOTE
 						} else if data.ui.insert_sel < data.ui.insert_sel_max {
 							data.ui.insert_sel += 1
 						}
@@ -596,6 +603,13 @@ func i_events(data *HardData) {
 						} else if data.insert.Protocol == PROTOCOL_CMD &&
 								  data.ui.insert_sel == INS_CMD_CMD {
 							data.ui.insert_sel = INS_PROTOCOL
+						} else if data.insert.Protocol == PROTOCOL_OS &&
+								  data.ui.insert_sel == INS_OS_HOST {
+							data.ui.insert_sel = INS_PROTOCOL
+						} else if data.insert.Protocol == PROTOCOL_SSH &&
+								  data.ui.insert_sel == INS_SSH_NOTE &&
+								  len(data.insert.Jump.Host) == 0 {
+							data.ui.insert_sel = INS_SSH_JUMP_HOST
 						} else if data.ui.insert_sel > INS_PROTOCOL {
 							data.ui.insert_sel -= 1
 						}
@@ -613,8 +627,18 @@ func i_events(data *HardData) {
 							  event.Key() == tcell.KeyEnter {
 						data.ui.insert_sel_ok = true
 						switch data.ui.insert_sel {
+						case INS_SSH_OK,
+							 INS_RDP_OK + len(data.insert.Drive),
+							 INS_CMD_OK:
+							data.ui.insert_sel_ok = false
+							i_insert_check_ok(data, data.insert)
+							if data.insert_err != nil {
+								break
+							}
+							i_insert_host(data, data.insert)
 						case INS_SSH_HOST,
-							 INS_RDP_HOST:
+							 INS_RDP_HOST,
+							 INS_OS_HOST:
 							ui.buff = data.insert.Host
 						case INS_SSH_PORT,
 							 INS_RDP_PORT:
@@ -622,10 +646,12 @@ func i_events(data *HardData) {
 								ui.buff = strconv.Itoa(int(data.insert.Port))
 							}
 						case INS_SSH_USER,
-							 INS_RDP_USER:
+							 INS_RDP_USER,
+							 INS_OS_USER:
 							ui.buff = data.insert.User
 						case INS_SSH_PASS,
-							 INS_RDP_PASS:
+							 INS_RDP_PASS,
+							 INS_OS_PASS:
 							break
 						case INS_SSH_PRIV: ui.buff = data.insert.Priv
 						case INS_SSH_JUMP_HOST: ui.buff = data.insert.Jump.Host
@@ -660,19 +686,22 @@ func i_events(data *HardData) {
 								data.insert.Silent = true
 							}
 							break
+						case INS_OS_USERDOMAINID:
+							ui.buff = data.insert.Stack.UserDomainID
+						case INS_OS_PROJECTID:
+							ui.buff = data.insert.Stack.ProjectID
+						case INS_OS_REGION:
+							ui.buff = data.insert.Stack.RegionName
+						case INS_OS_ENDTYPE:
+							ui.buff = data.insert.Stack.EndpointType
+						case INS_OS_INTERFACE:
+							ui.buff = data.insert.Stack.Interface
+						case INS_OS_IDAPI:
+							ui.buff = data.insert.Stack.IdentityAPI
 						case INS_SSH_NOTE,
 							 INS_RDP_NOTE + len(data.insert.Drive),
 							 INS_CMD_NOTE:
 							ui.buff = data.insert.Note
-						case INS_SSH_OK,
-							 INS_RDP_OK + len(data.insert.Drive),
-							 INS_CMD_OK:
-							data.ui.insert_sel_ok = false
-							i_insert_check_ok(data, data.insert)
-							if data.insert_err != nil {
-								break
-							}
-							i_insert_host(data, data.insert)
 						}
 					}
 				} else {
@@ -808,21 +837,33 @@ func i_events(data *HardData) {
 						 INS_RDP_NOTE + len(data.insert.Drive),
 						 INS_CMD_CMD,
 						 INS_CMD_SHELL,
-						 INS_CMD_NOTE:
+						 INS_CMD_NOTE,
+						 INS_OS_HOST,
+						 INS_OS_USER,
+						 INS_OS_PASS,
+						 INS_OS_USERDOMAINID,
+						 INS_OS_PROJECTID,
+						 INS_OS_REGION,
+						 INS_OS_ENDTYPE,
+						 INS_OS_INTERFACE,
+						 INS_OS_IDAPI:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
-								 INS_RDP_HOST:
+								 INS_RDP_HOST,
+								 INS_OS_HOST:
 								data.insert.Host = ui.buff
 							case INS_SSH_PORT,
 								 INS_RDP_PORT:
 								tmp, _ := strconv.Atoi(ui.buff)
 								data.insert.Port = uint16(tmp)
 							case INS_SSH_USER,
-								 INS_RDP_USER:
+								 INS_RDP_USER,
+								 INS_OS_USER:
 								data.insert.User = ui.buff
 							case INS_SSH_PASS,
-								 INS_RDP_PASS:
+								 INS_RDP_PASS,
+								 INS_OS_PASS:
 								data.insert.Pass, _ = c_encrypt_str(ui.buff,
 														 data.opts.GPG)
 							case INS_SSH_PRIV: data.insert.Priv = ui.buff
@@ -851,6 +892,18 @@ func i_events(data *HardData) {
 								data.insert.Host = ui.buff
 							case INS_CMD_SHELL:
 								data.insert.Shell[0] = ui.buff
+							case INS_OS_USERDOMAINID:
+								data.insert.Stack.UserDomainID = ui.buff
+							case INS_OS_PROJECTID:
+								data.insert.Stack.ProjectID = ui.buff
+							case INS_OS_REGION:
+								data.insert.Stack.RegionName = ui.buff
+							case INS_OS_ENDTYPE:
+								data.insert.Stack.EndpointType = ui.buff
+							case INS_OS_INTERFACE:
+								data.insert.Stack.Interface = ui.buff
+							case INS_OS_IDAPI:
+								data.insert.Stack.IdentityAPI = ui.buff
 							case INS_SSH_NOTE,
 								 INS_RDP_NOTE + len(data.insert.Drive),
 								 INS_CMD_NOTE:

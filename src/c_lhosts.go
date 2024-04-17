@@ -55,13 +55,13 @@ package main
 type StackSettings struct {
   UserDomainID string `yaml:"user_domain_id,omitempty"`
   ProjectID    string `yaml:"project_id,omitempty"`
+  RegionName   string `yaml:"region_name,omitempty"`
+  EndpointType string `yaml:"endpoint_type,omitempty"`
+  Interface    string `yaml:"interface,omitempty"`
   IdentityAPI  string `yaml:"identity_api_version,omitempty"`
   ImageAPI     string `yaml:"image_api_version,omitempty"`
   NetworkAPI   string `yaml:"network_api_version,omitempty"`
   VolumeAPI    string `yaml:"volume_api_version,omitempty"`
-  RegionName   string `yaml:"region_name,omitempty"`
-  EndpointType string `yaml:"endpoint_type,omitempty"`
-  Interface    string `yaml:"interface,omitempty"`
 }
 
 type JumpSettings struct {

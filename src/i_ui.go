@@ -673,6 +673,7 @@ func i_ui(data_dir string) {
 		opts,
 		make(map[*DirsNode]*ItemsList),
 		data_dir,
+		home_dir,
 		load_err,
 		nil,
 		[][2]string{},
@@ -711,64 +712,8 @@ func i_ui(data_dir string) {
 			if data.insert == nil {
 				i_prompt_insert(data.ui, data.litems.curr)
 			} else {
-				i_draw_insert_panel(data.ui, data.insert)
-				if data.ui.insert_sel_ok == true {
-					switch data.ui.insert_sel {
-					case INS_PROTOCOL:
-						i_prompt_list(data.ui, "Connection type", "Type:",
-									  PROTOCOL_STR[:])
-					case INS_SSH_HOST,
-						 INS_SSH_JUMP_HOST,
-						 INS_RDP_HOST:
-						i_prompt_generic(data.ui, "Host/IP: ", false, "")
-					case INS_SSH_PORT,
-						 INS_SSH_JUMP_PORT,
-						 INS_RDP_PORT:
-						i_prompt_generic(data.ui, "Port: ", false, "")
-					case INS_SSH_USER,
-						 INS_SSH_JUMP_USER,
-						 INS_RDP_USER:
-						i_prompt_generic(data.ui, "User: ", false, "")
-					case INS_SSH_PASS,
-						 INS_SSH_JUMP_PASS,
-						 INS_RDP_PASS:
-						i_prompt_generic(data.ui, "Pass: ", true, "")
-					case INS_SSH_PRIV,
-						 INS_SSH_JUMP_PRIV:
-						i_prompt_generic(data.ui, "Private key: ",
-							false, home_dir)
-					case INS_SSH_NOTE,
-						 INS_RDP_NOTE + len(data.insert.Drive),
-						 INS_CMD_NOTE:
-						i_prompt_generic(data.ui, "Note: ", false, "")
-					case INS_RDP_DOMAIN:
-						i_prompt_generic(data.ui, "Domain: ", false, "")
-					case INS_RDP_FILE:
-						i_prompt_generic(data.ui, "RDP file: ", false, home_dir)
-					case INS_RDP_SCREENSIZE:
-						i_prompt_list(data.ui, "Window size", "Size:",
-									  RDP_SCREENSIZE[:])
-					case INS_RDP_QUALITY:
-						i_prompt_list(data.ui, "Quality", "Quality:",
-									  RDP_QUALITY[:])
-					case INS_RDP_DRIVE + len(data.insert.Drive):
-						if len(data.ui.drives_buff) == 0 {
-							i_prompt_generic(data.ui, "Name: ", false, "")
-						} else {
-							i_prompt_dir(data.ui, "Local directory: ", home_dir)
-						}
-					case INS_CMD_CMD:
-						i_prompt_generic(data.ui, "Command: ", false, "")
-					case INS_CMD_SHELL:
-						i_prompt_generic(data.ui, "Shell: ", false, home_dir)
-					}
-					if len(data.insert.Drive) > 0 &&
-					   data.ui.insert_sel >= INS_RDP_DRIVE &&
-					   data.ui.insert_sel < INS_RDP_DRIVE +
-					   len(data.insert.Drive) {
-						i_draw_remove_share(data.ui)
-					}
-				} else if data.insert_err != nil {
+				i_draw_insert_panel(data.ui, data.insert, data.home_dir)
+				if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)
 				}
 			}

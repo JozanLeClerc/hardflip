@@ -59,6 +59,7 @@ type HardData struct {
 	opts   HardOpts
 	folds  map[*DirsNode]*ItemsList
 	data_dir string
+	home_dir string
 	load_err []error
 	insert_err []error
 	keys   [][2]string
