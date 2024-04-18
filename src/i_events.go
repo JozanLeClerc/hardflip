@@ -487,6 +487,12 @@ func i_events(data *HardData) {
 			} else if event.Rune() == 'm' ||
 					  event.Key() == tcell.KeyF7 {
 				data.ui.mode = MKDIR_MODE
+			} else if event.Rune() == 'y' {
+				if data.litems.curr == nil ||
+				   data.litems.curr.is_dir() == true {
+					break
+				}
+				data.yank = data.litems.curr
 			}
 			i_list_follow_cursor(data.litems, ui)
 		case DELETE_MODE:

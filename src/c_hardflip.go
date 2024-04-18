@@ -53,17 +53,18 @@ package main
 
 // the main data structure, holds up everything important
 type HardData struct {
-	litems *ItemsList
-	ldirs  *DirsList
-	ui     HardUI
-	opts   HardOpts
-	folds  map[*DirsNode]*ItemsList
+	litems  *ItemsList
+	ldirs   *DirsList
+	ui      HardUI
+	opts    HardOpts
+	folds   map[*DirsNode]*ItemsList
 	data_dir string
 	home_dir string
 	load_err []error
 	insert_err []error
-	keys   [][2]string
+	keys    [][2]string
 	insert  *HostNode
+	yank	*ItemsNode
 }
 
 func main() {

@@ -51,6 +51,8 @@
 
 package main
 
+import "github.com/gdamore/tcell/v2"
+
 func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
@@ -58,7 +60,7 @@ func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 		// style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
-	text := ""
+	text := " "
 	for i := 0; i < int(dir.Depth) - 2; i++ {
 		text += "  "
 	}
@@ -77,13 +79,18 @@ func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 }
 
 func i_host_panel_host(ui HardUI, icons bool,
-		depth uint16, host *HostNode, curr *HostNode, line int) {
+		depth uint16, host *HostNode, curr *HostNode, yank *ItemsNode,
+		line int) {
 	style := ui.style[DEF_STYLE]
+	if yank != nil && host == yank.Host {
+		style = style.Foreground(tcell.ColorPurple).Bold(true)
+		// TODO: here
+	}
 	if host == curr {
 		// style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
-	text := ""
+	text := " "
 	for i := 0; i < int(depth + 1) - 2; i++ {
 		text += "  "
 	}
@@ -117,6 +124,7 @@ func i_draw_host_panel(ui HardUI, icons bool,
 							  ptr.Host.parent.Depth,
 							  ptr.Host,
 							  litems.curr.Host,
+							  data.yank,
 							  line)
 			line++
 		} else if ptr.Dirs != nil {

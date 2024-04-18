@@ -156,7 +156,7 @@ const (
 )
 
 var (
-	HOST_ICONS = [4]string{" ", " ", " ", "󰅟 "}
+	HOST_ICONS = [4]string{" ", " ", " ", " "}
 	DIRS_ICONS = [2]string{" ", " "}
 	RDP_SCREENSIZE = [7]string{
 		"800x600",

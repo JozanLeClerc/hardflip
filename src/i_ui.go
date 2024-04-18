@@ -678,6 +678,7 @@ func i_ui(data_dir string) {
 		nil,
 		[][2]string{},
 		nil,
+		nil,
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE
