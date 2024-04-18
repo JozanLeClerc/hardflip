@@ -629,7 +629,8 @@ func i_events(data *HardData) {
 						switch data.ui.insert_sel {
 						case INS_SSH_OK,
 							 INS_RDP_OK + len(data.insert.Drive),
-							 INS_CMD_OK:
+							 INS_CMD_OK,
+							 INS_OS_OK:
 							data.ui.insert_sel_ok = false
 							i_insert_check_ok(data, data.insert)
 							if data.insert_err != nil {
@@ -698,9 +699,16 @@ func i_events(data *HardData) {
 							ui.buff = data.insert.Stack.Interface
 						case INS_OS_IDAPI:
 							ui.buff = data.insert.Stack.IdentityAPI
+						case INS_OS_IMGAPI:
+							ui.buff = data.insert.Stack.ImageAPI
+						case INS_OS_NETAPI:
+							ui.buff = data.insert.Stack.NetworkAPI
+						case INS_OS_VOLAPI:
+							ui.buff = data.insert.Stack.VolumeAPI
 						case INS_SSH_NOTE,
 							 INS_RDP_NOTE + len(data.insert.Drive),
-							 INS_CMD_NOTE:
+							 INS_CMD_NOTE,
+							 INS_OS_NOTE:
 							ui.buff = data.insert.Note
 						}
 					}
@@ -846,7 +854,11 @@ func i_events(data *HardData) {
 						 INS_OS_REGION,
 						 INS_OS_ENDTYPE,
 						 INS_OS_INTERFACE,
-						 INS_OS_IDAPI:
+						 INS_OS_IDAPI,
+						 INS_OS_IMGAPI,
+						 INS_OS_NETAPI,
+						 INS_OS_VOLAPI,
+						 INS_OS_NOTE:
 						if event.Key() == tcell.KeyEnter {
 							switch data.ui.insert_sel {
 							case INS_SSH_HOST,
@@ -904,9 +916,16 @@ func i_events(data *HardData) {
 								data.insert.Stack.Interface = ui.buff
 							case INS_OS_IDAPI:
 								data.insert.Stack.IdentityAPI = ui.buff
+							case INS_OS_IMGAPI:
+								data.insert.Stack.ImageAPI = ui.buff
+							case INS_OS_NETAPI:
+								data.insert.Stack.NetworkAPI = ui.buff
+							case INS_OS_VOLAPI:
+								data.insert.Stack.VolumeAPI = ui.buff
 							case INS_SSH_NOTE,
 								 INS_RDP_NOTE + len(data.insert.Drive),
-								 INS_CMD_NOTE:
+								 INS_CMD_NOTE,
+								 INS_OS_NOTE:
 								data.insert.Note = ui.buff
 							}
 							data.ui.insert_sel_ok = false

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Wed Apr 17 14:00:27 2024
+ * Thu Apr 18 17:00:01 2024
  * Joe
  *
  * insert a new host
@@ -192,6 +192,8 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 			text := "no host"
 			if in.Protocol == PROTOCOL_CMD {
 				text = "no command"
+			} else if in.Protocol == PROTOCOL_OS {
+				text = "no endpoint"
 			}
 			data.insert_err = append(data.insert_err, errors.New(text))
 		}
@@ -203,6 +205,20 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	if len(in.Jump.Host) > 0 && in.Jump.Port == 0 {
 		data.insert_err = append(data.insert_err,
 			errors.New("jump port can't be 0"))
+	}
+	if in.Protocol == PROTOCOL_OS {
+		if len(in.User) == 0 {
+			data.insert_err = append(data.insert_err,
+				errors.New("user can't be empty"))
+		}
+		if len(in.Stack.UserDomainID) == 0 {
+			data.insert_err = append(data.insert_err,
+				errors.New("user domain ID can't be empty"))
+		}
+		if len(in.Stack.ProjectID) == 0 {
+			data.insert_err = append(data.insert_err,
+				errors.New("project ID can't be empty"))
+		}
 	}
 	var file [2]string
 	switch in.Protocol {
@@ -347,7 +363,8 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 			false, home_dir)
 	case INS_SSH_NOTE,
 		 INS_RDP_NOTE + len(in.Drive),
-		 INS_CMD_NOTE:
+		 INS_CMD_NOTE,
+		 INS_OS_NOTE:
 		i_prompt_generic(ui, "Note: ", false, "")
 	case INS_RDP_DOMAIN:
 		i_prompt_generic(ui, "Domain: ", false, "")
@@ -383,6 +400,12 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 		i_prompt_generic(ui, "Interface: ", false, "")
 	case INS_OS_IDAPI:
 		i_prompt_generic(ui, "Identity API version: ", false, "")
+	case INS_OS_IMGAPI:
+		i_prompt_generic(ui, "Image API version: ", false, "")
+	case INS_OS_NETAPI:
+		i_prompt_generic(ui, "Network API version: ", false, "")
+	case INS_OS_VOLAPI:
+		i_prompt_generic(ui, "Volume API version: ", false, "")
 	}
 	if len(in.Drive) > 0 &&
 	   ui.insert_sel >= INS_RDP_DRIVE &&
@@ -701,5 +724,26 @@ func i_draw_insert_os(ui HardUI, line int, win Quad,
 	i_draw_text_box(ui, win.T + line, win, "Identity API version",
 		in.Stack.IdentityAPI,
 		INS_OS_IDAPI, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Image API version",
+		in.Stack.ImageAPI,
+		INS_OS_IMGAPI, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Network API version",
+		in.Stack.NetworkAPI,
+		INS_OS_NETAPI, false)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Volume API version",
+		in.Stack.VolumeAPI,
+		INS_OS_VOLAPI, false)
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- Note ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
+		INS_OS_NOTE, false)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_ok_butt(ui, win.T + line, INS_OS_OK, ui.insert_sel)
 	return line
 }
