@@ -30,7 +30,7 @@
 - [x] mkdir
 - [x] .rdp file
 - [x] reload keep position
-- [ ] add
+- [x] add
 - [ ] clone
 - [ ] edit
 - [ ] rename
