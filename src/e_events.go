@@ -42,7 +42,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/i_events.go
+ * hardflip: src/e_events.go
  * Thu Apr 11 16:00:44 2024
  * Joe
  *
@@ -60,7 +60,7 @@ import (
 	"golang.org/x/term"
 )
 
-func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
+func e_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	if litems.draw == nil || litems.curr == nil {
 		return
 	}
@@ -80,12 +80,12 @@ func i_list_follow_cursor(litems *ItemsList, ui *HardUI) {
 	}
 }
 
-func i_set_unfold(data *HardData, item *ItemsNode) {
+func e_set_unfold(data *HardData, item *ItemsNode) {
 	delete(data.folds, item.Dirs)
 	data.litems.reset_id()
 }
 
-func i_unfold_dir(data *HardData, item *ItemsNode) {
+func e_unfold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
 	}
@@ -96,12 +96,12 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 	start, end := fold.head, fold.last
 	// last empty dir
 	if start == nil && end == nil {
-		i_set_unfold(data, item)
+		e_set_unfold(data, item)
 		return
 	}
 	// single empty dir
 	if start == item && end == end { // HACK: i forgot why end == end
-		i_set_unfold(data, item)
+		e_set_unfold(data, item)
 		return
 	}
 	if data.litems.last == item {
@@ -114,10 +114,10 @@ func i_unfold_dir(data *HardData, item *ItemsNode) {
 		item.next.prev = end
 	}
 	item.next = start
-	i_set_unfold(data, item)
+	e_set_unfold(data, item)
 }
 
-func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
+func e_set_fold(data *HardData, curr, start, end *ItemsNode) {
 	folds := data.folds
 	tmp := ItemsList{
 		start,
@@ -130,7 +130,7 @@ func i_set_fold(data *HardData, curr, start, end *ItemsNode) {
 	data.litems.reset_id()
 }
 
-func i_fold_dir(data *HardData, item *ItemsNode) {
+func e_fold_dir(data *HardData, item *ItemsNode) {
 	if item == nil || item.Dirs == nil {
 		return
 	}
@@ -138,12 +138,12 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	start = item.next
 	// last dir + empty
 	if start == nil {
-		i_set_fold(data, item, nil, nil)
+		e_set_fold(data, item, nil, nil)
 		return
 	}
 	// empty dir
 	if start.Dirs != nil && start.Dirs.Depth <= item.Dirs.Depth {
-		i_set_fold(data, item, item, item)
+		e_set_fold(data, item, item, item)
 		return
 	}
 	// non-empty dir
@@ -156,7 +156,7 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 		end = data.litems.last
 		end.next = nil
 		data.litems.last = item
-		i_set_fold(data, item, start, end)
+		e_set_fold(data, item, start, end)
 		return
 	}
 	// this is not the end
@@ -164,10 +164,10 @@ func i_fold_dir(data *HardData, item *ItemsNode) {
 	end.next = nil
 	item.next = next_dir
 	next_dir.prev = item
-	i_set_fold(data, item, start, end)
+	e_set_fold(data, item, start, end)
 }
 
-func i_reload_data(data *HardData) {
+func e_reload_data(data *HardData) {
 	tmp_name := ""
 	tmp_parent_path := ""
 	if data.litems.curr != nil {
@@ -217,7 +217,7 @@ func i_reload_data(data *HardData) {
 	data.litems.curr = data.litems.head
 }
 
-func i_delete_dir(data *HardData) error {
+func e_delete_dir(data *HardData) error {
 	if data.litems.curr == nil || data.litems.curr.Dirs == nil {
 		return nil
 	}
@@ -228,7 +228,7 @@ func i_delete_dir(data *HardData) error {
 		return err
 	}
 	if data.folds[curr.Dirs] == nil {
-		i_fold_dir(data, curr)
+		e_fold_dir(data, curr)
 	}
 	delete(data.folds, curr.Dirs)
 	if curr == data.litems.head {
@@ -253,12 +253,12 @@ func i_delete_dir(data *HardData) error {
 	return nil
 }
 
-func i_delete_host(data *HardData) error {
+func e_delete_host(data *HardData) error {
 	if data.litems.curr == nil {
 		return nil
 	}
 	if data.litems.curr.is_dir() == true {
-		return i_delete_dir(data)
+		return e_delete_dir(data)
 	}
 	host := data.litems.curr.Host
 	if host == nil {
@@ -280,7 +280,7 @@ func i_delete_host(data *HardData) error {
 	return nil
 }
 
-func i_readline(event *tcell.EventKey, buffer *string) {
+func e_readline(event *tcell.EventKey, buffer *string) {
 	if len(*buffer) > 0 &&
 	(event.Key() == tcell.KeyBackspace ||
 	event.Key() == tcell.KeyBackspace2) {
@@ -292,7 +292,7 @@ func i_readline(event *tcell.EventKey, buffer *string) {
 	}
 }
 
-func i_mkdir(data *HardData, ui *HardUI) {
+func e_mkdir(data *HardData, ui *HardUI) {
 	if len(ui.buff) == 0 {
 		return
 	}
@@ -307,7 +307,7 @@ func i_mkdir(data *HardData, ui *HardUI) {
 		err, ui)
 		return
 	}
-	i_reload_data(data)
+	e_reload_data(data)
 	for curr := data.litems.head; curr != nil; curr = curr.next {
 		if curr.is_dir() == true &&
 		   curr.Dirs.Name == ui.buff &&
@@ -318,7 +318,7 @@ func i_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
-func i_set_drive_keys(data *HardData) {
+func e_set_drive_keys(data *HardData) {
 	data.insert.drive_keys = nil
 	for key := range data.insert.Drive {
 		data.insert.drive_keys = append(data.insert.drive_keys, key)
@@ -326,7 +326,7 @@ func i_set_drive_keys(data *HardData) {
 	data.ui.insert_sel_max = INS_RDP_OK + len(data.insert.Drive)
 }
 
-func i_set_protocol_defaults(data *HardData, in *HostNode) {
+func e_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
 		in.Port = 22
@@ -356,164 +356,25 @@ func i_set_protocol_defaults(data *HardData, in *HostNode) {
 }
 
 // screen events such as keypresses
-func i_events(data *HardData) {
+func e_events(data *HardData) {
 	ui := &data.ui
 	event := ui.s.PollEvent()
 	switch event := event.(type) {
 	case *tcell.EventResize:
 		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-		i_list_follow_cursor(data.litems, ui)
+		e_list_follow_cursor(data.litems, ui)
 		ui.s.Sync()
 	case *tcell.EventKey:
 		switch ui.mode {
 		case NORMAL_MODE:
-			if event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'q' {
-				ui.s.Fini()
-				os.Exit(0)
-			} else if event.Rune() == 'j' ||
-					  event.Key() == tcell.KeyDown {
-				data.litems.inc(+1)
-			} else if event.Rune() == 'k' ||
-					  event.Key() == tcell.KeyUp {
-				data.litems.inc(-1)
-			} else if event.Key() == tcell.KeyCtrlD ||
-					  event.Key() == tcell.KeyPgDn {
-				data.litems.inc(+(ui.dim[H] / 3))
-			} else if event.Key() == tcell.KeyCtrlU ||
-					  event.Key() == tcell.KeyPgUp {
-				data.litems.inc(-(ui.dim[H] / 3))
-			} else if event.Key() == tcell.KeyCtrlF {
-				// TODO: maybe keymap these
-			} else if event.Key() == tcell.KeyCtrlB {
-				// TODO: maybe keymap these
-			} else if event.Rune() == '}' ||
-					  event.Rune() == ']' {
-				if next := data.litems.curr.next_dir(); next != nil {
-					data.litems.curr = next
-				}
-			} else if event.Rune() == '{' ||
-					  event.Rune() == '[' {
-				if prev := data.litems.curr.prev_dir(); prev != nil {
-					data.litems.curr = prev
-				}
-			} else if event.Rune() == 'g' ||
-					  event.Key() == tcell.KeyHome {
-				data.litems.curr = data.litems.head
-				data.litems.draw = data.litems.head
-			} else if event.Rune() == 'G' ||
-					  event.Key() == tcell.KeyEnd {
-				data.litems.curr = data.litems.last
-			} else if event.Rune() == 'D' &&
-					  data.litems.head != nil &&
-					  data.litems.curr != nil {
-				ui.mode = DELETE_MODE
-			} else if event.Rune() == 'H' {
-				for curr := data.litems.last; curr != nil; curr = curr.prev {
-					if curr.is_dir() == true && data.folds[curr.Dirs] == nil {
-						i_fold_dir(data, curr)
-					}
-				}
-				data.litems.curr = data.litems.head
-				data.litems.draw = data.litems.curr
-			} else if event.Rune() == 'h' ||
-					  event.Key() == tcell.KeyLeft {
-				for curr := data.litems.curr;
-					curr != nil;
-					curr = curr.prev {
-					if curr.is_dir() == true {
-						if data.folds[curr.Dirs] == nil {
-							i_fold_dir(data, curr)
-							data.litems.curr = curr
-							data.litems.draw = data.litems.curr
-							break
-						} else {
-							if data.folds[curr.Dirs.Parent] == nil {
-								parent := curr.Dirs.Parent
-								for curr_new := curr;
-									curr_new != nil;
-									curr_new = curr_new.prev {
-									if curr_new.is_dir() == true {
-										if curr_new.Dirs == parent {
-											i_fold_dir(data, curr_new)
-											data.litems.curr = curr_new
-											data.litems.draw = data.litems.curr
-											break
-										} else {
-											if data.folds[curr_new.Dirs] ==
-											   nil {
-												i_fold_dir(data, curr_new)
-											}
-										}
-									}
-								}
-							}
-							break
-						}
-					}
-				}
-			} else if event.Rune() == 'l' ||
-					  event.Key() == tcell.KeyRight ||
-					  event.Key() == tcell.KeyEnter {
-				if data.litems.curr == nil {
-					break
-				} else if data.litems.curr.is_dir() == false {
-					c_exec(data.litems.curr.Host, data.opts, ui)
-				} else if data.litems.curr.Dirs != nil &&
-						  data.folds[data.litems.curr.Dirs] == nil {
-					i_fold_dir(data, data.litems.curr)
-				} else {
-					i_unfold_dir(data, data.litems.curr)
-				}
-			} else if event.Rune() == ' ' {
-				if data.litems.curr == nil ||
-				   data.litems.curr.is_dir() == false {
-					break
-				}
-				if data.litems.curr.Dirs != nil &&
-				   data.folds[data.litems.curr.Dirs] == nil {
-					i_fold_dir(data, data.litems.curr)
-				} else {
-					i_unfold_dir(data, data.litems.curr)
-				}
-			} else if event.Rune() == 'a' ||
-					  event.Rune() == 'i' {
-				data.ui.mode = INSERT_MODE
-				data.ui.insert_sel = 0
-				data.ui.insert_sel_ok = false
-			} else if event.Key() == tcell.KeyCtrlR {
-				event = nil
-				i_reload_data(data)
-			} else if event.Rune() == 'm' ||
-					  event.Key() == tcell.KeyF7 {
-				data.ui.mode = MKDIR_MODE
-			} else if event.Rune() == 'y' {
-				if data.litems.curr == nil ||
-				   data.litems.curr.is_dir() == true {
-					break
-				}
-				data.yank = data.litems.curr
-			}
-			i_list_follow_cursor(data.litems, ui)
+			e_normal_events(data, *event)
+			e_list_follow_cursor(data.litems, ui)
 		case DELETE_MODE:
-			if event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'n' {
-				ui.mode = NORMAL_MODE
-			} else if event.Key() == tcell.KeyEnter ||
-					  event.Rune() == 'y' {
-				if err := i_delete_host(data); err == nil {
-					ui.mode = NORMAL_MODE
-				}
-			}
+			e_delete_events(data, *event)
 		case ERROR_MODE:
-			if event.Rune() != 0 ||
-			   event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyEnter {
-				ui.mode = NORMAL_MODE
-				data.load_err = nil
-			}
+			e_error_events(data, *event)
 		case WELCOME_MODE:
+			// TODO: here
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {
 				ui.s.Fini()
@@ -555,7 +416,7 @@ func i_events(data *HardData) {
 					}
 					ui.s.HideCursor()
 					data.insert = &HostNode{}
-					i_set_protocol_defaults(data, data.insert)
+					e_set_protocol_defaults(data, data.insert)
 					data.insert.Name = ui.buff
 					ui.buff = ""
 					if data.litems.curr != nil {
@@ -564,7 +425,7 @@ func i_events(data *HardData) {
 						data.insert.parent = data.ldirs.head
 					}
 				} else {
-					i_readline(event, &data.ui.buff)
+					e_readline(event, &data.ui.buff)
 				}
 			} else if data.insert != nil {
 				if data.insert_err != nil {
@@ -739,7 +600,7 @@ func i_events(data *HardData) {
 							if len(data.insert.Drive) == 0 {
 								data.insert.Drive = nil
 							}
-							i_set_drive_keys(data)
+							e_set_drive_keys(data)
 						}
 						data.ui.insert_sel_ok = false
 						break
@@ -761,7 +622,7 @@ func i_events(data *HardData) {
 							data.insert.Protocol = int8(event.Rune() - 48 - 1)
 							data.ui.insert_sel_ok = false
 							ui.s.HideCursor()
-							i_set_protocol_defaults(data, data.insert)
+							e_set_protocol_defaults(data, data.insert)
 						}
 					case INS_RDP_SCREENSIZE:
 						if event.Rune() < '1' || event.Rune() > '7' {
@@ -807,7 +668,7 @@ func i_events(data *HardData) {
 								data.ui.drives_buff = ui.buff
 								ui.buff = ""
 							} else {
-								i_readline(event, &data.ui.buff)
+								e_readline(event, &data.ui.buff)
 							}
 						} else {
 							if event.Key() == tcell.KeyEnter {
@@ -822,13 +683,13 @@ func i_events(data *HardData) {
 									data.insert.Drive = make(map[string]string)
 								}
 								data.insert.Drive[ui.drives_buff] = ui.buff
-								i_set_drive_keys(data)
+								e_set_drive_keys(data)
 								data.ui.insert_sel_ok = false
 								ui.drives_buff = ""
 								ui.buff = ""
 								ui.s.HideCursor()
 							} else {
-								i_readline(event, &data.ui.buff)
+								e_readline(event, &data.ui.buff)
 							}
 						}
 					case INS_SSH_HOST,
@@ -938,7 +799,7 @@ func i_events(data *HardData) {
 							ui.buff = ""
 							ui.s.HideCursor()
 						} else {
-							i_readline(event, &data.ui.buff)
+							e_readline(event, &data.ui.buff)
 						}
 					}
 				}
@@ -951,12 +812,12 @@ func i_events(data *HardData) {
 				ui.buff = ""
 				data.insert = nil
 			} else if event.Key() == tcell.KeyEnter {
-				i_mkdir(data, ui)
+				e_mkdir(data, ui)
 				ui.s.HideCursor()
 				ui.mode = NORMAL_MODE
 				ui.buff = ""
 			} else {
-				i_readline(event, &data.ui.buff)
+				e_readline(event, &data.ui.buff)
 			}
 		}
 	}

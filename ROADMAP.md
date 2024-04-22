@@ -33,6 +33,7 @@
 - [x] add
 - [ ] clone
 - [ ] edit
+- [ ] move
 - [ ] rename
 
 ## v0.7

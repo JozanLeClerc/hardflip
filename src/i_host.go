@@ -51,8 +51,6 @@
 
 package main
 
-import "github.com/gdamore/tcell/v2"
-
 func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
@@ -83,8 +81,7 @@ func i_host_panel_host(ui HardUI, icons bool,
 		line int) {
 	style := ui.style[DEF_STYLE]
 	if yank != nil && host == yank.Host {
-		style = style.Foreground(tcell.ColorPurple).Bold(true)
-		// TODO: here
+		style = ui.style[YANK_STYLE]
 	}
 	if host == curr {
 		// style = style.Background(tcell.ColorBlack)

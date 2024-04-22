@@ -63,7 +63,7 @@ import (
 type HardUI struct {
 	s     tcell.Screen
 	mode  uint8
-	style [7]tcell.Style
+	style [MAX_STYLE + 1]tcell.Style
 	dim   [2]int
 	err   [2]string
 	buff  string
@@ -622,19 +622,7 @@ func i_load_ui(data_dir string,
 	return ldirs, litems, *load_err
 }
 
-func i_ui(data_dir string) {
-	home_dir, _ := os.UserHomeDir()
-	ui := HardUI{}
-	opts := HardOpts{}
-	var err error
-
-	ui.s, err = tcell.NewScreen()
-	if err != nil {
-		c_die("view", err)
-	}
-	if err := ui.s.Init(); err != nil {
-		c_die("view", err)
-	}
+func i_init_styles(ui *HardUI) {
 	ui.style[DEF_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorReset)
@@ -656,6 +644,25 @@ func i_ui(data_dir string) {
 	ui.style[BOT_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorBlue).Dim(true)
+	ui.style[YANK_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorYellow).Dim(true).Bold(true)
+}
+
+func i_ui(data_dir string) {
+	home_dir, _ := os.UserHomeDir()
+	ui := HardUI{}
+	opts := HardOpts{}
+	var err error
+
+	ui.s, err = tcell.NewScreen()
+	if err != nil {
+		c_die("view", err)
+	}
+	if err := ui.s.Init(); err != nil {
+		c_die("view", err)
+	}
+	i_init_styles(&ui)
 	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	var load_err []error
@@ -720,6 +727,6 @@ func i_ui(data_dir string) {
 			}
 		}
 		data.ui.s.Show()
-		i_events(&data)
+		e_events(&data)
 	}
 }

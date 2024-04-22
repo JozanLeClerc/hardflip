@@ -98,6 +98,8 @@ const (
 	ERR_STYLE
 	TITLE_STYLE
 	BOT_STYLE
+	YANK_STYLE
+	MAX_STYLE = YANK_STYLE
 )
 
 const (
