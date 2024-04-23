@@ -667,7 +667,7 @@ func i_ui(data_dir string) {
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	var load_err []error
 	conf_dir  := c_get_conf_dir(&load_err)
-	if conf_dir == "" {
+	if len(conf_dir) == 0 {
 		opts = DEFAULT_OPTS
 	} else {
 		opts = c_get_options(conf_dir, &load_err)

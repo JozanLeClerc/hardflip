@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Fri Feb 02 11:44:44 2024
+ * Tue Apr 23 17:47:58 2024
  * Joe
  *
  * exec the command at some point
@@ -53,6 +53,7 @@ package main
 
 import (
 	"bytes"
+	"math/rand/v2"
 	"os"
 	"os/exec"
 	"strconv"
@@ -227,11 +228,45 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 	return cmd_fmt, cmd_env
 }
 
+func c_redirect_ssh(host *HostNode, local_port uint16) error {
+	// TODO: here
+	rdr_fmt := []string{}
+	rdr_fmt = append(rdr_fmt, "ssh", "-f")
+	rdr_fmt = append(rdr_fmt, "-L",
+		strconv.Itoa(int(local_port)) + ":" +
+		host.Host + ":" +
+		strconv.Itoa(int(host.Port)))
+	if len(host.Jump.Priv) > 0 {
+		rdr_fmt = append(rdr_fmt, "-i", host.Jump.Priv)
+	}
+	if host.Jump.Port != 0 {
+		rdr_fmt = append(rdr_fmt, "-p", strconv.Itoa(int(host.Jump.Port)))
+	}
+	rdr_fmt = append(rdr_fmt, host.Jump.User + "@" + host.Jump.Host,
+		"-", "sleep", "5")
+	if err := exec.Command(rdr_fmt[0], rdr_fmt[1:]...).Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host == nil {
 		return
 	}
-	cmd_fmt, cmd_env := c_format_cmd(host, opts, ui)
+	tmp_host := host
+	if host.Protocol == PROTOCOL_RDP && len(host.Jump.Host) != 0 {
+		local_host := "127.0.0.1"
+		local_port := uint16(rand.IntN(40000) + 4389)
+		ui.s.Fini()
+		if err := c_redirect_ssh(host, local_port); err != nil {
+			c_error_mode("ssh tunneling", err, ui)
+			return
+		}
+		tmp_host.Host = local_host
+		tmp_host.Port = local_port
+	}
+	cmd_fmt, cmd_env := c_format_cmd(tmp_host, opts, ui)
 	if cmd_fmt == nil {
 		return
 	}
@@ -253,7 +288,7 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		ui.s.Show()
 	}
 	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent);
-	   err != nil && host.Protocol == 2 {
+	   err != nil && host.Protocol == PROTOCOL_CMD {
 		c_error_mode(err_str, err, ui)
 	}
 	if opts.Loop == false {

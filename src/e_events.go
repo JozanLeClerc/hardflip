@@ -186,7 +186,7 @@ func e_reload_data(data *HardData) {
 		data.opts = c_get_options(conf_dir, &data.load_err)
 	}
 	data.data_dir = c_get_data_dir(&data.ui)
-	if data.data_dir == "" {
+	if len(data.data_dir) == 0 {
 		return
 	}
 	g_load_count = -1

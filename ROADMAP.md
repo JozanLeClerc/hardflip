@@ -32,6 +32,7 @@
 - [x] reload keep position
 - [x] add
 - [ ] clone
+- [ ] ssh jump for rdp
 - [ ] edit
 - [ ] move
 - [ ] rename
@@ -59,7 +60,6 @@
 ## v1.2 - ghetto bird
 
 - [ ] vnc
-- [ ] ssh jump for rdp
 
 ## v1.3 - late flip
 
