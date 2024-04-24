@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Thu Apr 11 17:55:54 2024
+ * Wed Apr 24 15:11:37 2024
  * Joe
  *
  * constants
@@ -63,6 +63,8 @@ const (
 	NORMAL_KEYS_HINTS = `!a/i: insert host -
 m: mkdir -
 !s: search -
+y: yank -
+p: paste -
 [C-r]: reload
 !?: help`
 	ERROR_KEYS_HINTS = "[Enter]: ok"

@@ -68,6 +68,7 @@ type HardUI struct {
 	err   [2]string
 	buff  string
 	drives_buff string
+	msg_buff string
 	insert_sel int
 	insert_sel_max int
 	insert_sel_ok bool
@@ -178,31 +179,35 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts,
 		insert *HostNode, insert_err []error) {
 	text := ""
 
+	if len(ui.msg_buff) > 0 {
+		text = ui.msg_buff
+	} else {
 	switch ui.mode {
-	case NORMAL_MODE:
-		text = NORMAL_KEYS_HINTS
-	case DELETE_MODE:
-		text = CONFIRM_KEYS_HINTS
-	case LOAD_MODE:
-		text = "Loading..."
-	case ERROR_MODE:
-		text = ERROR_KEYS_HINTS
-	case WELCOME_MODE:
-		if len(opts.GPG) == 0 {
-			text = ""
-		} else {
+		case NORMAL_MODE:
+			text = NORMAL_KEYS_HINTS
+		case DELETE_MODE:
 			text = CONFIRM_KEYS_HINTS
-		}
-	case INSERT_MODE:
-		if insert == nil {
-			text = ""
-		} else if insert_err != nil {
+		case LOAD_MODE:
+			text = "Loading..."
+		case ERROR_MODE:
 			text = ERROR_KEYS_HINTS
-		} else {
-			text = INSERT_KEYS_HINTS
+		case WELCOME_MODE:
+			if len(opts.GPG) == 0 {
+				text = ""
+			} else {
+				text = CONFIRM_KEYS_HINTS
+			}
+		case INSERT_MODE:
+			if insert == nil {
+				text = ""
+			} else if insert_err != nil {
+				text = ERROR_KEYS_HINTS
+			} else {
+				text = INSERT_KEYS_HINTS
+			}
+		default:
+			text = ""
 		}
-	default:
-		text = ""
 	}
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
@@ -649,7 +654,7 @@ func i_init_styles(ui *HardUI) {
 		Foreground(tcell.ColorYellow).Dim(true).Bold(true)
 }
 
-type key_event_mode_func func(*HardData, tcell.EventKey) bool
+type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
 
 func i_ui(data_dir string) {
 	home_dir, _ := os.UserHomeDir()

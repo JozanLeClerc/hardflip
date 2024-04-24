@@ -353,9 +353,33 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 	}
 }
 
+func e_paste_prepare_item(yank *ItemsNode) ItemsNode {
+	new_host := &HostNode{}
+	*new_host = *yank.Host
+	new_host.Name += " (copy)"
+	if yank.Host.Drive != nil {
+		new_host.Drive = make(map[string]string, len(yank.Host.Drive))
+		for k, v := range yank.Host.Drive {
+			new_host.Drive[k] = v
+		}
+	}
+	if yank.Host.Shell != nil {
+		new_host.Shell = make([]string, len(yank.Host.Shell))
+		copy(new_host.Shell, yank.Host.Shell)
+	}
+	return ItemsNode{Dirs: nil, Host: new_host}
+}
+
+func e_paste_item(litems *ItemsList, item ItemsNode) {
+	curr := litems.curr
+}
+
 // screen events such as keypresses
 func e_events(data *HardData, fp [MODE_MAX + 1]key_event_mode_func) {
 	ui := &data.ui
+	if len(ui.msg_buff) != 0 {
+		ui.msg_buff = ""
+	}
 	event := ui.s.PollEvent()
 	switch event := event.(type) {
 	case *tcell.EventResize:
@@ -365,7 +389,7 @@ func e_events(data *HardData, fp [MODE_MAX + 1]key_event_mode_func) {
 	case *tcell.EventKey:
 		if ui.mode > MODE_MAX {
 			return
-		} else if brk := fp[ui.mode](data, *event); brk == true {
+		} else if brk := fp[ui.mode](data, ui, *event); brk == true {
 			return
 		} else if ui.mode == NORMAL_MODE {
 			e_list_follow_cursor(data.litems, ui)
