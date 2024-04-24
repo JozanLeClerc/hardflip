@@ -221,6 +221,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 		}
 	}
 	var file [2]string
+	// TEST: test irl insert + rdp + drives + jump
 	switch in.Protocol {
 	case PROTOCOL_SSH: file[0], file[1] = in.Priv, in.Jump.Priv
 	case PROTOCOL_RDP: file[0], file[1] = in.RDPFile, in.Jump.Priv
