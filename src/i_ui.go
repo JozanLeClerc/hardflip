@@ -649,6 +649,8 @@ func i_init_styles(ui *HardUI) {
 		Foreground(tcell.ColorYellow).Dim(true).Bold(true)
 }
 
+type key_event_mode_func func(*HardData, tcell.EventKey) bool
+
 func i_ui(data_dir string) {
 	home_dir, _ := os.UserHomeDir()
 	ui := HardUI{}
@@ -691,6 +693,15 @@ func i_ui(data_dir string) {
 		data.ui.mode = WELCOME_MODE
 		data.keys = c_get_secret_gpg_keyring()
 	}
+	fp := [MODE_MAX + 1]key_event_mode_func{
+		NORMAL_MODE:	e_normal_events,
+		DELETE_MODE:	e_delete_events,
+		LOAD_MODE:		e_load_events,
+		ERROR_MODE:		e_error_events,
+		WELCOME_MODE:	e_welcome_events,
+		MKDIR_MODE:		e_mkdir_events,
+		INSERT_MODE:	e_insert_events,
+	}
 	for {
 		data.ui.s.Clear()
 		i_draw_bottom_text(data.ui, data.opts, data.insert, data.insert_err)
@@ -727,6 +738,6 @@ func i_ui(data_dir string) {
 			}
 		}
 		data.ui.s.Show()
-		e_events(&data)
+		e_events(&data, fp)
 	}
 }

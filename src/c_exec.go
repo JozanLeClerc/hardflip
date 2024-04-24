@@ -53,7 +53,6 @@ package main
 
 import (
 	"bytes"
-	// "fmt"
 	"math/rand/v2"
 	"os"
 	"os/exec"
@@ -230,7 +229,6 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 }
 
 func c_redirect_ssh(host *HostNode, local_port uint16) error {
-	// TODO: here
 	rdr_fmt := []string{}
 	rdr_fmt = append(rdr_fmt, "ssh", "-f")
 	rdr_fmt = append(rdr_fmt, "-L",

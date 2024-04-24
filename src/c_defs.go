@@ -78,6 +78,7 @@ const (
 	WELCOME_MODE
 	MKDIR_MODE
 	INSERT_MODE
+	MODE_MAX = INSERT_MODE
 )
 
 const (
