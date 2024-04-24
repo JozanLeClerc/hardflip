@@ -60,6 +60,7 @@
 ## v1.2 - ghetto bird
 
 - [ ] vnc
+- [ ] tree-like branches
 
 ## v1.3 - late flip
 
