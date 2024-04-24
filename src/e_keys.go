@@ -242,6 +242,24 @@ func e_welcome_events(data *HardData, event tcell.EventKey) bool {
 	return false
 }
 
+func e_mkdir_events(data *HardData, event tcell.EventKey) bool {
+	if event.Key() == tcell.KeyEscape ||
+	   event.Key() == tcell.KeyCtrlC {
+		data.ui.s.HideCursor()
+		data.ui.mode = NORMAL_MODE
+		data.ui.buff = ""
+		data.insert = nil
+	} else if event.Key() == tcell.KeyEnter {
+		e_mkdir(data, &data.ui)
+		data.ui.s.HideCursor()
+		data.ui.mode = NORMAL_MODE
+		data.ui.buff = ""
+	} else {
+		e_readline(event, &data.ui.buff)
+	}
+	return false
+}
+
 func e_insert_events(data *HardData, event tcell.EventKey) bool {
 	ui := &data.ui
 
@@ -652,24 +670,6 @@ func e_insert_events(data *HardData, event tcell.EventKey) bool {
 				}
 			}
 		}
-	}
-	return false
-}
-
-func e_mkdir_events(data *HardData, event tcell.EventKey) bool {
-	if event.Key() == tcell.KeyEscape ||
-	   event.Key() == tcell.KeyCtrlC {
-		data.ui.s.HideCursor()
-		data.ui.mode = NORMAL_MODE
-		data.ui.buff = ""
-		data.insert = nil
-	} else if event.Key() == tcell.KeyEnter {
-		e_mkdir(data, &data.ui)
-		data.ui.s.HideCursor()
-		data.ui.mode = NORMAL_MODE
-		data.ui.buff = ""
-	} else {
-		e_readline(event, &data.ui.buff)
 	}
 	return false
 }
