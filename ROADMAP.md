@@ -31,7 +31,7 @@
 - [x] .rdp file
 - [x] reload keep position
 - [x] add
-- [ ] clone
+- [x] clone
 - [ ] ssh jump for rdp - working but missing in add menu
 - [ ] edit
 - [ ] move

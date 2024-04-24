@@ -186,9 +186,15 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.msg_buff = "yanked " + data.yank.Host.Name +
 			" (" + data.yank.Host.parent.path() + data.yank.Host.filename + ")"
 	} else if event.Rune() == 'p' && data.yank != nil {
-		// TODO: here
 		new_host := e_paste_prepare_item(data.yank)
-		// e_paste_item(data.litems, new_item)
+		if data.litems.curr.is_dir() == true {
+			new_host.parent = data.litems.curr.Dirs
+			if data.folds[data.litems.curr.Dirs] != nil {
+				e_unfold_dir(data, data.litems.curr)
+			}
+		} else {
+			new_host.parent = data.litems.curr.Host.parent
+		}
 		i_insert_host(data, &new_host)
 		data.yank = nil
 		ui.msg_buff = "pasted " + new_host.Name
