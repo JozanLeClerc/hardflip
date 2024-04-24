@@ -53,6 +53,7 @@ package main
 
 import (
 	"bytes"
+	// "fmt"
 	"math/rand/v2"
 	"os"
 	"os/exec"
@@ -243,7 +244,7 @@ func c_redirect_ssh(host *HostNode, local_port uint16) error {
 		rdr_fmt = append(rdr_fmt, "-p", strconv.Itoa(int(host.Jump.Port)))
 	}
 	rdr_fmt = append(rdr_fmt, host.Jump.User + "@" + host.Jump.Host,
-		"-", "sleep", "5")
+		"sleep", "5")
 	if err := exec.Command(rdr_fmt[0], rdr_fmt[1:]...).Run(); err != nil {
 		return err
 	}
@@ -258,7 +259,6 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host.Protocol == PROTOCOL_RDP && len(host.Jump.Host) != 0 {
 		local_host := "127.0.0.1"
 		local_port := uint16(rand.IntN(40000) + 4389)
-		ui.s.Fini()
 		if err := c_redirect_ssh(host, local_port); err != nil {
 			c_error_mode("ssh tunneling", err, ui)
 			return

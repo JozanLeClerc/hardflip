@@ -32,7 +32,7 @@
 - [x] reload keep position
 - [x] add
 - [ ] clone
-- [ ] ssh jump for rdp
+- [ ] ssh jump for rdp - working but missing in add menu
 - [ ] edit
 - [ ] move
 - [ ] rename

@@ -295,6 +295,53 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 		}
 		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
+	// jump
+	if len(host.Jump.Host) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[TITLE_STYLE], "Jump settings: ")
+		if line += 1; line > ui.dim[H] - 3 { return line }
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+			ui.style[TITLE_STYLE], "Host: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
+			ui.style[DEF_STYLE], host.Jump.Host)
+		if line += 1; line > ui.dim[H] - 3 { return line }
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+			ui.style[TITLE_STYLE], "Port: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
+			ui.style[DEF_STYLE], strconv.Itoa(int(host.Jump.Port)))
+		if line += 1; line > ui.dim[H] - 3 { return line }
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+			ui.style[TITLE_STYLE], "User: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
+			ui.style[DEF_STYLE], host.Jump.User)
+		if line += 1; line > ui.dim[H] - 3 { return line }
+		if len(host.Jump.Pass) > 0 {
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+				ui.style[TITLE_STYLE], "Pass: ")
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 10, line, ui.dim[W] - 2, line,
+				ui.style[DEF_STYLE], "***")
+			if line += 1; line > ui.dim[H] - 3 { return line }
+		}
+		if len(host.Jump.Priv) > 0 {
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 4, line, ui.dim[W] - 2, line,
+				ui.style[TITLE_STYLE], "Privkey: ")
+			i_draw_text(ui.s,
+				(ui.dim[W] / 3) + 13, line, ui.dim[W] - 2, line,
+				ui.style[DEF_STYLE], host.Jump.Priv)
+			if line += 1; line > ui.dim[H] - 3 { return line }
+		}
+		if line += 1; line > ui.dim[H] - 3 { return line }
+	}
 	return line
 }
 
