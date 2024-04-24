@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Mon Apr 22 17:04:37 2024
+ * Wed Apr 24 12:16:05 2024
  * Joe
  *
  * events in the keys
@@ -186,6 +186,7 @@ func e_normal_events(data *HardData, event tcell.EventKey) bool {
 		}
 		data.yank = data.litems.curr
 	}
+	// TODO: here paste
 	return false
 }
 
