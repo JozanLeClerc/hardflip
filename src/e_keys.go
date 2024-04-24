@@ -330,6 +330,12 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				if data.insert.Protocol == PROTOCOL_RDP &&
 				   ui.insert_sel == INS_PROTOCOL {
 					ui.insert_sel = INS_RDP_HOST
+
+				} else if data.insert.Protocol == PROTOCOL_RDP &&
+						  ui.insert_sel == INS_RDP_JUMP_HOST +
+							len(data.insert.Drive) &&
+						  len(data.insert.Jump.Host) == 0 {
+					ui.insert_sel = INS_RDP_NOTE + len(data.insert.Drive)
 				} else if data.insert.Protocol == PROTOCOL_CMD &&
 						  ui.insert_sel == INS_PROTOCOL {
 					ui.insert_sel = INS_CMD_CMD
@@ -348,6 +354,11 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				if data.insert.Protocol == PROTOCOL_RDP &&
 				   ui.insert_sel == INS_RDP_HOST {
 					ui.insert_sel = INS_PROTOCOL
+				} else if data.insert.Protocol == PROTOCOL_RDP &&
+						  ui.insert_sel == INS_RDP_NOTE +
+							len(data.insert.Drive) &&
+						  len(data.insert.Jump.Host) == 0 {
+					ui.insert_sel = INS_RDP_JUMP_HOST + len(data.insert.Drive)
 				} else if data.insert.Protocol == PROTOCOL_CMD &&
 						  ui.insert_sel == INS_CMD_CMD {
 					ui.insert_sel = INS_PROTOCOL
@@ -403,15 +414,24 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					 INS_OS_PASS:
 					return true
 				case INS_SSH_PRIV: ui.buff = data.insert.Priv
-				case INS_SSH_JUMP_HOST: ui.buff = data.insert.Jump.Host
-				case INS_SSH_JUMP_PORT:
+				case INS_SSH_JUMP_HOST,
+					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
+					ui.buff = data.insert.Jump.Host
+				case INS_SSH_JUMP_PORT,
+					 INS_SSH_JUMP_PORT + len(data.insert.Drive):
 					if data.insert.Jump.Port > 0 {
 						ui.buff = strconv.Itoa(int(
 						data.insert.Jump.Port))
 					}
-				case INS_SSH_JUMP_USER: ui.buff = data.insert.Jump.User
-				case INS_SSH_JUMP_PASS: return true
-				case INS_SSH_JUMP_PRIV: ui.buff = data.insert.Jump.Priv
+				case INS_SSH_JUMP_USER,
+					 INS_RDP_JUMP_USER + len(data.insert.Drive):
+					ui.buff = data.insert.Jump.User
+				case INS_SSH_JUMP_PASS,
+					 INS_RDP_JUMP_PASS + len(data.insert.Drive):
+					return true
+				case INS_SSH_JUMP_PRIV,
+					 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
+					ui.buff = data.insert.Jump.Priv
 				case INS_RDP_DOMAIN: ui.buff = data.insert.Domain
 				case INS_RDP_FILE: ui.buff = data.insert.RDPFile
 				case INS_RDP_SCREENSIZE: return true
@@ -583,6 +603,11 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				 INS_SSH_JUMP_USER,
 				 INS_SSH_JUMP_PASS,
 				 INS_SSH_JUMP_PRIV,
+				 INS_RDP_JUMP_HOST + len(data.insert.Drive),
+				 INS_RDP_JUMP_PORT + len(data.insert.Drive),
+				 INS_RDP_JUMP_USER + len(data.insert.Drive),
+				 INS_RDP_JUMP_PASS + len(data.insert.Drive),
+				 INS_RDP_JUMP_PRIV + len(data.insert.Drive),
 				 INS_SSH_NOTE,
 				 INS_RDP_HOST,
 				 INS_RDP_PORT,
@@ -627,22 +652,27 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						data.insert.Pass, _ = c_encrypt_str(ui.buff,
 												 data.opts.GPG)
 					case INS_SSH_PRIV: data.insert.Priv = ui.buff
-					case INS_SSH_JUMP_HOST:
+					case INS_SSH_JUMP_HOST,
+						 INS_RDP_JUMP_HOST + len(data.insert.Drive):
 						data.insert.Jump.Host = ui.buff
 						if len(ui.buff) > 0 {
 							data.insert.Jump.Port = 22
 						} else {
 							data.insert.Jump.Port = 0
 						}
-					case INS_SSH_JUMP_PORT:
+					case INS_SSH_JUMP_PORT,
+						 INS_RDP_JUMP_PORT + len(data.insert.Drive):
 						tmp, _ := strconv.Atoi(ui.buff)
 						data.insert.Jump.Port = uint16(tmp)
-					case INS_SSH_JUMP_USER:
+					case INS_SSH_JUMP_USER,
+						 INS_RDP_JUMP_USER + len(data.insert.Drive):
 						data.insert.Jump.User = ui.buff
-					case INS_SSH_JUMP_PASS:
+					case INS_SSH_JUMP_PASS,
+						 INS_RDP_JUMP_PASS + len(data.insert.Drive):
 						data.insert.Jump.Pass, _ =
 						c_encrypt_str(ui.buff, data.opts.GPG)
-					case INS_SSH_JUMP_PRIV:
+					case INS_SSH_JUMP_PRIV,
+						 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
 						data.insert.Jump.Priv = ui.buff
 					case INS_RDP_DOMAIN:
 						data.insert.Domain = ui.buff

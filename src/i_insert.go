@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Thu Apr 18 17:00:01 2024
+ * Wed Apr 24 17:40:10 2024
  * Joe
  *
  * insert a new host
@@ -223,7 +223,7 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	var file [2]string
 	switch in.Protocol {
 	case PROTOCOL_SSH: file[0], file[1] = in.Priv, in.Jump.Priv
-	case PROTOCOL_RDP: file[0] = in.RDPFile
+	case PROTOCOL_RDP: file[0], file[1] = in.RDPFile, in.Jump.Priv
 	case PROTOCOL_CMD: file[0] = in.Shell[0]
 	default: return
 	}
@@ -341,24 +341,29 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 					  PROTOCOL_STR[:])
 	case INS_SSH_HOST,
 		 INS_SSH_JUMP_HOST,
+		 INS_RDP_JUMP_HOST + len(in.Drive),
 		 INS_RDP_HOST:
 		i_prompt_generic(ui, "Host/IP: ", false, "")
 	case INS_SSH_PORT,
 		 INS_SSH_JUMP_PORT,
+		 INS_RDP_JUMP_PORT + len(in.Drive),
 		 INS_RDP_PORT:
 		i_prompt_generic(ui, "Port: ", false, "")
 	case INS_SSH_USER,
 		 INS_SSH_JUMP_USER,
+		 INS_RDP_JUMP_USER + len(in.Drive),
 		 INS_RDP_USER,
 		 INS_OS_USER:
 		i_prompt_generic(ui, "User: ", false, "")
 	case INS_SSH_PASS,
 		 INS_SSH_JUMP_PASS,
+		 INS_RDP_JUMP_PASS + len(in.Drive),
 		 INS_RDP_PASS,
 		 INS_OS_PASS:
 		i_prompt_generic(ui, "Pass: ", true, "")
 	case INS_SSH_PRIV,
-		 INS_SSH_JUMP_PRIV:
+		 INS_SSH_JUMP_PRIV,
+		 INS_RDP_JUMP_PRIV + len(in.Drive):
 		i_prompt_generic(ui, "Private key: ",
 			false, home_dir)
 	case INS_SSH_NOTE,
@@ -389,9 +394,9 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 	case INS_OS_HOST:
 		i_prompt_generic(ui, "Endpoint: ", false, "")
 	case INS_OS_USERDOMAINID:
-		i_prompt_generic(ui, "UserDomainID: ", false, "")
+		i_prompt_generic(ui, "User Domain ID: ", false, "")
 	case INS_OS_PROJECTID:
-		i_prompt_generic(ui, "ProjectID: ", false, "")
+		i_prompt_generic(ui, "Project ID: ", false, "")
 	case INS_OS_REGION:
 		i_prompt_generic(ui, "Region name: ", false, "")
 	case INS_OS_ENDTYPE:
@@ -628,6 +633,45 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 	}
 	i_draw_text_box(ui, win.T + line, win, "Add share", "",
 		INS_RDP_DRIVE + len(in.Drive), false)
+	red = false
+	if line += 2; win.T + line >= win.B { return line }
+	text = "---- Jump settings ----"
+	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
+		win.T + line, ui.style[DEF_STYLE], text)
+	if line += 2; win.T + line >= win.B { return line }
+	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
+		INS_RDP_JUMP_HOST + len(in.Drive), false)
+	if len(in.Jump.Host) > 0 {
+		if line += 1; win.T + line >= win.B { return line }
+		i_draw_text_box(ui, win.T + line, win, "Port",
+			strconv.Itoa(int(in.Jump.Port)),
+			INS_RDP_JUMP_PORT + len(in.Drive), false)
+		if line += 2; win.T + line >= win.B { return line }
+		i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
+			INS_RDP_JUMP_USER + len(in.Drive), false)
+		if line += 1; win.T + line >= win.B { return line }
+		i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
+			INS_RDP_JUMP_PASS + len(in.Drive), false)
+		if line += 1; win.T + line >= win.B { return line}
+		if len(in.Jump.Priv) > 0 {
+			file := in.Jump.Priv
+			if file[0] == '~' {
+				file = home + file[1:]
+			}
+			if stat, err := os.Stat(file);
+			   err != nil || stat.IsDir() == true {
+				red = true
+			}
+		}
+		i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
+			INS_RDP_JUMP_PRIV + len(in.Drive), red)
+		if red == true {
+			if line += 1; win.T + line >= win.B { return line }
+			text := "file does not exist"
+			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
