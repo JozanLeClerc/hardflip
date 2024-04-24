@@ -104,7 +104,7 @@ func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
 		cmd_fmt = append(cmd_fmt, "sshpass", "-p", pass)
 	}
 
-	cmd_fmt = append(cmd_fmt, "ssh")
+	cmd_fmt = append(cmd_fmt, "ssh", "-F", "none")
 	if len(host.Priv) > 0 {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}
