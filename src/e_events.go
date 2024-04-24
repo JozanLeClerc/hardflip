@@ -353,9 +353,9 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 	}
 }
 
-func e_paste_prepare_item(yank *ItemsNode) ItemsNode {
-	new_host := &HostNode{}
-	*new_host = *yank.Host
+func e_paste_prepare_item(yank *ItemsNode) HostNode {
+	new_host := HostNode{}
+	new_host = *yank.Host
 	new_host.Name += " (copy)"
 	if yank.Host.Drive != nil {
 		new_host.Drive = make(map[string]string, len(yank.Host.Drive))
@@ -367,12 +367,12 @@ func e_paste_prepare_item(yank *ItemsNode) ItemsNode {
 		new_host.Shell = make([]string, len(yank.Host.Shell))
 		copy(new_host.Shell, yank.Host.Shell)
 	}
-	return ItemsNode{Dirs: nil, Host: new_host}
+	return new_host
 }
 
-func e_paste_item(litems *ItemsList, item ItemsNode) {
-	curr := litems.curr
-}
+// func e_paste_item(litems *ItemsList, item ItemsNode) {
+// 	curr := litems.curr
+// }
 
 // screen events such as keypresses
 func e_events(data *HardData, fp [MODE_MAX + 1]key_event_mode_func) {
