@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Thu Apr 25 11:42:12 2024
+ * Thu Apr 25 15:31:49 2024
  * Joe
  *
  * events in the keys
@@ -181,10 +181,12 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		tmp := e_deep_copy_host(data.litems.curr.Host)
 		data.insert = &tmp
 		e_set_protocol_max(data, data.insert)
-		e_set_drive_keys(data)
+		if data.insert.Protocol == PROTOCOL_RDP && data.insert.Drive != nil {
+			e_set_drive_keys(data)
+		}
 		ui.mode = INSERT_MODE
 		ui.insert_method = INSERT_EDIT
-		ui.insert_sel = 0
+		ui.insert_sel = INS_PROTOCOL
 		ui.insert_sel_ok = false
 	} else if event.Key() == tcell.KeyCtrlR {
 		e_reload_data(data)
