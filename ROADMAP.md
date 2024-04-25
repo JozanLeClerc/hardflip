@@ -56,6 +56,7 @@
 ## v1.1 - 360 hard
 
 - [ ] fuzz
+- [ ] rename dirs
 
 ## v1.2 - ghetto bird
 

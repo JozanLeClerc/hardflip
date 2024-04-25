@@ -316,6 +316,16 @@ func e_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
+func e_rename(data *HardData, ui *HardUI) {
+	if len(ui.buff) == 0 ||
+	   data.litems.curr == nil || data.litems.curr.is_dir() == true {
+		return
+	}
+	data.litems.curr.Host.Name = ui.buff
+	// ui.insert_method = INSERT_MOVE
+	// i_insert_host(data, new_host)
+}
+
 func e_set_drive_keys(data *HardData) {
 	data.insert.drive_keys = nil
 	for key := range data.insert.Drive {

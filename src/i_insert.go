@@ -140,7 +140,8 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 	}
 	filename := insert.filename
 	if data.ui.insert_method == INSERT_ADD ||
-	   data.ui.insert_method == INSERT_COPY {
+	   data.ui.insert_method == INSERT_COPY ||
+	   data.ui.insert_method == INSERT_MOVE {
 		filename = i_insert_format_filename(insert.Name,
 			data.data_dir + insert.parent.path())
 		insert.filename = filename

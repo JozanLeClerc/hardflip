@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Apr 18 16:59:53 2024
+ * Thu Apr 25 16:20:41 2024
  * Joe
  *
  * interfacing with the user
@@ -710,6 +710,7 @@ func i_ui(data_dir string) {
 		WELCOME_MODE:	e_welcome_events,
 		MKDIR_MODE:		e_mkdir_events,
 		INSERT_MODE:	e_insert_events,
+		RENAME_MODE:	e_rename_events,
 	}
 	for {
 		data.ui.s.Clear()
@@ -730,13 +731,14 @@ func i_ui(data_dir string) {
 		} else if data.litems.head == nil {
 			i_draw_zhosts_box(data.ui)
 		}
-		if data.ui.mode == DELETE_MODE {
+		switch data.ui.mode {
+		case DELETE_MODE:
 			i_draw_delete_msg(data.ui, data.litems.curr)
-		} else if data.ui.mode == ERROR_MODE {
+		case ERROR_MODE:
 			i_draw_error_msg(data.ui, data.load_err)
-		} else if data.ui.mode == MKDIR_MODE {
+		case MKDIR_MODE:
 			i_prompt_mkdir(data.ui, data.litems.curr)
-		} else if data.ui.mode == INSERT_MODE {
+		case INSERT_MODE:
 			if data.insert == nil {
 				i_prompt_insert(data.ui, data.litems.curr)
 			} else {
@@ -745,6 +747,8 @@ func i_ui(data_dir string) {
 					i_draw_insert_err_msg(data.ui, data.insert_err)
 				}
 			}
+		case RENAME_MODE:
+			i_prompt_insert(data.ui, data.litems.curr)
 		}
 		data.ui.s.Show()
 		e_events(&data, fp)

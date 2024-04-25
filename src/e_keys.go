@@ -238,6 +238,14 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		}
 		data.yank = nil
 		ui.msg_buff = "pasted " + new_host.Name
+	} else if (event.Rune() == 'c' ||
+			   event.Rune() == 'C' ||
+			   event.Rune() == 'r' ||
+			   event.Rune() == 'R') &&
+			  data.litems.curr != nil &&
+			  data.litems.curr.is_dir() == false {
+		ui.mode = RENAME_MODE
+		ui.buff = data.litems.curr.Host.Name
 	}
 	return false
 }
@@ -764,5 +772,21 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			}
 		}
 	}
+	return false
+}
+
+func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
+	if event.Key() == tcell.KeyEscape ||
+	   event.Key() == tcell.KeyCtrlC {
+		data.insert = nil
+	} else if event.Key() == tcell.KeyEnter {
+		e_rename(data, ui)
+	} else {
+		e_readline(event, &ui.buff)
+		return true
+	}
+	ui.s.HideCursor()
+	ui.mode = NORMAL_MODE
+	ui.buff = ""
 	return false
 }
