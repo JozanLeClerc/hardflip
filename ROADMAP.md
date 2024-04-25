@@ -34,7 +34,7 @@
 - [x] clone
 - [x] ssh jump for rdp
 - [x] edit
-- [ ] move
+- [x] move
 - [ ] rename
 
 ## v0.7

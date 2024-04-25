@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Thu Apr 25 15:31:49 2024
+ * Thu Apr 25 15:49:50 2024
  * Joe
  *
  * events in the keys
@@ -200,8 +200,22 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		data.yank = data.litems.curr
 		ui.msg_buff = "yanked " + data.yank.Host.Name +
 			" (" + data.yank.Host.parent.path() + data.yank.Host.filename + ")"
+	} else if event.Rune() == 'd' &&
+			(data.litems.curr == nil ||
+			 data.litems.curr.is_dir() == true) == false {
+		ui.insert_method = INSERT_MOVE
+		data.yank = data.litems.curr
+		ui.msg_buff = "yanked " + data.yank.Host.Name +
+			" (" + data.yank.Host.parent.path() + data.yank.Host.filename + ")"
 	} else if event.Rune() == 'p' && data.yank != nil {
-		new_host := e_paste_prepare_item(data.yank)
+		new_host := e_deep_copy_host(data.yank.Host)
+		if ui.insert_method == INSERT_COPY {
+			new_host.Name += " (copy)"
+		} else if ui.insert_method == INSERT_MOVE && data.litems.curr != nil &&
+				  data.litems.curr.path_node() == data.yank.path_node() {
+			data.yank = nil
+			return true
+		}
 		if data.litems.curr.is_dir() == true {
 			new_host.parent = data.litems.curr.Dirs
 			if data.folds[data.litems.curr.Dirs] != nil {
@@ -211,6 +225,15 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			new_host.parent = data.litems.curr.Host.parent
 		}
 		i_insert_host(data, &new_host)
+		if ui.insert_method == INSERT_MOVE {
+			data.litems.del(data.yank)
+			file_path := data.data_dir + data.yank.Host.parent.path() +
+						 data.yank.Host.filename
+			if err := os.Remove(file_path); err != nil {
+				c_error_mode("can't remove " + file_path, err, &data.ui)
+				return true
+			}
+		}
 		data.yank = nil
 		ui.msg_buff = "pasted " + new_host.Name
 	}

@@ -379,12 +379,6 @@ func e_deep_copy_host(base *HostNode) HostNode {
 	return new_host
 }
 
-func e_paste_prepare_item(yank *ItemsNode) HostNode {
-	new_host := e_deep_copy_host(yank.Host)
-	new_host.Name += " (copy)"
-	return new_host
-}
-
 // func e_paste_item(litems *ItemsList, item ItemsNode) {
 // 	curr := litems.curr
 // }
