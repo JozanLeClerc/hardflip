@@ -82,6 +82,9 @@ func i_host_panel_host(ui HardUI, icons bool,
 	style := ui.style[DEF_STYLE]
 	if yank != nil && host == yank.Host {
 		style = ui.style[YANK_STYLE]
+		if ui.insert_method == INSERT_MOVE {
+			style = ui.style[MOVE_STYLE]
+		}
 	}
 	if host == curr {
 		// style = style.Background(tcell.ColorBlack)

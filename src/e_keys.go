@@ -224,7 +224,9 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		} else {
 			new_host.parent = data.litems.curr.Host.parent
 		}
-		i_insert_host(data, &new_host)
+		if err := i_insert_host(data, &new_host); err != nil {
+			return true
+		}
 		if ui.insert_method == INSERT_MOVE {
 			data.litems.del(data.yank)
 			file_path := data.data_dir + data.yank.Host.parent.path() +

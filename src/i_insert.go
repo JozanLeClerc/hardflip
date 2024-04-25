@@ -132,7 +132,7 @@ func i_insert_default_users(insert *HostNode) {
 	}
 }
 
-func i_insert_host(data *HardData, insert *HostNode) {
+func i_insert_host(data *HardData, insert *HostNode) error {
 	i_insert_abs_files(insert, data.home_dir)
 	i_insert_default_users(insert)
 	if len(insert.Drive) == 0 {
@@ -149,14 +149,14 @@ func i_insert_host(data *HardData, insert *HostNode) {
 	if err != nil {
 		c_error_mode("yaml", err, &data.ui)
 		data.insert = nil
-		return
+		return err
 	}
 	err = os.WriteFile(data.data_dir + insert.parent.path() + filename,
 		fmt, 0644)
 	if err != nil {
 		c_error_mode("can't write file", err, &data.ui)
 		data.insert = nil
-		return
+		return err
 	}
 	if data.ui.insert_method == INSERT_EDIT && data.litems.curr != nil {
 		tmp := e_deep_copy_host(data.insert)
@@ -164,7 +164,7 @@ func i_insert_host(data *HardData, insert *HostNode) {
 		data.litems.reset_id()
 		data.ui.mode = NORMAL_MODE
 		data.insert = nil
-		return
+		return nil
 	}
 	// HACK: not sure if this is necessary
 	// if data.litems.curr.is_dir() == true {
@@ -199,6 +199,7 @@ func i_insert_host(data *HardData, insert *HostNode) {
 	data.litems.reset_id()
 	data.ui.mode = NORMAL_MODE
 	data.insert = nil
+	return nil
 }
 
 func i_insert_check_ok(data *HardData, in *HostNode) {

@@ -653,6 +653,9 @@ func i_init_styles(ui *HardUI) {
 	ui.style[YANK_STYLE] = tcell.StyleDefault.
 		Background(tcell.ColorReset).
 		Foreground(tcell.ColorYellow).Dim(true).Bold(true)
+	ui.style[MOVE_STYLE] = tcell.StyleDefault.
+		Background(tcell.ColorReset).
+		Foreground(tcell.ColorRed).Dim(true).Bold(true)
 }
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
