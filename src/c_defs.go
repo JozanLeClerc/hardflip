@@ -63,10 +63,6 @@ const (
 	NORMAL_KEYS_HINTS = `!a/i: insert host -
 m: mkdir -
 !s: search -
-e: edit -
-d: cut -
-y: yank -
-p: paste -
 [C-r]: reload
 !?: help`
 	ERROR_KEYS_HINTS = "[Enter]: ok"
