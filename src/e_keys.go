@@ -649,8 +649,13 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					case INS_SSH_PASS,
 						 INS_RDP_PASS,
 						 INS_OS_PASS:
-						data.insert.Pass, _ = c_encrypt_str(ui.buff,
-												 data.opts.GPG)
+						if len(ui.buff) == 0 {
+							data.insert.Pass = ""
+							return true
+						} else {
+							data.insert.Pass, _ = c_encrypt_str(ui.buff,
+													data.opts.GPG)
+						}
 					case INS_SSH_PRIV: data.insert.Priv = ui.buff
 					case INS_SSH_JUMP_HOST,
 						 INS_RDP_JUMP_HOST + len(data.insert.Drive):
@@ -669,8 +674,12 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						data.insert.Jump.User = ui.buff
 					case INS_SSH_JUMP_PASS,
 						 INS_RDP_JUMP_PASS + len(data.insert.Drive):
-						data.insert.Jump.Pass, _ =
-						c_encrypt_str(ui.buff, data.opts.GPG)
+						if len(ui.buff) == 0 {
+							data.insert.Jump.Pass = ""
+						} else {
+							data.insert.Jump.Pass, _ = c_encrypt_str(ui.buff,
+														data.opts.GPG)
+						}
 					case INS_SSH_JUMP_PRIV,
 						 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
 						data.insert.Jump.Priv = ui.buff

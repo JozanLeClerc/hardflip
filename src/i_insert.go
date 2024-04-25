@@ -73,6 +73,12 @@ func i_insert_format_filename(name, path string) string {
 	re := regexp.MustCompile("[^a-zA-Z0-9]+")
 	replace := "_"
 	str = re.ReplaceAllString(str, replace)
+	re2 := regexp.MustCompile("__")
+	replace = "_"
+	str = re2.ReplaceAllString(str, replace)
+	re3 := regexp.MustCompile("_$")
+	replace = ""
+	str = re3.ReplaceAllString(str, replace)
 	_, err := os.Stat(path + str + ".yml")
 	base := str
 	i := 0
@@ -279,7 +285,7 @@ func i_draw_tick_box(ui HardUI, line int, dim Quad, label string, content bool,
 }
 
 func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
-					 id int, red bool) {
+					 id int, secret, red bool) {
 	selected := ui.insert_sel
 	const tbox_size int = 14
 	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
@@ -292,8 +298,7 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 	if l <= dim.L { l = dim.L + 1 }
 	i_draw_text(ui.s, l, line, ui.dim[W] / 2, line,
 		ui.style[DEF_STYLE], label)
-	if (id == INS_SSH_PASS || id == INS_SSH_JUMP_PASS ||
-		id == INS_RDP_PASS || id == INS_OS_PASS) &&
+	if secret == true &&
 		len(content) > 0 {
 		content = "***"
 	}
@@ -440,7 +445,7 @@ func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
 	line := 2
 	if win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win, "Connection type",
-		PROTOCOL_STR[in.Protocol], 0, false)
+		PROTOCOL_STR[in.Protocol], 0, false, false)
 	line += 2
 	var end_line int
 	fp := [PROTOCOL_MAX + 1]draw_insert_func{
@@ -466,16 +471,16 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
-		INS_SSH_HOST, false)
+		INS_SSH_HOST, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		INS_SSH_PORT, false);
+		INS_SSH_PORT, false, false);
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User,
-		INS_SSH_USER, false)
+		INS_SSH_USER, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
-		INS_SSH_PASS, false)
+		INS_SSH_PASS, true, false)
 	if line += 1; win.T + line >= win.B { return line }
 	if file := in.Priv; len(file) > 0 {
 		if file[0] == '~' {
@@ -487,7 +492,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 		}
 	}
 	i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Priv,
-		INS_SSH_PRIV, red)
+		INS_SSH_PRIV, false, red)
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
@@ -501,18 +506,18 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
-		INS_SSH_JUMP_HOST, false)
+		INS_SSH_JUMP_HOST, false, false)
 	if len(in.Jump.Host) > 0 {
 		if line += 1; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "Port",
 			strconv.Itoa(int(in.Jump.Port)),
-			INS_SSH_JUMP_PORT, false)
+			INS_SSH_JUMP_PORT, false, false)
 		if line += 2; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
-			INS_SSH_JUMP_USER, false)
+			INS_SSH_JUMP_USER, false, false)
 		if line += 1; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
-			INS_SSH_JUMP_PASS, false)
+			INS_SSH_JUMP_PASS, true, false)
 		if line += 1; win.T + line >= win.B { return line}
 		if len(in.Jump.Priv) > 0 {
 			file := in.Jump.Priv
@@ -525,7 +530,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 			}
 		}
 		i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
-			INS_SSH_JUMP_PRIV, red)
+			INS_SSH_JUMP_PRIV, false, red)
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "file does not exist"
@@ -539,7 +544,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
-		INS_SSH_NOTE, false)
+		INS_SSH_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_SSH_OK, ui.insert_sel)
 	return line
@@ -554,19 +559,19 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
-		INS_RDP_HOST, false)
+		INS_RDP_HOST, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Port", strconv.Itoa(int(in.Port)),
-		INS_RDP_PORT, false);
+		INS_RDP_PORT, false, false);
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Domain", in.Domain,
-		INS_RDP_DOMAIN, false);
+		INS_RDP_DOMAIN, false, false);
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User,
-		INS_RDP_USER, false)
+		INS_RDP_USER, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
-		INS_RDP_PASS, false)
+		INS_RDP_PASS, true, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- RDP File ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -582,7 +587,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		}
 	}
 	i_draw_text_box(ui, win.T + line, win, "RDP file", in.RDPFile,
-		INS_RDP_FILE, red)
+		INS_RDP_FILE, false, red)
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
@@ -598,13 +603,13 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 	screensize := strconv.Itoa(int(in.Width)) + "x" +
 				  strconv.Itoa(int(in.Height))
 	i_draw_text_box(ui, win.T + line, win, "Window size", screensize,
-		INS_RDP_SCREENSIZE, red)
+		INS_RDP_SCREENSIZE, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_tick_box(ui, win.T + line, win, "Dynamic window", in.Dynamic,
 		INS_RDP_DYNAMIC, ui.insert_sel)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
-		INS_RDP_QUALITY, red)
+		INS_RDP_QUALITY, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Share mounts ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -623,7 +628,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		}
 		i_draw_text_box(ui, win.T + line, win, "Share " + strconv.Itoa(k + 1),
 			"(" + v + "): " + in.Drive[v],
-			INS_RDP_DRIVE + k, red)
+			INS_RDP_DRIVE + k, false, red)
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "path is not a directory"
@@ -633,7 +638,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		if line += 1; win.T + line >= win.B { return line }
 	}
 	i_draw_text_box(ui, win.T + line, win, "Add share", "",
-		INS_RDP_DRIVE + len(in.Drive), false)
+		INS_RDP_DRIVE + len(in.Drive), false, false)
 	red = false
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
@@ -641,18 +646,18 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
-		INS_RDP_JUMP_HOST + len(in.Drive), false)
+		INS_RDP_JUMP_HOST + len(in.Drive), false, false)
 	if len(in.Jump.Host) > 0 {
 		if line += 1; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "Port",
 			strconv.Itoa(int(in.Jump.Port)),
-			INS_RDP_JUMP_PORT + len(in.Drive), false)
+			INS_RDP_JUMP_PORT + len(in.Drive), false, false)
 		if line += 2; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "User", in.Jump.User,
-			INS_RDP_JUMP_USER + len(in.Drive), false)
+			INS_RDP_JUMP_USER + len(in.Drive), false, false)
 		if line += 1; win.T + line >= win.B { return line }
 		i_draw_text_box(ui, win.T + line, win, "Pass", in.Jump.Pass,
-			INS_RDP_JUMP_PASS + len(in.Drive), false)
+			INS_RDP_JUMP_PASS + len(in.Drive), true, false)
 		if line += 1; win.T + line >= win.B { return line}
 		if len(in.Jump.Priv) > 0 {
 			file := in.Jump.Priv
@@ -665,7 +670,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 			}
 		}
 		i_draw_text_box(ui, win.T + line, win, "SSH private key", in.Jump.Priv,
-			INS_RDP_JUMP_PRIV + len(in.Drive), red)
+			INS_RDP_JUMP_PRIV + len(in.Drive), false, red)
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "file does not exist"
@@ -679,7 +684,7 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
-		INS_RDP_NOTE + len(in.Drive), false)
+		INS_RDP_NOTE + len(in.Drive), false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK + len(in.Drive), ui.insert_sel)
 	return line
@@ -694,7 +699,7 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Command", in.Host,
-		INS_CMD_CMD, false)
+		INS_CMD_CMD, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	if shell := in.Shell[0]; len(shell) > 0 {
 		if shell[0] == '~' {
@@ -706,7 +711,7 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad,
 		}
 	}
 	i_draw_text_box(ui, win.T + line, win, "Shell", in.Shell[0],
-		INS_CMD_SHELL, red);
+		INS_CMD_SHELL, false, red);
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
@@ -723,7 +728,7 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
-		INS_CMD_NOTE, false)
+		INS_CMD_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_CMD_OK, ui.insert_sel)
 	return line
@@ -737,30 +742,30 @@ func i_draw_insert_os(ui HardUI, line int, win Quad,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Endpoint", in.Host,
-		INS_OS_HOST, false)
+		INS_OS_HOST, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User", in.User,
-		INS_OS_USER, false)
+		INS_OS_USER, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Pass", in.Pass,
-		INS_OS_PASS, false)
+		INS_OS_PASS, true, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "User domain ID",
 		in.Stack.UserDomainID,
-		INS_OS_USERDOMAINID, false)
+		INS_OS_USERDOMAINID, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Project ID", in.Stack.ProjectID,
-		INS_OS_PROJECTID, false)
+		INS_OS_PROJECTID, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Region name", in.Stack.RegionName,
-		INS_OS_REGION, false)
+		INS_OS_REGION, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Endpoint type",
 		in.Stack.EndpointType,
-		INS_OS_ENDTYPE, false)
+		INS_OS_ENDTYPE, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Interface", in.Stack.Interface,
-		INS_OS_INTERFACE, false)
+		INS_OS_INTERFACE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- API settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -768,26 +773,26 @@ func i_draw_insert_os(ui HardUI, line int, win Quad,
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Identity API version",
 		in.Stack.IdentityAPI,
-		INS_OS_IDAPI, false)
+		INS_OS_IDAPI, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Image API version",
 		in.Stack.ImageAPI,
-		INS_OS_IMGAPI, false)
+		INS_OS_IMGAPI, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Network API version",
 		in.Stack.NetworkAPI,
-		INS_OS_NETAPI, false)
+		INS_OS_NETAPI, false, false)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Volume API version",
 		in.Stack.VolumeAPI,
-		INS_OS_VOLAPI, false)
+		INS_OS_VOLAPI, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
 		win.T + line, ui.style[DEF_STYLE], text)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
-		INS_OS_NOTE, false)
+		INS_OS_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_ok_butt(ui, win.T + line, INS_OS_OK, ui.insert_sel)
 	return line
