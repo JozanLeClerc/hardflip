@@ -63,6 +63,8 @@ const (
 	NORMAL_KEYS_HINTS = `!a/i: insert host -
 m: mkdir -
 !s: search -
+e: edit -
+d: cut -
 y: yank -
 p: paste -
 [C-r]: reload
@@ -163,6 +165,13 @@ const (
 	INS_OS_VOLAPI
 	INS_OS_NOTE
 	INS_OS_OK
+)
+
+const (
+	INSERT_ADD = iota
+	INSERT_COPY
+	INSERT_MOVE
+	INSERT_EDIT
 )
 
 var (

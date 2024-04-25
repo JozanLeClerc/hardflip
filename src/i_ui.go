@@ -72,6 +72,7 @@ type HardUI struct {
 	insert_sel int
 	insert_sel_max int
 	insert_sel_ok bool
+	insert_method int
 }
 
 type Quad struct {

@@ -172,6 +172,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if event.Rune() == 'a' ||
 			  event.Rune() == 'i' {
 		ui.mode = INSERT_MODE
+		ui.insert_method = INSERT_ADD
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
 	} else if event.Rune() == 'e' &&
@@ -182,6 +183,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		e_set_protocol_max(data, data.insert)
 		e_set_drive_keys(data)
 		ui.mode = INSERT_MODE
+		ui.insert_method = INSERT_EDIT
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
 	} else if event.Key() == tcell.KeyCtrlR {
@@ -192,6 +194,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if event.Rune() == 'y' &&
 			(data.litems.curr == nil ||
 			 data.litems.curr.is_dir() == true) == false {
+		ui.insert_method = INSERT_COPY
 		data.yank = data.litems.curr
 		ui.msg_buff = "yanked " + data.yank.Host.Name +
 			" (" + data.yank.Host.parent.path() + data.yank.Host.filename + ")"
