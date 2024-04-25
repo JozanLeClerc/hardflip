@@ -138,9 +138,15 @@ func i_insert_host(data *HardData, insert *HostNode) {
 	if len(insert.Drive) == 0 {
 		insert.Drive = nil
 	}
-	filename := i_insert_format_filename(insert.Name,
-		data.data_dir + insert.parent.path())
-	insert.filename = filename
+	filename := insert.filename
+	replace := false
+	if len(filename) == 0 || data.yank != nil {
+		filename = i_insert_format_filename(insert.Name,
+			data.data_dir + insert.parent.path())
+		insert.filename = filename
+	} else {
+		replace = true
+	}
 	fmt, err := yaml.Marshal(insert)
 	if err != nil {
 		c_error_mode("yaml", err, &data.ui)
@@ -151,6 +157,14 @@ func i_insert_host(data *HardData, insert *HostNode) {
 		fmt, 0644)
 	if err != nil {
 		c_error_mode("can't write file", err, &data.ui)
+		data.insert = nil
+		return
+	}
+	if replace == true && data.litems.curr != nil {
+		tmp := e_deep_copy_host(data.insert)
+		data.litems.curr.Host = &tmp
+		data.litems.reset_id()
+		data.ui.mode = NORMAL_MODE
 		data.insert = nil
 		return
 	}

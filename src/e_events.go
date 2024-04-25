@@ -324,23 +324,33 @@ func e_set_drive_keys(data *HardData) {
 	data.ui.insert_sel_max = INS_RDP_OK + len(data.insert.Drive)
 }
 
+func e_set_protocol_max(data *HardData, in *HostNode) {
+	switch in.Protocol {
+	case PROTOCOL_SSH:
+		data.ui.insert_sel_max = INS_SSH_OK
+	case PROTOCOL_RDP:
+		data.ui.insert_sel_max = INS_RDP_OK + len(in.Drive)
+	case PROTOCOL_CMD:
+		data.ui.insert_sel_max = INS_CMD_OK
+	case PROTOCOL_OS:
+		data.ui.insert_sel_max = INS_OS_OK
+	}
+}
+
 func e_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
 		in.Port = 22
-		data.ui.insert_sel_max = INS_SSH_OK
 	case PROTOCOL_RDP:
 		in.Port = 3389
 		in.Quality = 2
 		in.Width = 1600
 		in.Height = 1200
 		in.Dynamic = true
-		data.ui.insert_sel_max = INS_RDP_OK + len(in.Drive)
 		in.drive_keys = nil
 	case PROTOCOL_CMD:
 		in.Silent = false
 		in.Shell = []string{"/bin/sh", "-c"}
-		data.ui.insert_sel_max = INS_CMD_OK
 	case PROTOCOL_OS:
 		in.Stack.RegionName = "eu-west-0"
 		in.Stack.IdentityAPI = "3"
@@ -349,24 +359,29 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Stack.VolumeAPI   = "3.42"
 		in.Stack.EndpointType = "publicURL"
 		in.Stack.Interface = "public"
-		data.ui.insert_sel_max = INS_OS_OK
 	}
+	e_set_protocol_max(data, in)
 }
 
-func e_paste_prepare_item(yank *ItemsNode) HostNode {
+func e_deep_copy_host(base *HostNode) HostNode {
 	new_host := HostNode{}
-	new_host = *yank.Host
-	new_host.Name += " (copy)"
-	if yank.Host.Drive != nil {
-		new_host.Drive = make(map[string]string, len(yank.Host.Drive))
-		for k, v := range yank.Host.Drive {
+	new_host = *base
+	if base.Drive != nil {
+		new_host.Drive = make(map[string]string, len(base.Drive))
+		for k, v := range base.Drive {
 			new_host.Drive[k] = v
 		}
 	}
-	if yank.Host.Shell != nil {
-		new_host.Shell = make([]string, len(yank.Host.Shell))
-		copy(new_host.Shell, yank.Host.Shell)
+	if base.Shell != nil {
+		new_host.Shell = make([]string, len(base.Shell))
+		copy(new_host.Shell, base.Shell)
 	}
+	return new_host
+}
+
+func e_paste_prepare_item(yank *ItemsNode) HostNode {
+	new_host := e_deep_copy_host(yank.Host)
+	new_host.Name += " (copy)"
 	return new_host
 }
 

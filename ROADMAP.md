@@ -33,7 +33,7 @@
 - [x] add
 - [x] clone
 - [x] ssh jump for rdp - working but missing in add menu
-- [ ] edit
+- [x] edit
 - [ ] move
 - [ ] rename
 

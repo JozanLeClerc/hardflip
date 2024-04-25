@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Wed Apr 24 18:07:00 2024
+ * Thu Apr 25 11:42:12 2024
  * Joe
  *
  * events in the keys
@@ -171,6 +171,15 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		}
 	} else if event.Rune() == 'a' ||
 			  event.Rune() == 'i' {
+		ui.mode = INSERT_MODE
+		ui.insert_sel = 0
+		ui.insert_sel_ok = false
+	} else if event.Rune() == 'e' &&
+			  data.litems.curr != nil &&
+			  data.litems.curr.is_dir() == false {
+		tmp := e_deep_copy_host(data.litems.curr.Host)
+		data.insert = &tmp
+		e_set_protocol_max(data, data.insert)
 		ui.mode = INSERT_MODE
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
