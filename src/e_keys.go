@@ -180,6 +180,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		tmp := e_deep_copy_host(data.litems.curr.Host)
 		data.insert = &tmp
 		e_set_protocol_max(data, data.insert)
+		e_set_drive_keys(data)
 		ui.mode = INSERT_MODE
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
