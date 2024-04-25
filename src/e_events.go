@@ -316,14 +316,24 @@ func e_mkdir(data *HardData, ui *HardUI) {
 	}
 }
 
-func e_rename(data *HardData, ui *HardUI) {
-	if len(ui.buff) == 0 ||
-	   data.litems.curr == nil || data.litems.curr.is_dir() == true {
-		return
+func e_rename(data *HardData, ui *HardUI) error {
+	tmp := data.litems.curr
+
+	if len(ui.buff) == 0 || tmp == nil || tmp.is_dir() == true ||
+	   ui.buff == tmp.Host.Name {
+		return nil
 	}
-	data.litems.curr.Host.Name = ui.buff
-	// ui.insert_method = INSERT_MOVE
-	// i_insert_host(data, new_host)
+	new_host := e_deep_copy_host(data.litems.curr.Host)
+	new_host.Name = ui.buff
+	ui.insert_method = INSERT_MOVE
+	i_insert_host(data, &new_host)
+	data.litems.del(tmp)
+	file_path := data.data_dir + tmp.Host.parent.path() + tmp.Host.filename
+	if err := os.Remove(file_path); err != nil {
+		c_error_mode("can't remove " + file_path, err, &data.ui)
+		return err
+	}
+	return nil
 }
 
 func e_set_drive_keys(data *HardData) {

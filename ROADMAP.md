@@ -35,7 +35,7 @@
 - [x] ssh jump for rdp
 - [x] edit
 - [x] move
-- [ ] rename
+- [x] rename
 
 ## v0.7
 
@@ -57,6 +57,7 @@
 
 - [ ] fuzz
 - [ ] rename dirs
+- [ ] undo maybe
 
 ## v1.2 - ghetto bird
 

@@ -240,8 +240,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.msg_buff = "pasted " + new_host.Name
 	} else if (event.Rune() == 'c' ||
 			   event.Rune() == 'C' ||
-			   event.Rune() == 'r' ||
-			   event.Rune() == 'R') &&
+			   event.Rune() == 'A') &&
 			  data.litems.curr != nil &&
 			  data.litems.curr.is_dir() == false {
 		ui.mode = RENAME_MODE
@@ -780,7 +779,10 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	   event.Key() == tcell.KeyCtrlC {
 		data.insert = nil
 	} else if event.Key() == tcell.KeyEnter {
-		e_rename(data, ui)
+		if err := e_rename(data, ui); err != nil {
+			ui.s.HideCursor()
+			ui.buff = ""
+		}
 	} else {
 		e_readline(event, &ui.buff)
 		return true
