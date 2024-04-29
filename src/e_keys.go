@@ -561,12 +561,14 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					ui.s.HideCursor()
 					return true
 				} else {
+					filename := data.insert.filename
 					name := data.insert.Name
 					parent := data.insert.parent
 					data.insert = nil
 					data.insert = &HostNode{}
 					data.insert.Name = name
 					data.insert.parent = parent
+					data.insert.filename = filename
 					data.insert.Protocol = int8(event.Rune() - 48 - 1)
 					ui.insert_sel_ok = false
 					ui.s.HideCursor()

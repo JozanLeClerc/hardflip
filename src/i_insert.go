@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Wed Apr 24 17:40:10 2024
+ * Mon Apr 29 15:36:06 2024
  * Joe
  *
  * insert a new host
@@ -146,14 +146,14 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 			data.data_dir + insert.parent.path())
 		insert.filename = filename
 	}
-	fmt, err := yaml.Marshal(insert)
+	format, err := yaml.Marshal(insert)
 	if err != nil {
 		c_error_mode("yaml", err, &data.ui)
 		data.insert = nil
 		return err
 	}
 	err = os.WriteFile(data.data_dir + insert.parent.path() + filename,
-		fmt, 0644)
+		format, 0644)
 	if err != nil {
 		c_error_mode("can't write file", err, &data.ui)
 		data.insert = nil
