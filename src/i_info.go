@@ -149,6 +149,15 @@ func i_info_ssh(ui HardUI, host *HostNode, line int) int {
 		if line += 1; line > ui.dim[H] - 3 { return line }
 	}
 	if line += 1; line > ui.dim[H] - 3 { return line }
+	if len(host.Exec) > 0 {
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+			ui.style[TITLE_STYLE], "Command: ")
+		i_draw_text(ui.s,
+			(ui.dim[W] / 3) + 12, line, ui.dim[W] - 2, line,
+			ui.style[DEF_STYLE], host.Exec)
+		if line += 2; line > ui.dim[H] - 3 { return line }
+	}
 	// jump
 	if len(host.Jump.Host) > 0 {
 		i_draw_text(ui.s,

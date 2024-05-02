@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Thu Apr 25 15:49:50 2024
+ * Thu May 02 10:16:58 2024
  * Joe
  *
  * events in the keys
@@ -461,6 +461,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					 INS_OS_PASS:
 					return true
 				case INS_SSH_PRIV: ui.buff = data.insert.Priv
+				case INS_SSH_EXEC: ui.buff = data.insert.Exec
 				case INS_SSH_JUMP_HOST,
 					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
 					ui.buff = data.insert.Jump.Host
@@ -647,6 +648,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				 INS_SSH_USER,
 				 INS_SSH_PASS,
 				 INS_SSH_PRIV,
+				 INS_SSH_EXEC,
 				 INS_SSH_JUMP_HOST,
 				 INS_SSH_JUMP_PORT,
 				 INS_SSH_JUMP_USER,
@@ -706,6 +708,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 													data.opts.GPG)
 						}
 					case INS_SSH_PRIV: data.insert.Priv = ui.buff
+					case INS_SSH_EXEC: data.insert.Exec = ui.buff
 					case INS_SSH_JUMP_HOST,
 						 INS_RDP_JUMP_HOST + len(data.insert.Drive):
 						data.insert.Jump.Host = ui.buff

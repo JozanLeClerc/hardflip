@@ -46,6 +46,7 @@
 ## v0.8
 
 - [ ] theming
+- [ ] default ssh key
 
 ## v1.0 - wheelbite
 

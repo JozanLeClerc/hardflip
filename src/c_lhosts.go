@@ -84,6 +84,7 @@ type HostNode struct {
 	User     string   `yaml:"user,omitempty"`
 	Pass     string   `yaml:"pass,omitempty"`
 	Priv     string   `yaml:"priv,omitempty"`
+	Exec     string   `yaml:"exec,omitempty"`
 	RDPFile  string   `yaml:"rdp_file,omitempty"`
 	Jump     JumpSettings `yaml:"jump,omitempty"`
 	Quality  uint8    `yaml:"quality,omitempty"`

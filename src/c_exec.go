@@ -82,20 +82,20 @@ func c_exec_cmd(cmd_fmt, cmd_env []string, silent bool) (error, string) {
 }
 
 func c_format_ssh_jump(host *HostNode) string {
-		jump_fmt := "-oProxyCommand=ssh"
-		if len(host.Jump.Priv) > 0 {
-			jump_fmt += " -i " + host.Jump.Priv
-		}
-		if host.Jump.Port != 0 {
-			jump_fmt += " -p " + strconv.Itoa(int(host.Jump.Port))
-		}
-		if len(host.Jump.User) == 0 {
-			jump_fmt += " root"
-		} else {
-			jump_fmt += " " + host.Jump.User
-		}
-		jump_fmt += "@" + host.Jump.Host + " -W %h:%p"
-		return jump_fmt
+	jump_fmt := "-oProxyCommand=ssh"
+	if len(host.Jump.Priv) > 0 {
+		jump_fmt += " -i " + host.Jump.Priv
+	}
+	if host.Jump.Port != 0 {
+		jump_fmt += " -p " + strconv.Itoa(int(host.Jump.Port))
+	}
+	if len(host.Jump.User) == 0 {
+		jump_fmt += " root"
+	} else {
+		jump_fmt += " " + host.Jump.User
+	}
+	jump_fmt += "@" + host.Jump.Host + " -W %h:%p"
+	return jump_fmt
 }
 
 func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
@@ -114,7 +114,13 @@ func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
 	if host.Port != 0 {
 		cmd_fmt = append(cmd_fmt, "-p", strconv.Itoa(int(host.Port)))
 	}
+	if len(host.Exec) > 0 {
+		cmd_fmt = append(cmd_fmt, "-t")
+	}
 	cmd_fmt = append(cmd_fmt, host.User + "@" + host.Host)
+	if len(host.Exec) > 0 {
+		cmd_fmt = append(cmd_fmt, "--", host.Exec)
+	}
 	return cmd_fmt, nil
 }
 
