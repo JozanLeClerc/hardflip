@@ -385,7 +385,7 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 		 INS_RDP_JUMP_PRIV + len(in.Drive):
 		i_prompt_generic(ui, "Private key: ", false, home_dir)
 	case INS_SSH_EXEC:
-		i_prompt_generic(ui, "Command (optional): ", false, "")
+		i_prompt_generic(ui, "Command: ", false, "")
 	case INS_SSH_NOTE,
 		 INS_RDP_NOTE + len(in.Drive),
 		 INS_CMD_NOTE,
@@ -515,7 +515,7 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 	}
 	red = false
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Custom command", in.Exec,
+	i_draw_text_box(ui, win.T + line, win, "Command (optional)", in.Exec,
 		INS_SSH_EXEC, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
