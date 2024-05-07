@@ -92,6 +92,8 @@ type HostNode struct {
 	Width    uint16   `yaml:"width,omitempty"`
 	Height   uint16   `yaml:"height,omitempty"`
 	Dynamic  bool     `yaml:"dynamic,omitempty"`
+	FullScr  bool     `yaml:"fullscr,omitempty"`
+	MultiMon bool     `yaml:"multimon,omitempty"`
 	Note     string   `yaml:"note,omitempty"`
 	Drive    map[string]string `yaml:"drive,omitempty"`
 	Silent   bool     `yaml:"silent,omitempty"`

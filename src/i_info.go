@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_info.go
- * Fri Jan 19 18:44:13 2024
+ * Tue May 07 10:23:39 2024
  * Joe
  *
  * interfacing informations about items
@@ -279,6 +279,20 @@ func i_info_rdp(ui HardUI, host *HostNode, line int) int {
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 19, line, ui.dim[W] - 2, line,
 		ui.style[DEF_STYLE], strconv.FormatBool(host.Dynamic))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[TITLE_STYLE], "Full screen: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 16, line, ui.dim[W] - 2, line,
+		ui.style[DEF_STYLE], strconv.FormatBool(host.FullScr))
+	if line += 1; line > ui.dim[H] - 3 { return line }
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,
+		ui.style[TITLE_STYLE], "Multi monitor: ")
+	i_draw_text(ui.s,
+		(ui.dim[W] / 3) + 18, line, ui.dim[W] - 2, line,
+		ui.style[DEF_STYLE], strconv.FormatBool(host.MultiMon))
 	if line += 1; line > ui.dim[H] - 3 { return line }
 	i_draw_text(ui.s,
 		(ui.dim[W] / 3) + 3, line, ui.dim[W] - 2, line,

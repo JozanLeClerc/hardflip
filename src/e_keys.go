@@ -491,6 +491,22 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						data.insert.Dynamic = true
 					}
 					return true
+				case INS_RDP_FULLSCR:
+					ui.insert_sel_ok = false
+					if data.insert.FullScr == true {
+						data.insert.FullScr = false
+					} else {
+						data.insert.FullScr = true
+					}
+					return true
+				case INS_RDP_MULTIMON:
+					ui.insert_sel_ok = false
+					if data.insert.MultiMon == true {
+						data.insert.MultiMon = false
+					} else {
+						data.insert.MultiMon = true
+					}
+					return true
 				case INS_RDP_QUALITY: return true
 				case INS_RDP_DRIVE + len(data.insert.Drive): return true
 				case INS_CMD_CMD: ui.buff = data.insert.Host

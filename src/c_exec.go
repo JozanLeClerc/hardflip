@@ -146,6 +146,12 @@ func c_format_rdp(host *HostNode, pass string) ([]string, []string) {
 	if host.Dynamic == true {
 		cmd_fmt = append(cmd_fmt, "/dynamic-resolution")
 	}
+	if host.FullScr == true {
+		cmd_fmt = append(cmd_fmt, "/f")
+	}
+	if host.MultiMon == true {
+		cmd_fmt = append(cmd_fmt, "/multimon:force")
+	}
 	if host.Drive != nil {
 		for share, path := range host.Drive {
 			cmd_fmt = append(cmd_fmt, "/drive:" + share + "," + path)

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Mon Apr 29 15:36:06 2024
+ * Tue May 07 10:23:23 2024
  * Joe
  *
  * insert a new host
@@ -624,6 +624,12 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_tick_box(ui, win.T + line, win, "Dynamic window", in.Dynamic,
 		INS_RDP_DYNAMIC, ui.insert_sel)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_tick_box(ui, win.T + line, win, "Full screen", in.FullScr,
+		INS_RDP_FULLSCR, ui.insert_sel)
+	if line += 1; win.T + line >= win.B { return line }
+	i_draw_tick_box(ui, win.T + line, win, "Multi monitor", in.MultiMon,
+		INS_RDP_MULTIMON, ui.insert_sel)
 	if line += 1; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Quality", RDP_QUALITY[in.Quality],
 		INS_RDP_QUALITY, false, false)
