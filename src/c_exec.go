@@ -265,6 +265,7 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host == nil {
 		return
 	}
+	save_host, save_port := host.Host, host.Port
 	tmp_host := host
 	if host.Protocol == PROTOCOL_RDP && len(host.Jump.Host) != 0 {
 		local_host := "127.0.0.1"
@@ -277,6 +278,10 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		tmp_host.Port = local_port
 	}
 	cmd_fmt, cmd_env := c_format_cmd(tmp_host, opts, ui)
+	if tmp_host.Port != save_port {
+		tmp_host.Host = save_host
+		tmp_host.Port = save_port
+	}
 	if cmd_fmt == nil {
 		return
 	}
