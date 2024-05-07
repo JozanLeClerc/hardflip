@@ -466,7 +466,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
 					ui.buff = data.insert.Jump.Host
 				case INS_SSH_JUMP_PORT,
-					 INS_SSH_JUMP_PORT + len(data.insert.Drive):
+					 INS_RDP_JUMP_PORT + len(data.insert.Drive):
 					if data.insert.Jump.Port > 0 {
 						ui.buff = strconv.Itoa(int(
 						data.insert.Jump.Port))
