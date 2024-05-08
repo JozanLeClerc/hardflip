@@ -440,6 +440,10 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 	}
 }
 
+func i_insert_follow_cursor(ui *HardUI, line int) int {
+	return line - 15
+}
+
 func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
 	type draw_insert_func func(ui HardUI, line int, win Quad,
 							   in *HostNode, home string) int
@@ -468,6 +472,7 @@ func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
 		i_draw_insert_cmd,
 		i_draw_insert_os,
 	}
+	line = i_insert_follow_cursor(&ui, line)
 	end_line = fp[in.Protocol](ui, line, win, in, home_dir)
 	if win.T + end_line >= win.B {
 		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])

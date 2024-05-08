@@ -377,7 +377,6 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				if data.insert.Protocol == PROTOCOL_RDP &&
 				   ui.insert_sel == INS_PROTOCOL {
 					ui.insert_sel = INS_RDP_HOST
-
 				} else if data.insert.Protocol == PROTOCOL_RDP &&
 						  ui.insert_sel == INS_RDP_JUMP_HOST +
 							len(data.insert.Drive) &&
