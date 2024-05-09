@@ -399,6 +399,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				if ui.insert_sel < ui.insert_sel_max &&
 				   ui.insert_line + 2 >= ui.insert_win.B - ui.insert_win.T {
 					ui.insert_scroll += 1
+					// TODO: gogo
 				}
 			} else if event.Rune() == 'k' ||
 					  event.Key() == tcell.KeyUp {
