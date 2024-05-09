@@ -277,12 +277,16 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	}
 }
 
-func i_draw_tick_box(ui HardUI, line int, dim Quad, label string, content bool,
+func i_draw_tick_box(ui *HardUI, line int, dim Quad, label string, content bool,
 					 id, selected int) {
+	if line < dim.T + 1 {
+		return
+	}
 	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
 	if id == selected {
 		tbox_style = tbox_style.Reverse(true).Dim(false)
+		ui.insert_line = line
 	}
 	l := ui.dim[W] / 2 - len(label) - 2
 	if l <= dim.L { l = dim.L + 1 }
@@ -297,14 +301,18 @@ func i_draw_tick_box(ui HardUI, line int, dim Quad, label string, content bool,
 		"[" + x + "]")
 }
 
-func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
+func i_draw_text_box(ui *HardUI, line int, dim Quad, label, content string,
 					 id int, secret, red bool) {
+	if line < dim.T + 1 {
+		return
+	}
 	selected := ui.insert_sel
 	const tbox_size int = 14
 	tbox_style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
 	if id == selected {
 		tbox_style = tbox_style.Reverse(true).Dim(false)
+		ui.insert_line = line
 	}
 
 	l := ui.dim[W] / 2 - len(label) - 2
@@ -329,13 +337,17 @@ func i_draw_text_box(ui HardUI, line int, dim Quad, label, content string,
 		line, tbox_style, content)
 }
 
-func i_draw_ok_butt(ui HardUI, line int, id, selected int) {
+func i_draw_ok_butt(ui *HardUI, dim Quad, line, id, selected int) {
+	if line < dim.T + 1 {
+		return
+	}
 	const butt_size int = 10
 	const txt string = "ok"
 	style := ui.style[DEF_STYLE].Background(tcell.ColorBlack).Dim(true)
 
 	if id == selected {
 		style = style.Reverse(true).Dim(false)
+		ui.insert_line = line
 	}
 	buff := "["
 	for i := 0; i < butt_size / 2 - len(txt); i++ {
@@ -440,30 +452,35 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 	}
 }
 
-func i_insert_follow_cursor(ui *HardUI, line int) int {
-	return line - 15
+func i_insert_follow_cursor(insert_scroll, line int) int {
+	return line - insert_scroll
 }
 
-func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
-	type draw_insert_func func(ui HardUI, line int, win Quad,
+func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
+	type draw_insert_func func(ui *HardUI, line int,
 							   in *HostNode, home string) int
 
 	if len(in.Name) == 0 {
 		return
 	}
-	win := Quad{
+	ui.insert_win = Quad{
 		ui.dim[W] / 8,
 		ui.dim[H] / 8,
 		ui.dim[W] - ui.dim[W] / 8 - 1,
 		ui.dim[H] - ui.dim[H] / 8 - 1,
 	}
-	i_draw_box(ui.s, win.L, win.T, win.R, win.B,
+	i_draw_box(ui.s,
+		ui.insert_win.L, ui.insert_win.T, ui.insert_win.R, ui.insert_win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Insert - " + in.Name + " ", true)
-	line := 2
-	if win.T + line >= win.B { return }
-	i_draw_text_box(ui, win.T + line, win, "Connection type",
-		PROTOCOL_STR[in.Protocol], 0, false, false)
+	line := i_insert_follow_cursor(ui.insert_scroll, 2)
+	if line + 2 < ui.insert_win.T {
+		ui.s.SetContent(ui.dim[W] / 2, ui.insert_win.T, '▲',
+			nil, ui.style[BOX_STYLE])
+	}
+	if ui.insert_win.T + line >= ui.insert_win.B { return }
+	i_draw_text_box(ui, ui.insert_win.T + line, ui.insert_win,
+		"Connection type", PROTOCOL_STR[in.Protocol], 0, false, false)
 	line += 2
 	var end_line int
 	fp := [PROTOCOL_MAX + 1]draw_insert_func{
@@ -472,22 +489,24 @@ func i_draw_insert_panel(ui HardUI, in *HostNode, home_dir string) {
 		i_draw_insert_cmd,
 		i_draw_insert_os,
 	}
-	line = i_insert_follow_cursor(&ui, line)
-	end_line = fp[in.Protocol](ui, line, win, in, home_dir)
-	if win.T + end_line >= win.B {
-		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
+	end_line = fp[in.Protocol](ui, line, in, home_dir)
+	if ui.insert_win.T + end_line >= ui.insert_win.B {
+		ui.s.SetContent(ui.dim[W] / 2, ui.insert_win.B, '▼',
+			nil, ui.style[BOX_STYLE])
 		// TODO: scroll or something
 	}
-	i_draw_insert_inputs(ui, in, home_dir)
+	i_draw_insert_inputs(*ui, in, home_dir)
 }
 
-func i_draw_insert_ssh(ui HardUI, line int, win Quad,
-					   in *HostNode, home string) int {
+func i_draw_insert_ssh(ui *HardUI, line int, in *HostNode, home string) int {
+	win := ui.insert_win
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > win.T - 3 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
 		INS_SSH_HOST, false, false)
@@ -524,8 +543,10 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 		INS_SSH_EXEC, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > win.T - 3 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
 		INS_SSH_JUMP_HOST, false, false)
@@ -568,12 +589,13 @@ func i_draw_insert_ssh(ui HardUI, line int, win Quad,
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_SSH_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, INS_SSH_OK, ui.insert_sel)
+	i_draw_ok_butt(ui, win, win.T + line, INS_SSH_OK, ui.insert_sel)
 	return line
 }
 
-func i_draw_insert_rdp(ui HardUI, line int, win Quad,
+func i_draw_insert_rdp(ui *HardUI, line int,
 					   in *HostNode, home string) int {
+	win := ui.insert_win
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
@@ -714,12 +736,14 @@ func i_draw_insert_rdp(ui HardUI, line int, win Quad,
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_RDP_NOTE + len(in.Drive), false, false)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, INS_RDP_OK + len(in.Drive), ui.insert_sel)
+	i_draw_ok_butt(ui, win, win.T + line,
+		INS_RDP_OK + len(in.Drive), ui.insert_sel)
 	return line
 }
 
-func i_draw_insert_cmd(ui HardUI, line int, win Quad,
+func i_draw_insert_cmd(ui *HardUI, line int,
 					   in *HostNode, home string) int {
+	win := ui.insert_win
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Settings ----"
@@ -758,12 +782,13 @@ func i_draw_insert_cmd(ui HardUI, line int, win Quad,
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_CMD_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, INS_CMD_OK, ui.insert_sel)
+	i_draw_ok_butt(ui, win, win.T + line, INS_CMD_OK, ui.insert_sel)
 	return line
 }
 
-func i_draw_insert_os(ui HardUI, line int, win Quad,
+func i_draw_insert_os(ui *HardUI, line int,
 					  in *HostNode, home string) int {
+	win := ui.insert_win
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
 	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
@@ -822,6 +847,6 @@ func i_draw_insert_os(ui HardUI, line int, win Quad,
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_OS_NOTE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_ok_butt(ui, win.T + line, INS_OS_OK, ui.insert_sel)
+	i_draw_ok_butt(ui, win, win.T + line, INS_OS_OK, ui.insert_sel)
 	return line
 }

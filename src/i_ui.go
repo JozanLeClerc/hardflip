@@ -73,6 +73,9 @@ type HardUI struct {
 	insert_sel_max int
 	insert_sel_ok bool
 	insert_method int
+	insert_scroll int
+	insert_line int
+	insert_win Quad
 }
 
 type Quad struct {
@@ -742,7 +745,7 @@ func i_ui(data_dir string) {
 			if data.insert == nil {
 				i_prompt_insert(data.ui, data.litems.curr)
 			} else {
-				i_draw_insert_panel(data.ui, data.insert, data.home_dir)
+				i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
 				if data.insert_err != nil {
 					i_draw_insert_err_msg(data.ui, data.insert_err)
 				}

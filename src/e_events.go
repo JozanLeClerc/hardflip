@@ -380,6 +380,7 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Stack.EndpointType = "publicURL"
 		in.Stack.Interface = "public"
 	}
+	data.ui.insert_scroll = 0
 	e_set_protocol_max(data, in)
 }
 

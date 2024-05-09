@@ -175,6 +175,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.insert_method = INSERT_ADD
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
+		ui.insert_scroll = 0
 	} else if event.Rune() == 'e' &&
 			  data.litems.curr != nil &&
 			  data.litems.curr.is_dir() == false {
@@ -395,6 +396,10 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				} else if ui.insert_sel < ui.insert_sel_max {
 					ui.insert_sel += 1
 				}
+				if ui.insert_sel < ui.insert_sel_max &&
+				   ui.insert_line + 2 >= ui.insert_win.B - ui.insert_win.T {
+					ui.insert_scroll += 1
+				}
 			} else if event.Rune() == 'k' ||
 					  event.Key() == tcell.KeyUp {
 				if data.insert.Protocol == PROTOCOL_RDP &&
@@ -417,6 +422,12 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					ui.insert_sel = INS_SSH_JUMP_HOST
 				} else if ui.insert_sel > INS_PROTOCOL {
 					ui.insert_sel -= 1
+				}
+				if ui.insert_sel > INS_PROTOCOL {
+					ui.insert_scroll -= 1
+					if ui.insert_scroll < 0 {
+						ui.insert_scroll = 0
+					}
 				}
 			} else if event.Rune() == 'g' ||
 					  event.Rune() == 'h' ||
