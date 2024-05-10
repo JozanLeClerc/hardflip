@@ -246,6 +246,8 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			  data.litems.curr.is_dir() == false {
 		ui.mode = RENAME_MODE
 		ui.buff = data.litems.curr.Host.Name
+	} else if event.Rune() == '?' {
+		ui.mode = HELP_MODE
 	}
 	return false
 }
@@ -827,5 +829,9 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	ui.s.HideCursor()
 	ui.mode = NORMAL_MODE
 	ui.buff = ""
+	return false
+}
+
+func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	return false
 }

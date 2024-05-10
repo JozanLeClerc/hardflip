@@ -713,6 +713,7 @@ func i_ui(data_dir string) {
 		MKDIR_MODE:		e_mkdir_events,
 		INSERT_MODE:	e_insert_events,
 		RENAME_MODE:	e_rename_events,
+		HELP_MODE:		e_help_events,
 	}
 	for {
 		data.ui.s.Clear()
@@ -751,6 +752,8 @@ func i_ui(data_dir string) {
 			}
 		case RENAME_MODE:
 			i_prompt_insert(data.ui, data.litems.curr)
+		case HELP_MODE:
+			i_draw_help(data.ui)
 		}
 		data.ui.s.Show()
 		e_events(&data, fp)

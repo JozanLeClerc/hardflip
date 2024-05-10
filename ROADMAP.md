@@ -41,6 +41,7 @@
 
 - [x] scroll insert
 - [ ] help
+- [ ] rename dirs
 - [ ] better readline
 
 ## v0.8
@@ -57,7 +58,6 @@
 ## v1.1 - 360 hard
 
 - [ ] fuzz
-- [ ] rename dirs
 - [ ] undo maybe
 
 ## v1.2 - ghetto bird

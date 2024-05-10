@@ -400,10 +400,6 @@ func e_deep_copy_host(base *HostNode) HostNode {
 	return new_host
 }
 
-// func e_paste_item(litems *ItemsList, item ItemsNode) {
-// 	curr := litems.curr
-// }
-
 // screen events such as keypresses
 func e_events(data *HardData, fp [MODE_MAX + 1]key_event_mode_func) {
 	ui := &data.ui
