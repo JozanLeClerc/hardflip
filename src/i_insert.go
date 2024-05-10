@@ -501,7 +501,7 @@ func i_draw_insert_ssh(ui *HardUI, line int, win Quad,
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
-	if line > win.T - 3 {
+	if line > 0 {
 		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
 	}
@@ -532,7 +532,7 @@ func i_draw_insert_ssh(ui *HardUI, line int, win Quad,
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
-		if line > win.T - 3 {
+		if line > 0 {
 			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
 				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
 		}
@@ -543,7 +543,7 @@ func i_draw_insert_ssh(ui *HardUI, line int, win Quad,
 		INS_SSH_EXEC, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
-	if line > win.T - 3 {
+	if line > 0 {
 		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
 			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
 	}
@@ -577,14 +577,18 @@ func i_draw_insert_ssh(ui *HardUI, line int, win Quad,
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "file does not exist"
-			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			if line > 0 {
+				i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+					win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			}
 		}
 	}
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_SSH_NOTE, false, false)
@@ -599,8 +603,10 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Host,
 		INS_RDP_HOST, false, false)
@@ -618,8 +624,10 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 		INS_RDP_PASS, true, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- RDP File ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	if file := in.RDPFile; len(file) > 0 {
 		if file[0] == '~' {
@@ -635,14 +643,18 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
+		if line > 0 {
 		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
 	}
 	red = false
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Window settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	screensize := strconv.Itoa(int(in.Width)) + "x" +
 				  strconv.Itoa(int(in.Height))
@@ -662,8 +674,10 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 		INS_RDP_QUALITY, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Share mounts ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	for k, v := range in.drive_keys {
 		red = false
@@ -682,8 +696,10 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "path is not a directory"
-			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			if line > 0 {
+				i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+					win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			}
 		}
 		if line += 1; win.T + line >= win.B { return line }
 	}
@@ -692,8 +708,10 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 	red = false
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Host/IP", in.Jump.Host,
 		INS_RDP_JUMP_HOST + len(in.Drive), false, false)
@@ -724,14 +742,18 @@ func i_draw_insert_rdp(ui *HardUI, line int, win Quad,
 		if red == true {
 			if line += 1; win.T + line >= win.B { return line }
 			text := "file does not exist"
-			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			if line > 0 {
+				i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+					win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+			}
 		}
 	}
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_RDP_NOTE + len(in.Drive), false, false)
@@ -747,8 +769,10 @@ func i_draw_insert_cmd(ui *HardUI, line int, win Quad,
 	red := false
 	if win.T + line >= win.B { return line }
 	text := "---- Settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Command", in.Host,
 		INS_CMD_CMD, false, false)
@@ -767,8 +791,10 @@ func i_draw_insert_cmd(ui *HardUI, line int, win Quad,
 	if red == true {
 		if line += 1; win.T + line >= win.B { return line }
 		text := "file does not exist"
-		i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
-			win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		if line > 0 {
+			i_draw_text(ui.s, ui.dim[W] / 2, win.T + line,
+				win.R - 1, win.T + line, ui.style[ERR_STYLE], text)
+		}
 	}
 	red = false
 	if line += 1; win.T + line >= win.B { return line }
@@ -776,8 +802,10 @@ func i_draw_insert_cmd(ui *HardUI, line int, win Quad,
 		INS_CMD_SILENT, ui.insert_sel)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_CMD_NOTE, false, false)
@@ -791,8 +819,10 @@ func i_draw_insert_os(ui *HardUI, line int, win Quad,
 					  in *HostNode, home string) int {
 	if win.T + line >= win.B { return line }
 	text := "---- Host settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Endpoint", in.Host,
 		INS_OS_HOST, false, false)
@@ -821,8 +851,10 @@ func i_draw_insert_os(ui *HardUI, line int, win Quad,
 		INS_OS_INTERFACE, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- API settings ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Identity API version",
 		in.Stack.IdentityAPI,
@@ -841,8 +873,10 @@ func i_draw_insert_os(ui *HardUI, line int, win Quad,
 		INS_OS_VOLAPI, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Note ----"
-	i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line, win.R - 1,
-		win.T + line, ui.style[DEF_STYLE], text)
+	if line > 0 {
+		i_draw_text(ui.s, ui.dim[W] / 2 - len(text) / 2, win.T + line,
+			win.R - 1, win.T + line, ui.style[DEF_STYLE], text)
+	}
 	if line += 2; win.T + line >= win.B { return line }
 	i_draw_text_box(ui, win.T + line, win, "Note", in.Note,
 		INS_OS_NOTE, false, false)
