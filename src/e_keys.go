@@ -401,7 +401,6 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				}
 				if ui.insert_butt == false {
 					ui.insert_scroll += 2
-					// TODO: gogo
 				}
 			} else if event.Rune() == 'k' ||
 					  event.Key() == tcell.KeyUp {
@@ -842,14 +841,21 @@ func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		return true
 	} else if event.Rune() == 'j' ||
 			  event.Key() == tcell.KeyDown {
+		if ui.help_end == true {
+			return true
+		}
 		ui.help_scroll += 1
 	} else if event.Rune() == 'k' ||
 			  event.Key() == tcell.KeyUp {
-		if ui.help_scroll >= 0 {
+		if ui.help_scroll <= 0 {
 			ui.help_scroll = 0
 			return true
 		}
 		ui.help_scroll -= 1
+	} else if event.Rune() == 'g' {
+		ui.help_scroll = 0
+	} else if event.Rune() == 'G' {
+		// TODO: here
 	}
 	return false
 }

@@ -76,6 +76,7 @@ type HardUI struct {
 	insert_scroll int
 	insert_butt bool
 	help_scroll int
+	help_end bool
 }
 
 type Quad struct {
@@ -756,7 +757,7 @@ func i_ui(data_dir string) {
 		case RENAME_MODE:
 			i_prompt_insert(data.ui, data.litems.curr)
 		case HELP_MODE:
-			i_draw_help(data.ui)
+			i_draw_help(&data.ui)
 		}
 		data.ui.s.Show()
 		e_events(&data, fp)

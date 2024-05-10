@@ -491,7 +491,6 @@ func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
 	if win.T + end_line >= win.B {
 		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼',
 			nil, ui.style[BOX_STYLE])
-		// TODO: scroll or something
 	}
 	i_draw_insert_inputs(*ui, in, home_dir)
 }

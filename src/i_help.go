@@ -51,9 +51,7 @@
 
 package main
 
-import "github.com/gdamore/tcell/v2"
-
-func i_draw_help(ui HardUI) {
+func i_draw_help(ui *HardUI) {
 	if ui.dim[W] < 12 || ui.dim[H] < 6 {
 		return
 	}
@@ -68,15 +66,33 @@ func i_draw_help(ui HardUI) {
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Keys ", true)
 	line := 0
-	i_help_normal(ui, win, &line)
+	line -= ui.help_scroll
+	if line < 0 {
+		ui.s.SetContent(win.L, win.T + 1, '▲',
+			nil, ui.style[BOX_STYLE])
+	}
+	ui.help_end = i_help_normal(*ui, win, &line)
+	if ui.help_end == false {
+		ui.s.SetContent(win.L, win.B - 1, '▼',
+			nil, ui.style[BOX_STYLE])
+	}
+	// TODO: here
 }
 
-func i_help_normal(ui HardUI, win Quad, line *int) {
+func i_help_normal(ui HardUI, win Quad, line *int) bool {
 	for _, v := range HELP_NORMAL_KEYS {
-		i_draw_text(ui.s, win.L + 4,  win.T + 1 + *line, win.R - 1, win.T + 1 + *line,
-			ui.style[DEF_STYLE], v[0])
-		i_draw_text(ui.s, win.L + 10, win.T + 1 + *line, win.R - 1, win.T + 1 +  *line,
-			ui.style[DEF_STYLE], v[1])
+		if *line < 0 {
+			*line += 1
+			continue
+		} else if win.T + *line + 1 >= win.B {
+			return false
+		}
+		i := 13 - len(v[0])
+		i_draw_text(ui.s, win.L + 1 + i, win.T + 1 + *line, win.L + 14,
+			win.T + 1 + *line, ui.style[BOT_STYLE], v[0])
+		i_draw_text(ui.s, win.L + 15,    win.T + 1 + *line, win.R - 1,
+			win.T + 1 +  *line, ui.style[DEF_STYLE], v[1])
 		*line += 1
 	}
+	return true
 }
