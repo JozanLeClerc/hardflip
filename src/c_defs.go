@@ -179,6 +179,17 @@ const (
 )
 
 var (
+	HELP_KEYS = [][2]string{
+	{"j | <down>",	"Down"},
+	{"k | <up>",	"Up"},
+	{"a | i",		"Insert host"},
+	{"y",			"Copy host"},
+	{"d",			"Cut host"},
+	{"p",			"Paste host"},
+	}
+)
+
+var (
 	HOST_ICONS = [4]string{" ", " ", " ", " "}
 	DIRS_ICONS = [2]string{" ", " "}
 	RDP_SCREENSIZE = [7]string{
