@@ -842,6 +842,7 @@ func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		return true
 	} else if event.Rune() == 'j' ||
 			  event.Key() == tcell.KeyDown {
+		ui.help_scroll += 1
 	} else if event.Rune() == 'k' ||
 			  event.Key() == tcell.KeyUp {
 		if ui.help_scroll >= 0 {

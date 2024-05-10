@@ -179,7 +179,7 @@ const (
 )
 
 var (
-	HELP_KEYS = [][2]string{
+	HELP_NORMAL_KEYS = [][2]string{
 	{"j | <down>",	"Down"},
 	{"k | <up>",	"Up"},
 	{"a | i",		"Insert host"},

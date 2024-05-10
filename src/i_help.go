@@ -51,6 +51,8 @@
 
 package main
 
+import "github.com/gdamore/tcell/v2"
+
 func i_draw_help(ui HardUI) {
 	if ui.dim[W] < 12 || ui.dim[H] < 6 {
 		return
@@ -65,8 +67,16 @@ func i_draw_help(ui HardUI) {
 		win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Keys ", true)
-	i_help_normal(ui)
+	line := 0
+	i_help_normal(ui, win, &line)
 }
 
-func i_help_normal(ui HardUI) {
+func i_help_normal(ui HardUI, win Quad, line *int) {
+	for _, v := range HELP_NORMAL_KEYS {
+		i_draw_text(ui.s, win.L + 4,  win.T + 1 + *line, win.R - 1, win.T + 1 + *line,
+			ui.style[DEF_STYLE], v[0])
+		i_draw_text(ui.s, win.L + 10, win.T + 1 + *line, win.R - 1, win.T + 1 +  *line,
+			ui.style[DEF_STYLE], v[1])
+		*line += 1
+	}
 }
