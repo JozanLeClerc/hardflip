@@ -397,8 +397,9 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					ui.insert_sel += 1
 				}
 				if ui.insert_sel < ui.insert_sel_max &&
-				   ui.insert_line + 2 >= ui.insert_win.B - ui.insert_win.T {
-					ui.insert_scroll += 1
+				   ui.insert_sel % 2 == 0 &&
+				   ui.insert_butt == false {
+					ui.insert_scroll += 2
 					// TODO: gogo
 				}
 			} else if event.Rune() == 'k' ||
@@ -424,8 +425,8 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				} else if ui.insert_sel > INS_PROTOCOL {
 					ui.insert_sel -= 1
 				}
-				if ui.insert_sel > INS_PROTOCOL {
-					ui.insert_scroll -= 1
+				if ui.insert_scroll > 0 && ui.insert_sel % 2 == 0 {
+					ui.insert_scroll -= 2
 					if ui.insert_scroll < 0 {
 						ui.insert_scroll = 0
 					}
