@@ -443,8 +443,8 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				for data.ui.insert_butt == false {
 					ui.insert_scroll += 2
 					i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
-					data.ui.s.Show()
 				}
+				data.ui.s.Show()
 			} else if event.Rune() == 'i' ||
 					  event.Rune() == 'a' ||
 					  event.Rune() == ' ' ||
