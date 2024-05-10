@@ -396,9 +396,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				} else if ui.insert_sel < ui.insert_sel_max {
 					ui.insert_sel += 1
 				}
-				if ui.insert_sel < ui.insert_sel_max &&
-				   ui.insert_sel % 2 == 0 &&
-				   ui.insert_butt == false {
+				if ui.insert_butt == false {
 					ui.insert_scroll += 2
 					// TODO: gogo
 				}
@@ -425,7 +423,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				} else if ui.insert_sel > INS_PROTOCOL {
 					ui.insert_sel -= 1
 				}
-				if ui.insert_scroll > 0 && ui.insert_sel % 2 == 0 {
+				if ui.insert_scroll > 0 {
 					ui.insert_scroll -= 2
 					if ui.insert_scroll < 0 {
 						ui.insert_scroll = 0
@@ -434,11 +432,13 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			} else if event.Rune() == 'g' ||
 					  event.Rune() == 'h' ||
 					  event.Key() == tcell.KeyLeft {
-					ui.insert_sel = INS_PROTOCOL
+				ui.insert_sel = INS_PROTOCOL
+				ui.insert_scroll = 0
 			} else if event.Rune() == 'G' ||
 					  event.Rune() == 'l' ||
 					  event.Key() == tcell.KeyRight {
-					ui.insert_sel = ui.insert_sel_max
+				ui.insert_sel = ui.insert_sel_max
+				// FIX: should scroll at some point
 			} else if event.Rune() == 'i' ||
 					  event.Rune() == 'a' ||
 					  event.Rune() == ' ' ||

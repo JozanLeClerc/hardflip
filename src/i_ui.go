@@ -75,7 +75,6 @@ type HardUI struct {
 	insert_method int
 	insert_scroll int
 	insert_butt bool
-	insert_win Quad
 }
 
 type Quad struct {

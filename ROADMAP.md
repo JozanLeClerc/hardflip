@@ -39,7 +39,7 @@
 
 ## v0.7
 
-- [ ] scroll insert
+- [x] scroll insert
 - [ ] help
 - [ ] better readline
 
