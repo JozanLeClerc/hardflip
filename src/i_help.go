@@ -52,17 +52,21 @@
 package main
 
 func i_draw_help(ui HardUI) {
-	if ui.dim[W] < 8 || ui.dim[H] < 4 {
+	if ui.dim[W] < 12 || ui.dim[H] < 6 {
 		return
 	}
 	win := Quad{
-		4,
-		4,
-		ui.dim[W] - 4,
-		ui.dim[H] - 4,
+		6,
+		3,
+		ui.dim[W] - 6,
+		ui.dim[H] - 3,
 	}
 	i_draw_box(ui.s,
 		win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Keys ", true)
+	i_help_normal(ui)
+}
+
+func i_help_normal(ui HardUI) {
 }

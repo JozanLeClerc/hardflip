@@ -75,6 +75,7 @@ type HardUI struct {
 	insert_method int
 	insert_scroll int
 	insert_butt bool
+	help_scroll int
 }
 
 type Quad struct {
@@ -208,6 +209,8 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts,
 			} else {
 				text = INSERT_KEYS_HINTS
 			}
+		case HELP_MODE:
+			text = HELP_KEYS_HINTS
 		default:
 			text = ""
 		}

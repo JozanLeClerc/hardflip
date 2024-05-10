@@ -248,6 +248,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.buff = data.litems.curr.Host.Name
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
+		ui.help_scroll = 0
 	}
 	return false
 }
@@ -833,5 +834,12 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 }
 
 func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
+	if event.Key() == tcell.KeyEscape ||
+	   event.Key() == tcell.KeyCtrlC ||
+	   event.Rune() == 'q' {
+		ui.mode = NORMAL_MODE
+		ui.help_scroll = 0
+		return true
+	}
 	return false
 }
