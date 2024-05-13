@@ -245,9 +245,9 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			  data.litems.curr != nil {
 		ui.mode = RENAME_MODE
 		if data.litems.curr.is_dir() == false {
-			ui.buff.str = data.litems.curr.Host.Name
+			ui.buff.insert(data.litems.curr.Host.Name)
 		} else {
-			ui.buff.str = data.litems.curr.Dirs.Name
+			ui.buff.insert(data.litems.curr.Dirs.Name)
 		}
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
@@ -317,13 +317,13 @@ func e_mkdir_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	   event.Key() == tcell.KeyCtrlC {
 		ui.s.HideCursor()
 		ui.mode = NORMAL_MODE
-		ui.buff.str = ""
+		ui.buff.empty()
 		data.insert = nil
 	} else if event.Key() == tcell.KeyEnter {
 		e_mkdir(data, ui)
 		ui.s.HideCursor()
 		ui.mode = NORMAL_MODE
-		ui.buff.str = ""
+		ui.buff.empty()
 	} else {
 		e_readline(event, &ui.buff)
 	}
@@ -338,22 +338,22 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.mode = NORMAL_MODE
 			ui.insert_sel = 0
 			data.insert = nil
-			ui.buff.str = ""
+			ui.buff.empty()
 		} else if event.Key() == tcell.KeyEnter {
-			if ui.buff.str == "" {
+			if ui.buff.len() == 0 {
 				ui.s.HideCursor()
 				ui.mode = NORMAL_MODE
 				ui.insert_sel = 0
 				ui.insert_sel_ok = false
 				data.insert = nil
-				ui.buff.str = ""
+				ui.buff.empty()
 				return true
 			}
 			ui.s.HideCursor()
 			data.insert = &HostNode{}
 			e_set_protocol_defaults(data, data.insert)
-			data.insert.Name = ui.buff.str
-			ui.buff.str = ""
+			data.insert.Name = ui.buff.str()
+			ui.buff.empty()
 			if data.litems.curr != nil {
 				data.insert.parent = data.litems.curr.path_node()
 			} else {
@@ -377,7 +377,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				ui.mode = NORMAL_MODE
 				ui.insert_sel = 0
 				data.insert = nil
-				ui.buff.str = ""
+				ui.buff.empty()
 			} else if event.Rune() == 'j' ||
 					  event.Key() == tcell.KeyDown ||
 					  event.Key() == tcell.KeyTab {
@@ -467,42 +467,41 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				case INS_SSH_HOST,
 					 INS_RDP_HOST,
 					 INS_OS_HOST:
-					ui.buff.str = data.insert.Host
+					ui.buff.insert(data.insert.Host)
 				case INS_SSH_PORT,
 					 INS_RDP_PORT:
 					if data.insert.Port > 0 {
-						ui.buff.str = strconv.Itoa(int(data.insert.Port))
+						ui.buff.insert(strconv.Itoa(int(data.insert.Port)))
 					}
 				case INS_SSH_USER,
 					 INS_RDP_USER,
 					 INS_OS_USER:
-					ui.buff.str = data.insert.User
+					ui.buff.insert(data.insert.User)
 				case INS_SSH_PASS,
 					 INS_RDP_PASS,
 					 INS_OS_PASS:
 					return true
-				case INS_SSH_PRIV: ui.buff.str = data.insert.Priv
-				case INS_SSH_EXEC: ui.buff.str = data.insert.Exec
+				case INS_SSH_PRIV: ui.buff.insert(data.insert.Priv)
+				case INS_SSH_EXEC: ui.buff.insert(data.insert.Exec)
 				case INS_SSH_JUMP_HOST,
 					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
-					ui.buff.str = data.insert.Jump.Host
+					ui.buff.insert(data.insert.Jump.Host)
 				case INS_SSH_JUMP_PORT,
 					 INS_RDP_JUMP_PORT + len(data.insert.Drive):
 					if data.insert.Jump.Port > 0 {
-						ui.buff.str = strconv.Itoa(int(
-						data.insert.Jump.Port))
+						ui.buff.insert(strconv.Itoa(int(data.insert.Jump.Port)))
 					}
 				case INS_SSH_JUMP_USER,
 					 INS_RDP_JUMP_USER + len(data.insert.Drive):
-					ui.buff.str = data.insert.Jump.User
+					ui.buff.insert(data.insert.Jump.User)
 				case INS_SSH_JUMP_PASS,
 					 INS_RDP_JUMP_PASS + len(data.insert.Drive):
 					return true
 				case INS_SSH_JUMP_PRIV,
 					 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
-					ui.buff.str = data.insert.Jump.Priv
-				case INS_RDP_DOMAIN: ui.buff.str = data.insert.Domain
-				case INS_RDP_FILE: ui.buff.str = data.insert.RDPFile
+					ui.buff.insert(data.insert.Jump.Priv)
+				case INS_RDP_DOMAIN: ui.buff.insert(data.insert.Domain)
+				case INS_RDP_FILE: ui.buff.insert(data.insert.RDPFile)
 				case INS_RDP_SCREENSIZE: return true
 				case INS_RDP_DYNAMIC:
 					ui.insert_sel_ok = false
@@ -530,8 +529,8 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					return true
 				case INS_RDP_QUALITY: return true
 				case INS_RDP_DRIVE + len(data.insert.Drive): return true
-				case INS_CMD_CMD: ui.buff.str = data.insert.Host
-				case INS_CMD_SHELL: ui.buff.str = data.insert.Shell[0]
+				case INS_CMD_CMD: ui.buff.insert(data.insert.Host)
+				case INS_CMD_SHELL: ui.buff.insert(data.insert.Shell[0])
 				case INS_CMD_SILENT:
 					ui.insert_sel_ok = false
 					if data.insert.Silent == true {
@@ -541,35 +540,35 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					}
 					return true
 				case INS_OS_USERDOMAINID:
-					ui.buff.str = data.insert.Stack.UserDomainID
+					ui.buff.insert(data.insert.Stack.UserDomainID)
 				case INS_OS_PROJECTID:
-					ui.buff.str = data.insert.Stack.ProjectID
+					ui.buff.insert(data.insert.Stack.ProjectID)
 				case INS_OS_REGION:
-					ui.buff.str = data.insert.Stack.RegionName
+					ui.buff.insert(data.insert.Stack.RegionName)
 				case INS_OS_ENDTYPE:
-					ui.buff.str = data.insert.Stack.EndpointType
+					ui.buff.insert(data.insert.Stack.EndpointType)
 				case INS_OS_INTERFACE:
-					ui.buff.str = data.insert.Stack.Interface
+					ui.buff.insert(data.insert.Stack.Interface)
 				case INS_OS_IDAPI:
-					ui.buff.str = data.insert.Stack.IdentityAPI
+					ui.buff.insert(data.insert.Stack.IdentityAPI)
 				case INS_OS_IMGAPI:
-					ui.buff.str = data.insert.Stack.ImageAPI
+					ui.buff.insert(data.insert.Stack.ImageAPI)
 				case INS_OS_NETAPI:
-					ui.buff.str = data.insert.Stack.NetworkAPI
+					ui.buff.insert(data.insert.Stack.NetworkAPI)
 				case INS_OS_VOLAPI:
-					ui.buff.str = data.insert.Stack.VolumeAPI
+					ui.buff.insert(data.insert.Stack.VolumeAPI)
 				case INS_SSH_NOTE,
 					 INS_RDP_NOTE + len(data.insert.Drive),
 					 INS_CMD_NOTE,
 					 INS_OS_NOTE:
-					ui.buff.str = data.insert.Note
+					ui.buff.insert(data.insert.Note)
 				}
 			}
 		} else {
 			if event.Key() == tcell.KeyEscape ||
 			   event.Key() == tcell.KeyCtrlC {
 				ui.insert_sel_ok = false
-				ui.buff.str = ""
+				ui.buff.empty()
 				ui.drives_buff = ""
 				ui.s.HideCursor()
 			}
@@ -595,7 +594,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			case INS_PROTOCOL:
 				if event.Rune() < '1' || event.Rune() > '4' {
 					ui.insert_sel_ok = false
-					ui.buff.str = ""
+					ui.buff.empty()
 					ui.s.HideCursor()
 					return true
 				} else {
@@ -615,7 +614,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			case INS_RDP_SCREENSIZE:
 				if event.Rune() < '1' || event.Rune() > '7' {
 					ui.insert_sel_ok = false
-					ui.buff.str = ""
+					ui.buff.empty()
 					ui.s.HideCursor()
 					return true
 				} else {
@@ -635,7 +634,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			case INS_RDP_QUALITY:
 				if event.Rune() < '1' || event.Rune() > '3' {
 					ui.insert_sel_ok = false
-					ui.buff.str = ""
+					ui.buff.empty()
 					ui.s.HideCursor()
 					return true
 				} else {
@@ -646,35 +645,35 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			case INS_RDP_DRIVE + len(data.insert.Drive):
 				if len(ui.drives_buff) == 0 {
 					if event.Key() == tcell.KeyEnter {
-						if len(ui.buff.str) == 0 {
+						if ui.buff.len() == 0 {
 							ui.insert_sel_ok = false
 							ui.drives_buff = ""
-							ui.buff.str = ""
+							ui.buff.empty()
 							ui.s.HideCursor()
 							return true
 						}
-						ui.drives_buff = ui.buff.str
-						ui.buff.str = ""
+						ui.drives_buff = ui.buff.str()
+						ui.buff.empty()
 					} else {
 						e_readline(event, &ui.buff)
 					}
 				} else {
 					if event.Key() == tcell.KeyEnter {
-						if len(ui.buff.str) == 0 {
+						if ui.buff.len() == 0 {
 							ui.insert_sel_ok = false
 							ui.drives_buff = ""
-							ui.buff.str = ""
+							ui.buff.empty()
 							ui.s.HideCursor()
 							return true
 						}
 						if len(data.insert.Drive) == 0 {
 							data.insert.Drive = make(map[string]string)
 						}
-						data.insert.Drive[ui.drives_buff] = ui.buff.str
+						data.insert.Drive[ui.drives_buff] = ui.buff.str()
 						e_set_drive_keys(data)
 						ui.insert_sel_ok = false
 						ui.drives_buff = ""
-						ui.buff.str = ""
+						ui.buff.empty()
 						ui.s.HideCursor()
 					} else {
 						e_readline(event, &ui.buff)
@@ -725,87 +724,87 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					case INS_SSH_HOST,
 						 INS_RDP_HOST,
 						 INS_OS_HOST:
-						data.insert.Host = ui.buff.str
+						data.insert.Host = ui.buff.str()
 					case INS_SSH_PORT,
 						 INS_RDP_PORT:
-						tmp, _ := strconv.Atoi(ui.buff.str)
+						tmp, _ := strconv.Atoi(ui.buff.str())
 						data.insert.Port = uint16(tmp)
 					case INS_SSH_USER,
 						 INS_RDP_USER,
 						 INS_OS_USER:
-						data.insert.User = ui.buff.str
+						data.insert.User = ui.buff.str()
 					case INS_SSH_PASS,
 						 INS_RDP_PASS,
 						 INS_OS_PASS:
-						if len(ui.buff.str) == 0 {
+						if ui.buff.len() == 0 {
 							data.insert.Pass = ""
 							return true
 						} else {
-							data.insert.Pass, _ = c_encrypt_str(ui.buff.str,
+							data.insert.Pass, _ = c_encrypt_str(ui.buff.str(),
 													data.opts.GPG)
 						}
-					case INS_SSH_PRIV: data.insert.Priv = ui.buff.str
-					case INS_SSH_EXEC: data.insert.Exec = ui.buff.str
+					case INS_SSH_PRIV: data.insert.Priv = ui.buff.str()
+					case INS_SSH_EXEC: data.insert.Exec = ui.buff.str()
 					case INS_SSH_JUMP_HOST,
 						 INS_RDP_JUMP_HOST + len(data.insert.Drive):
-						data.insert.Jump.Host = ui.buff.str
-						if len(ui.buff.str) > 0 {
+						data.insert.Jump.Host = ui.buff.str()
+						if len(ui.buff.str()) > 0 {
 							data.insert.Jump.Port = 22
 						} else {
 							data.insert.Jump.Port = 0
 						}
 					case INS_SSH_JUMP_PORT,
 						 INS_RDP_JUMP_PORT + len(data.insert.Drive):
-						tmp, _ := strconv.Atoi(ui.buff.str)
+						tmp, _ := strconv.Atoi(ui.buff.str())
 						data.insert.Jump.Port = uint16(tmp)
 					case INS_SSH_JUMP_USER,
 						 INS_RDP_JUMP_USER + len(data.insert.Drive):
-						data.insert.Jump.User = ui.buff.str
+						data.insert.Jump.User = ui.buff.str()
 					case INS_SSH_JUMP_PASS,
 						 INS_RDP_JUMP_PASS + len(data.insert.Drive):
-						if len(ui.buff.str) == 0 {
+						if len(ui.buff.str()) == 0 {
 							data.insert.Jump.Pass = ""
 						} else {
-							data.insert.Jump.Pass, _ = c_encrypt_str(ui.buff.str,
-														data.opts.GPG)
+							data.insert.Jump.Pass, _ =
+							c_encrypt_str(ui.buff.str(), data.opts.GPG)
 						}
 					case INS_SSH_JUMP_PRIV,
 						 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
-						data.insert.Jump.Priv = ui.buff.str
+						data.insert.Jump.Priv = ui.buff.str()
 					case INS_RDP_DOMAIN:
-						data.insert.Domain = ui.buff.str
+						data.insert.Domain = ui.buff.str()
 					case INS_RDP_FILE:
-						data.insert.RDPFile = ui.buff.str
+						data.insert.RDPFile = ui.buff.str()
 					case INS_CMD_CMD:
-						data.insert.Host = ui.buff.str
+						data.insert.Host = ui.buff.str()
 					case INS_CMD_SHELL:
-						data.insert.Shell[0] = ui.buff.str
+						data.insert.Shell[0] = ui.buff.str()
 					case INS_OS_USERDOMAINID:
-						data.insert.Stack.UserDomainID = ui.buff.str
+						data.insert.Stack.UserDomainID = ui.buff.str()
 					case INS_OS_PROJECTID:
-						data.insert.Stack.ProjectID = ui.buff.str
+						data.insert.Stack.ProjectID = ui.buff.str()
 					case INS_OS_REGION:
-						data.insert.Stack.RegionName = ui.buff.str
+						data.insert.Stack.RegionName = ui.buff.str()
 					case INS_OS_ENDTYPE:
-						data.insert.Stack.EndpointType = ui.buff.str
+						data.insert.Stack.EndpointType = ui.buff.str()
 					case INS_OS_INTERFACE:
-						data.insert.Stack.Interface = ui.buff.str
+						data.insert.Stack.Interface = ui.buff.str()
 					case INS_OS_IDAPI:
-						data.insert.Stack.IdentityAPI = ui.buff.str
+						data.insert.Stack.IdentityAPI = ui.buff.str()
 					case INS_OS_IMGAPI:
-						data.insert.Stack.ImageAPI = ui.buff.str
+						data.insert.Stack.ImageAPI = ui.buff.str()
 					case INS_OS_NETAPI:
-						data.insert.Stack.NetworkAPI = ui.buff.str
+						data.insert.Stack.NetworkAPI = ui.buff.str()
 					case INS_OS_VOLAPI:
-						data.insert.Stack.VolumeAPI = ui.buff.str
+						data.insert.Stack.VolumeAPI = ui.buff.str()
 					case INS_SSH_NOTE,
 						 INS_RDP_NOTE + len(data.insert.Drive),
 						 INS_CMD_NOTE,
 						 INS_OS_NOTE:
-						data.insert.Note = ui.buff.str
+						data.insert.Note = ui.buff.str()
 					}
 					ui.insert_sel_ok = false
-					ui.buff.str = ""
+					ui.buff.empty()
 					ui.s.HideCursor()
 				} else {
 					e_readline(event, &ui.buff)
@@ -823,7 +822,7 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if event.Key() == tcell.KeyEnter {
 		if err := e_rename(data, ui); err != nil {
 			ui.s.HideCursor()
-			ui.buff.str = ""
+			ui.buff.empty()
 			return true
 		}
 	} else {
@@ -832,7 +831,7 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	}
 	ui.s.HideCursor()
 	ui.mode = NORMAL_MODE
-	ui.buff.str = ""
+	ui.buff.empty()
 	return false
 }
 

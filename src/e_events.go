@@ -279,21 +279,45 @@ func e_delete_host(data *HardData) error {
 }
 
 func e_readline(event tcell.EventKey, buffer *Buffer) {
-	if len(buffer.str) > 0 &&
+	if len(buffer.data) > 0 &&
 	(event.Key() == tcell.KeyBackspace ||
 	event.Key() == tcell.KeyBackspace2) {
-		buffer.str = (buffer.str)[:len(buffer.str) - 1]
+		if buffer.cursor == 0 {
+			return
+		} else if buffer.cursor == buffer.len() {
+			buffer.data = (buffer.data)[:buffer.cursor - 1]
+		}
+		buffer.cursor -= 1
 	} else if event.Key() == tcell.KeyCtrlU {
-		buffer.str = ""
+		buffer.empty()
 	} else if event.Rune() >= 32 && event.Rune() <= 126 {
-		buffer.str += string(event.Rune())
+		if buffer.cursor == buffer.len() {
+			buffer.data = append(buffer.data, event.Rune())
+		} else {
+			buffer.data = append(buffer.data[:buffer.cursor],
+				append([]rune{event.Rune()}, buffer.data[buffer.cursor:]...)...)
+		}
+		buffer.cursor += 1
 	} else if event.Key() == tcell.KeyCtrlA {
+		buffer.cursor = 0
 	} else if event.Key() == tcell.KeyCtrlE {
+		buffer.cursor = buffer.len()
+	} else if event.Key() == tcell.KeyLeft ||
+			  event.Key() == tcell.KeyCtrlB {
+		buffer.cursor -= 1
+	} else if event.Key() == tcell.KeyRight ||
+			  event.Key() == tcell.KeyCtrlF {
+		buffer.cursor += 1
+	}
+	if buffer.cursor > buffer.len() {
+		buffer.cursor = buffer.len()
+	} else if buffer.cursor < 0 {
+		buffer.cursor = 0
 	}
 }
 
 func e_mkdir(data *HardData, ui *HardUI) {
-	if len(ui.buff.str) == 0 {
+	if ui.buff.len() == 0 {
 		return
 	}
 	path := "/"
@@ -302,15 +326,15 @@ func e_mkdir(data *HardData, ui *HardUI) {
 	}
 	if err := os.MkdirAll(data.data_dir +
 		path +
-		ui.buff.str, os.ModePerm); err != nil {
-		c_error_mode("mkdir " + path[1:] + ui.buff.str + " failed",
+		ui.buff.str(), os.ModePerm); err != nil {
+		c_error_mode("mkdir " + path[1:] + ui.buff.str() + " failed",
 		err, ui)
 		return
 	}
 	e_reload_data(data)
 	for curr := data.litems.head; curr != nil; curr = curr.next {
 		if curr.is_dir() == true &&
-		   curr.Dirs.Name == ui.buff.str &&
+		   curr.Dirs.Name == ui.buff.str() &&
 		   curr.Dirs.Parent.path() == path {
 			data.litems.curr = curr
 			return
@@ -327,12 +351,12 @@ func e_rename(data *HardData, ui *HardUI) error {
 		name = tmp.Dirs.Name
 	}
 
-	if len(ui.buff.str) == 0 || tmp == nil || ui.buff.str == name {
+	if ui.buff.len() == 0 || tmp == nil || ui.buff.str() == name {
 		return nil
 	}
 	if tmp.is_dir() == false {
 		new_host := e_deep_copy_host(data.litems.curr.Host)
-		new_host.Name = ui.buff.str
+		new_host.Name = ui.buff.str()
 		ui.insert_method = INSERT_MOVE
 		i_insert_host(data, &new_host)
 		data.litems.del(tmp)
@@ -344,7 +368,7 @@ func e_rename(data *HardData, ui *HardUI) error {
 		return nil
 	} else {
 		old_path := data.data_dir + tmp.Dirs.path()
-		new_path := data.data_dir + tmp.Dirs.Parent.path() + data.ui.buff.str
+		new_path := data.data_dir + tmp.Dirs.Parent.path() + data.ui.buff.str()
 		if err := os.Rename(old_path, new_path); err != nil {
 			c_error_mode("can't rename " + old_path, err, &data.ui)
 			return err
@@ -353,7 +377,7 @@ func e_rename(data *HardData, ui *HardUI) error {
 		e_reload_data(data)
 		for curr := data.litems.head; curr != nil; curr = curr.next {
 			if curr.is_dir() == true &&
-			   curr.Dirs.Name == ui.buff.str &&
+			   curr.Dirs.Name == ui.buff.str() &&
 			   curr.Dirs.Parent.path() == path {
 				data.litems.curr = curr
 				return nil

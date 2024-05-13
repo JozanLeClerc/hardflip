@@ -61,7 +61,7 @@ import (
 )
 
 type Buffer struct {
-	str string
+	data []rune
 	cursor int
 }
 
@@ -86,6 +86,25 @@ type HardUI struct {
 
 type Quad struct {
 	L, T, R, B int
+}
+
+func (buffer *Buffer)empty() {
+	buffer.data = []rune{}
+	buffer.cursor = 0
+}
+
+func (buffer *Buffer)insert(str string) {
+	buffer.data = []rune(str)
+	// TODO: uncomment
+	// buffer.cursor = len(buffer.data)
+}
+
+func (buffer *Buffer)str() string {
+	return string(buffer.data)
+}
+
+func (buffer *Buffer)len() int {
+	return len(buffer.data)
 }
 
 func i_left_right(text_len int, ui *HardUI) (int, int) {
@@ -372,9 +391,9 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff.str)
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
-		len(ui.buff.str), ui.dim[H] - 1)
+		len(ui.buff.str()), ui.dim[H] - 1)
 }
 
 func i_prompt_list(ui HardUI, name, prompt string, list []string) {
@@ -401,8 +420,8 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 		return
 	}
 	style := ui.style[DEF_STYLE].Bold(true)
-	if len(home_dir) > 0 && len(ui.buff.str) > 0 {
-		file := ui.buff.str
+	if len(home_dir) > 0 && ui.buff.len() > 0 {
+		file := ui.buff.str()
 		if file[0] == '~' {
 			file = home_dir + file[1:]
 		}
@@ -419,8 +438,8 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		style, ui.buff.str)
-	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff.str), ui.dim[H] - 1)
+		style, ui.buff.str())
+	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.len(), ui.dim[H] - 1)
 }
 
 func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
@@ -428,8 +447,8 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
 	style := ui.style[DEF_STYLE].Bold(true)
-	if len(home_dir) > 0 && len(ui.buff.str) > 0 {
-		file := ui.buff.str
+	if len(home_dir) > 0 && ui.buff.len() > 0 {
+		file := ui.buff.str()
 		if file[0] == '~' {
 			file = home_dir + file[1:]
 		}
@@ -444,8 +463,8 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		style, ui.buff.str)
-	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff.str), ui.dim[H] - 1)
+		style, ui.buff.str())
+	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.len(), ui.dim[H] - 1)
 }
 
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
@@ -471,9 +490,9 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff.str)
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
-		len(ui.buff.str), ui.dim[H] - 1)
+		ui.buff.cursor, ui.dim[H] - 1)
 }
 
 func i_draw_remove_share(ui HardUI) {
