@@ -856,7 +856,10 @@ func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if event.Rune() == 'g' {
 		ui.help_scroll = 0
 	} else if event.Rune() == 'G' {
-		// TODO: here
+		for ui.help_end != true {
+			ui.help_scroll += 1
+			i_draw_help(ui)
+		}
 	}
 	return false
 }

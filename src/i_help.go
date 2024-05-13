@@ -61,6 +61,9 @@ func i_draw_help(ui *HardUI) {
 		ui.dim[W] - 6,
 		ui.dim[H] - 3,
 	}
+	if win.B > win.T + len(HELP_NORMAL_KEYS) + 1 {
+		win.B = win.T + len(HELP_NORMAL_KEYS) + 1
+	}
 	i_draw_box(ui.s,
 		win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
