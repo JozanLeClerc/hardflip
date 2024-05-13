@@ -95,8 +95,7 @@ func (buffer *Buffer)empty() {
 
 func (buffer *Buffer)insert(str string) {
 	buffer.data = []rune(str)
-	// TODO: uncomment
-	// buffer.cursor = len(buffer.data)
+	buffer.cursor = len(buffer.data)
 }
 
 func (buffer *Buffer)str() string {
@@ -393,7 +392,7 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
-		len(ui.buff.str()), ui.dim[H] - 1)
+		ui.buff.cursor, ui.dim[H] - 1)
 }
 
 func i_prompt_list(ui HardUI, name, prompt string, list []string) {
@@ -439,7 +438,7 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		style, ui.buff.str())
-	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.len(), ui.dim[H] - 1)
+	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.cursor, ui.dim[H] - 1)
 }
 
 func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
@@ -464,7 +463,7 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		style, ui.buff.str())
-	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.len(), ui.dim[H] - 1)
+	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.cursor, ui.dim[H] - 1)
 }
 
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {

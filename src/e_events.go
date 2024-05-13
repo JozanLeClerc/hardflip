@@ -286,6 +286,9 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 			return
 		} else if buffer.cursor == buffer.len() {
 			buffer.data = (buffer.data)[:buffer.cursor - 1]
+		} else {
+			buffer.data = append(buffer.data[:buffer.cursor - 1],
+				buffer.data[buffer.cursor:]...)
 		}
 		buffer.cursor -= 1
 	} else if event.Key() == tcell.KeyCtrlU {
