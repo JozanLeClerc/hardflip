@@ -287,6 +287,8 @@ func e_readline(event tcell.EventKey, buffer *string) {
 		*buffer = ""
 	} else if event.Rune() >= 32 && event.Rune() <= 126 {
 		*buffer += string(event.Rune())
+	} else if event.Key() == tcell.KeyCtrlA {
+	} else if event.Key() == tcell.KeyCtrlE {
 	}
 }
 

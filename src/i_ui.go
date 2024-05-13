@@ -60,6 +60,11 @@ import (
 	"golang.org/x/term"
 )
 
+type Buffer struct {
+	str string
+	cursor int
+}
+
 type HardUI struct {
 	s     tcell.Screen
 	mode  uint8
