@@ -473,8 +473,8 @@ func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
 		" Insert - " + in.Name + " ", true)
 	line := i_insert_follow_cursor(ui.insert_scroll, 2)
 	if line + 2 < win.T {
-		ui.s.SetContent(ui.dim[W] / 2, win.T, '▲',
-			nil, ui.style[BOX_STYLE])
+		ui.s.SetContent(ui.dim[W] / 2, win.T, '▲', nil, ui.style[BOX_STYLE])
+		// FIX: shows in fullscreen for some reason
 	}
 	if win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win,
@@ -490,8 +490,7 @@ func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
 	ui.insert_butt = false
 	end_line = fp[in.Protocol](ui, line, win, in, home_dir)
 	if win.T + end_line >= win.B {
-		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼',
-			nil, ui.style[BOX_STYLE])
+		ui.s.SetContent(ui.dim[W] / 2, win.B, '▼', nil, ui.style[BOX_STYLE])
 	}
 	i_draw_insert_inputs(*ui, in, home_dir)
 }

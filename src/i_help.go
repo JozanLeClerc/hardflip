@@ -79,6 +79,9 @@ func i_draw_help(ui *HardUI) {
 		ui.s.SetContent(win.L, win.B - 1, '▼',
 			nil, ui.style[BOX_STYLE])
 	}
+	text := " hardflip " + VERSION + " - " + VERSION_NAME + " "
+	i_draw_text(ui.s, win.R - 1 - len(text),
+		win.B, win.R - 1, win.B, ui.style[DEF_STYLE], text)
 }
 
 func i_help_normal(ui HardUI, win Quad, line *int) bool {
