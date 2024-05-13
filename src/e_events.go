@@ -52,6 +52,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -278,6 +279,51 @@ func e_delete_host(data *HardData) error {
 	return nil
 }
 
+func e_tab_complete(buffer *Buffer) {
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		return
+	}
+	var match []string
+	for _, v := range entries {
+		if len(v.Name()) >= buffer.len() &&
+		   v.Name()[:buffer.len()] == buffer.str() {
+			match = append(match, v.Name())
+		}
+	}
+	log.Println(match)
+	if len(match) == 0 {
+		return
+	} else if len(match) == 1 {
+		buffer.insert(match[0])
+	} else {
+		var common []rune
+		var shortest int = 1000000000
+		var check bool = true
+		for _, v := range match {
+			if len(v) < shortest {
+				shortest = len(v)
+			}
+		}
+		for j := 0; j < shortest; j++ {
+			for i := 1; i < len(match); i++ {
+				if match[i][j] != match[i - 1][j] {
+					check = false
+				}
+			}
+			if check == false {
+				break
+			} else {
+				common = append(common, rune(match[0][j]))
+			}
+		}
+		if len(common) == 0 {
+			return
+		}
+		buffer.insert(string(common))
+	}
+}
+
 func e_readline(event tcell.EventKey, buffer *Buffer) {
 	if buffer.len() > 0 &&
 	   (event.Key() == tcell.KeyBackspace ||
@@ -321,8 +367,7 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 		buffer.cursor += 1
 	} else if event.Key() == tcell.KeyTab ||
 			  event.Key() == tcell.KeyCtrlI {
-		buffer.insert("hey go fuck yourself")
-		// TODO: here
+		e_tab_complete(buffer)
 	}
 	if buffer.cursor > buffer.len() {
 		buffer.cursor = buffer.len()

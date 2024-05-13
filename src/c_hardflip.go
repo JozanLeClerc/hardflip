@@ -51,6 +51,9 @@
 
 package main
 
+import "log"
+import "os"
+
 // the main data structure, holds up everything important
 type HardData struct {
 	litems  *ItemsList
@@ -68,6 +71,15 @@ type HardData struct {
 }
 
 func main() {
+	// TODO: remove log for release
+	f, _ := os.OpenFile("/tmp/hflog",
+		os.O_RDWR | os.O_CREATE | os.O_APPEND, 0644)
+	defer f.Close()
+	log.SetOutput(f)
+	log.SetPrefix("")
+	log.SetFlags(0)
+	log.Println("--------------------")
+
 	data_dir := c_get_data_dir(nil)
 	i_ui(data_dir)
 }
