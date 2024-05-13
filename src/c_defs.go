@@ -180,6 +180,9 @@ const (
 
 var (
 	HELP_NORMAL_KEYS = [][2]string{
+	{"<down> | j",	"Select next item"},
+	{"<up> | k",	"Select previous item"},
+	{"[Enter]",		"Connect to selected host / toggle directory"},
 	{"a | i",		"Create a new host"},
 	{"y",			"Copy selected host"},
 	{"d",			"Cut selected host"},
@@ -187,8 +190,6 @@ var (
 	{"m",			"Create a new directory"},
 	{"e",			"Edit selected host"},
 	{"c",			"Rename selected item"},
-	{"<down> | j",	"Select next item"},
-	{"<up> | k",	"Select previous item"},
 	{"g",			"Go to first item"},
 	{"G",			"Go to last item"},
 	}
