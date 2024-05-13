@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_defs.go
- * Wed Apr 24 15:11:37 2024
+ * Mon May 13 10:27:54 2024
  * Joe
  *
  * constants
@@ -180,18 +180,28 @@ const (
 
 var (
 	HELP_NORMAL_KEYS = [][2]string{
-	{"<down> | j",	"Select next item"},
-	{"<up> | k",	"Select previous item"},
-	{"[Enter]",		"Connect to selected host / toggle directory"},
-	{"a | i",		"Create a new host"},
-	{"y",			"Copy selected host"},
-	{"d",			"Cut selected host"},
-	{"p",			"Paste host in clipboard"},
-	{"m",			"Create a new directory"},
-	{"e",			"Edit selected host"},
-	{"c",			"Rename selected item"},
-	{"g",			"Go to first item"},
-	{"G",			"Go to last item"},
+	{"<down> | j",			"Go to next item"},
+	{"<up> | k",			"Go to previous item"},
+	{"<pgdown> | <c-d>",	"Jump down"},
+	{"<pgup> | <c-u>",	 	"Jump up"},
+	{"} | ]",				"Go to next directory"},
+	{"{ | [",				"Go to previous directory"},
+	{"g",					"Go to first item"},
+	{"G",					"Go to last item"},
+	{"D",					"Delete selected item"},
+	{"h",					"Close current directory"},
+	{"H",					"Close all directories"},
+	{"l | <space>",			"Toggle directory"},
+	{"l | <enter>",			"Connect to selected host / toggle directory"},
+	{"a | i",				"Create a new host"},
+	{"y",					"Copy selected host"},
+	{"d",					"Cut selected host"},
+	{"p",					"Paste host in clipboard"},
+	{"<f7> | m",					"Create a new directory"},
+	{"e",					"Edit selected host"},
+	{"c | C | A",			"Rename selected item"},
+	{"?",					"Display this help menu"},
+	{"<c-c> | q",			"Quit"},
 	}
 )
 

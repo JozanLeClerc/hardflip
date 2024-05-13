@@ -80,6 +80,7 @@ func i_draw_help(ui *HardUI) {
 }
 
 func i_help_normal(ui HardUI, win Quad, line *int) bool {
+	delim := 17
 	for _, v := range HELP_NORMAL_KEYS {
 		if *line < 0 {
 			*line += 1
@@ -87,10 +88,11 @@ func i_help_normal(ui HardUI, win Quad, line *int) bool {
 		} else if win.T + *line + 1 >= win.B {
 			return false
 		}
-		i := 13 - len(v[0])
-		i_draw_text(ui.s, win.L + 1 + i, win.T + 1 + *line, win.L + 14,
+		i := delim - 1 - len(v[0])
+		if i < 0 { i = 0 }
+		i_draw_text(ui.s, win.L + 1 + i, win.T + 1 + *line, win.L + delim,
 			win.T + 1 + *line, ui.style[BOT_STYLE], v[0])
-		i_draw_text(ui.s, win.L + 15,    win.T + 1 + *line, win.R - 1,
+		i_draw_text(ui.s, win.L + delim + 1, win.T + 1 + *line, win.R,
 			win.T + 1 +  *line, ui.style[DEF_STYLE], v[1])
 		*line += 1
 	}

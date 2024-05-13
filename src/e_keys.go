@@ -835,7 +835,8 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	if event.Key() == tcell.KeyEscape ||
 	   event.Key() == tcell.KeyCtrlC ||
-	   event.Rune() == 'q' {
+	   event.Rune() == 'q' ||
+	   event.Rune() == '?' {
 		ui.mode = NORMAL_MODE
 		ui.help_scroll = 0
 		return true
