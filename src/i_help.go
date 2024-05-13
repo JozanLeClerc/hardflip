@@ -79,7 +79,6 @@ func i_draw_help(ui *HardUI) {
 		ui.s.SetContent(win.L, win.B - 1, '▼',
 			nil, ui.style[BOX_STYLE])
 	}
-	// TODO: here
 }
 
 func i_help_normal(ui HardUI, win Quad, line *int) bool {

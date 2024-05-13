@@ -82,6 +82,22 @@ func (litems *ItemsList) add_back(node *ItemsNode) {
 	litems.last = last.next
 }
 
+// adds an item node to the list after the current selected item
+func (litems *ItemsList) add_after(node *ItemsNode) {
+	if litems.head == nil || litems.curr == nil {
+		litems.add_back(node)
+		return
+	}
+	curr := litems.curr
+	node.prev = curr
+	node.next = curr.next
+	curr.next = node
+	if litems.last == curr {
+		litems.last = node
+	}
+	litems.curr = node
+}
+
 // removes an item node from the list and resets the ids
 func (litems *ItemsList) del(item *ItemsNode) {
     if litems.head == nil {
@@ -120,22 +136,6 @@ func (litems *ItemsList) del(item *ItemsNode) {
 	for ptr := ptr.next; ptr != nil; ptr = ptr.next {
 		ptr.ID -= 1
 	}
-}
-
-// sets litems.curr to be used
-func (litems *ItemsList) sel(id int) {
-	curr := litems.head
-
-	if curr == nil {
-		litems.curr = nil
-	}
-    for curr.next != nil && curr.ID != id {
-        curr = curr.next
-    }
-	if curr.ID != id {
-		litems.curr = nil
-	}
-	litems.curr = curr
 }
 
 func (item *ItemsNode) is_dir() bool {

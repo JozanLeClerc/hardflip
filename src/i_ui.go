@@ -445,7 +445,11 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
-		path = curr.path()
+		if curr.is_dir() == false {
+			path = curr.path()
+		} else {
+			path = curr.Dirs.Parent.path()
+		}
 	}
 	path = path[1:]
 	prompt := "Name: "

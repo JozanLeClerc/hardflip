@@ -242,10 +242,13 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if (event.Rune() == 'c' ||
 			   event.Rune() == 'C' ||
 			   event.Rune() == 'A') &&
-			  data.litems.curr != nil &&
-			  data.litems.curr.is_dir() == false {
+			  data.litems.curr != nil {
 		ui.mode = RENAME_MODE
-		ui.buff = data.litems.curr.Host.Name
+		if data.litems.curr.is_dir() == false {
+			ui.buff = data.litems.curr.Host.Name
+		} else {
+			ui.buff = data.litems.curr.Dirs.Name
+		}
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
 		ui.help_scroll = 0
@@ -821,6 +824,7 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		if err := e_rename(data, ui); err != nil {
 			ui.s.HideCursor()
 			ui.buff = ""
+			return true
 		}
 	} else {
 		e_readline(event, &ui.buff)

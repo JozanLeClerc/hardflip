@@ -318,22 +318,47 @@ func e_mkdir(data *HardData, ui *HardUI) {
 
 func e_rename(data *HardData, ui *HardUI) error {
 	tmp := data.litems.curr
+	name := ""
+	if tmp.is_dir() == false {
+		name = tmp.Host.Name
+	} else {
+		name = tmp.Dirs.Name
+	}
 
-	if len(ui.buff) == 0 || tmp == nil || tmp.is_dir() == true ||
-	   ui.buff == tmp.Host.Name {
+	if len(ui.buff) == 0 || tmp == nil || ui.buff == name {
 		return nil
 	}
-	new_host := e_deep_copy_host(data.litems.curr.Host)
-	new_host.Name = ui.buff
-	ui.insert_method = INSERT_MOVE
-	i_insert_host(data, &new_host)
-	data.litems.del(tmp)
-	file_path := data.data_dir + tmp.Host.parent.path() + tmp.Host.filename
-	if err := os.Remove(file_path); err != nil {
-		c_error_mode("can't remove " + file_path, err, &data.ui)
-		return err
+	if tmp.is_dir() == false {
+		new_host := e_deep_copy_host(data.litems.curr.Host)
+		new_host.Name = ui.buff
+		ui.insert_method = INSERT_MOVE
+		i_insert_host(data, &new_host)
+		data.litems.del(tmp)
+		file_path := data.data_dir + tmp.Host.parent.path() + tmp.Host.filename
+		if err := os.Remove(file_path); err != nil {
+			c_error_mode("can't remove " + file_path, err, &data.ui)
+			return err
+		}
+		return nil
+	} else {
+		old_path := data.data_dir + tmp.Dirs.path()
+		new_path := data.data_dir + tmp.Dirs.Parent.path() + data.ui.buff
+		if err := os.Rename(old_path, new_path); err != nil {
+			c_error_mode("can't rename " + old_path, err, &data.ui)
+			return err
+		}
+		path := tmp.Dirs.Parent.path()
+		e_reload_data(data)
+		for curr := data.litems.head; curr != nil; curr = curr.next {
+			if curr.is_dir() == true &&
+			   curr.Dirs.Name == ui.buff &&
+			   curr.Dirs.Parent.path() == path {
+				data.litems.curr = curr
+				return nil
+			}
+		}
+		return nil
 	}
-	return nil
 }
 
 func e_set_drive_keys(data *HardData) {
