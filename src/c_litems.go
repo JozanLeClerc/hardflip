@@ -92,6 +92,9 @@ func (litems *ItemsList) add_after(node *ItemsNode) {
 	node.prev = curr
 	node.next = curr.next
 	curr.next = node
+	if node.next != nil {
+		node.next.prev = node
+	}
 	if litems.last == curr {
 		litems.last = node
 	}
