@@ -71,7 +71,7 @@ type HardUI struct {
 	style [MAX_STYLE + 1]tcell.Style
 	dim   [2]int
 	err   [2]string
-	buff  string
+	buff  Buffer
 	drives_buff string
 	msg_buff string
 	insert_sel int
@@ -372,8 +372,9 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff)
-	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str)
+	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
+		len(ui.buff.str), ui.dim[H] - 1)
 }
 
 func i_prompt_list(ui HardUI, name, prompt string, list []string) {
@@ -400,8 +401,8 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 		return
 	}
 	style := ui.style[DEF_STYLE].Bold(true)
-	if len(home_dir) > 0 && len(ui.buff) > 0 {
-		file := ui.buff
+	if len(home_dir) > 0 && len(ui.buff.str) > 0 {
+		file := ui.buff.str
 		if file[0] == '~' {
 			file = home_dir + file[1:]
 		}
@@ -418,8 +419,8 @@ func i_prompt_generic(ui HardUI, prompt string, secret bool, home_dir string) {
 	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		style, ui.buff)
-	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
+		style, ui.buff.str)
+	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff.str), ui.dim[H] - 1)
 }
 
 func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
@@ -427,8 +428,8 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
 	style := ui.style[DEF_STYLE].Bold(true)
-	if len(home_dir) > 0 && len(ui.buff) > 0 {
-		file := ui.buff
+	if len(home_dir) > 0 && len(ui.buff.str) > 0 {
+		file := ui.buff.str
 		if file[0] == '~' {
 			file = home_dir + file[1:]
 		}
@@ -443,8 +444,8 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 	}
 	i_draw_text(ui.s, len(prompt) + 1,
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		style, ui.buff)
-	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff), ui.dim[H] - 1)
+		style, ui.buff.str)
+	ui.s.ShowCursor(len(prompt) + 1 + len(ui.buff.str), ui.dim[H] - 1)
 }
 
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
@@ -470,8 +471,9 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		ui.style[DEF_STYLE], path)
 	i_draw_text(ui.s, len(prompt) + 1 + len(path),
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff)
-	ui.s.ShowCursor(len(prompt) + 1 + len(path) + len(ui.buff), ui.dim[H] - 1)
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str)
+	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
+		len(ui.buff.str), ui.dim[H] - 1)
 }
 
 func i_draw_remove_share(ui HardUI) {
