@@ -319,9 +319,10 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 	} else if event.Key() == tcell.KeyRight ||
 			  event.Key() == tcell.KeyCtrlF {
 		buffer.cursor += 1
-	} else if event.Key() == tcell.KeyTAB ||
+	} else if event.Key() == tcell.KeyTab ||
 			  event.Key() == tcell.KeyCtrlI {
 		buffer.insert("hey go fuck yourself")
+		// TODO: here
 	}
 	if buffer.cursor > buffer.len() {
 		buffer.cursor = buffer.len()
