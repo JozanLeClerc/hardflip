@@ -445,10 +445,14 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 	path := "/"
 	if curr != nil {
-		if curr.is_dir() == false {
-			path = curr.path()
+		if ui.mode == RENAME_MODE {
+			if curr.is_dir() == false {
+				path = curr.path()
+			} else {
+				path = curr.Dirs.Parent.path()
+			}
 		} else {
-			path = curr.Dirs.Parent.path()
+			path = curr.path()
 		}
 	}
 	path = path[1:]
