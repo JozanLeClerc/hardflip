@@ -279,9 +279,9 @@ func e_delete_host(data *HardData) error {
 }
 
 func e_readline(event tcell.EventKey, buffer *Buffer) {
-	if len(buffer.data) > 0 &&
-	(event.Key() == tcell.KeyBackspace ||
-	event.Key() == tcell.KeyBackspace2) {
+	if buffer.len() > 0 &&
+	   (event.Key() == tcell.KeyBackspace ||
+	   event.Key() == tcell.KeyBackspace2) {
 		if buffer.cursor == 0 {
 			return
 		} else if buffer.cursor == buffer.len() {
@@ -291,6 +291,14 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 				buffer.data[buffer.cursor:]...)
 		}
 		buffer.cursor -= 1
+	} else if event.Key() == tcell.KeyDelete ||
+			  event.Key() == tcell.KeyCtrlD {
+		if buffer.cursor == buffer.len() {
+			return
+		} else {
+			buffer.data = append(buffer.data[:buffer.cursor],
+				buffer.data[buffer.cursor + 1:]...)
+		}
 	} else if event.Key() == tcell.KeyCtrlU {
 		buffer.empty()
 	} else if event.Rune() >= 32 && event.Rune() <= 126 {
@@ -311,6 +319,9 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 	} else if event.Key() == tcell.KeyRight ||
 			  event.Key() == tcell.KeyCtrlF {
 		buffer.cursor += 1
+	} else if event.Key() == tcell.KeyTAB ||
+			  event.Key() == tcell.KeyCtrlI {
+		buffer.insert("hey go fuck yourself")
 	}
 	if buffer.cursor > buffer.len() {
 		buffer.cursor = buffer.len()
