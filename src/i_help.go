@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_help.go
- * Fri May 10 15:40:13 2024
+ * Tue May 14 09:38:04 2024
  * Joe
  *
  * helping the user
@@ -85,7 +85,7 @@ func i_draw_help(ui *HardUI) {
 }
 
 func i_help_normal(ui HardUI, win Quad, line *int) bool {
-	delim := 17
+	delim := 22
 	for _, v := range HELP_NORMAL_KEYS {
 		if *line < 0 {
 			*line += 1

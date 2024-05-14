@@ -56,7 +56,7 @@ const (
 	CONF_DIR_NAME  = "hf"
 	DATA_DIR_NAME  = "hf"
 	VERSION        = "v0.6"
-	VERSION_NAME   = ""
+	VERSION_NAME   = "pre-release"
 )
 
 const (
