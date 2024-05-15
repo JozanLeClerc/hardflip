@@ -279,10 +279,11 @@ func e_delete_host(data *HardData) error {
 	return nil
 }
 
-func e_tab_complete_get_current_dir(str, home_dir string) string {
+func e_tab_complete_get_current_dir(str, home_dir string) (string, string) {
 	dir := "./"
+	file := ""
 	if len(str) == 0 {
-		return "./"
+		return dir, file
 	} else if str[0] == '~' {
 		dir = home_dir + str[1:]
 	} else {
@@ -292,28 +293,28 @@ func e_tab_complete_get_current_dir(str, home_dir string) string {
 		if dir[i] == '/' {
 			break
 		}
+		file += string(dir[i])
 		dir = dir[:i]
 	}
+	// TODO: file is reversed oh no
 	if stat, err := os.Stat(dir);
 	   err == nil && dir[len(dir) - 1] == '/' && stat.IsDir() == true {
-		return dir
+		return dir, file
 	}
-	return "./"
+	return "./", file
 }
 
 func e_tab_complete(buffer *Buffer, home_dir string) {
-	dir := e_tab_complete_get_current_dir(buffer.str(), home_dir)
-	log.Println("cwd:", dir)
+	dir, file := e_tab_complete_get_current_dir(buffer.str(), home_dir)
+	log.Println("cwd:", dir, "file:", file)
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return
 	}
 	var match []string
 	for _, v := range entries {
-		log.Println("entry:", v.Name())
-		// TODO: its all here
-		if len(v.Name()) >= buffer.len() - len(dir) &&
-		   v.Name()[:buffer.len()] == buffer.str() {
+		if len(v.Name()) >= len(file) &&
+		   v.Name()[:len(file)] == file {
 			match = append(match, v.Name())
 		}
 	}
@@ -321,7 +322,7 @@ func e_tab_complete(buffer *Buffer, home_dir string) {
 	if len(match) == 0 {
 		return
 	} else if len(match) == 1 {
-		buffer.insert(match[0])
+		buffer.insert(dir + match[0])
 		if stat, err := os.Stat(match[0]); err == nil && stat.IsDir() == true {
 			buffer.insert(match[0] + "/")
 		}
