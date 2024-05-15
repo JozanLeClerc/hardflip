@@ -279,23 +279,52 @@ func e_delete_host(data *HardData) error {
 	return nil
 }
 
-func e_tab_complete(buffer *Buffer) {
-	entries, err := os.ReadDir(".")
+func e_tab_complete_get_current_dir(str, home_dir string) string {
+	dir := "./"
+	if len(str) == 0 {
+		return "./"
+	} else if str[0] == '~' {
+		dir = home_dir + str[1:]
+	} else {
+		dir = str
+	}
+	for i := len(dir) - 1; i >= 0; i-- {
+		if dir[i] == '/' {
+			break
+		}
+		dir = dir[:i]
+	}
+	if stat, err := os.Stat(dir);
+	   err == nil && dir[len(dir) - 1] == '/' && stat.IsDir() == true {
+		return dir
+	}
+	return "./"
+}
+
+func e_tab_complete(buffer *Buffer, home_dir string) {
+	dir := e_tab_complete_get_current_dir(buffer.str(), home_dir)
+	log.Println("cwd:", dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return
 	}
 	var match []string
 	for _, v := range entries {
-		if len(v.Name()) >= buffer.len() &&
+		log.Println("entry:", v.Name())
+		// TODO: its all here
+		if len(v.Name()) >= buffer.len() - len(dir) &&
 		   v.Name()[:buffer.len()] == buffer.str() {
 			match = append(match, v.Name())
 		}
 	}
-	log.Println(match)
+	log.Println("match:", match)
 	if len(match) == 0 {
 		return
 	} else if len(match) == 1 {
 		buffer.insert(match[0])
+		if stat, err := os.Stat(match[0]); err == nil && stat.IsDir() == true {
+			buffer.insert(match[0] + "/")
+		}
 	} else {
 		var common []rune
 		var shortest int = 1000000000
@@ -324,7 +353,7 @@ func e_tab_complete(buffer *Buffer) {
 	}
 }
 
-func e_readline(event tcell.EventKey, buffer *Buffer) {
+func e_readline(event tcell.EventKey, buffer *Buffer, home_dir string) {
 	if buffer.len() > 0 &&
 	   (event.Key() == tcell.KeyBackspace ||
 	   event.Key() == tcell.KeyBackspace2) {
@@ -367,7 +396,7 @@ func e_readline(event tcell.EventKey, buffer *Buffer) {
 		buffer.cursor += 1
 	} else if event.Key() == tcell.KeyTab ||
 			  event.Key() == tcell.KeyCtrlI {
-		e_tab_complete(buffer)
+		e_tab_complete(buffer, home_dir)
 	}
 	if buffer.cursor > buffer.len() {
 		buffer.cursor = buffer.len()

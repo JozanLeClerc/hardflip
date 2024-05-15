@@ -325,7 +325,7 @@ func e_mkdir_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.mode = NORMAL_MODE
 		ui.buff.empty()
 	} else {
-		e_readline(event, &ui.buff)
+		e_readline(event, &ui.buff, data.home_dir)
 	}
 	return false
 }
@@ -360,7 +360,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				data.insert.parent = data.ldirs.head
 			}
 		} else {
-			e_readline(event, &ui.buff)
+			e_readline(event, &ui.buff, data.home_dir)
 		}
 	} else if data.insert != nil {
 		if data.insert_err != nil {
@@ -655,7 +655,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						ui.drives_buff = ui.buff.str()
 						ui.buff.empty()
 					} else {
-						e_readline(event, &ui.buff)
+						e_readline(event, &ui.buff, data.home_dir)
 					}
 				} else {
 					if event.Key() == tcell.KeyEnter {
@@ -676,7 +676,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						ui.buff.empty()
 						ui.s.HideCursor()
 					} else {
-						e_readline(event, &ui.buff)
+						e_readline(event, &ui.buff, data.home_dir)
 					}
 				}
 			case INS_SSH_HOST,
@@ -807,7 +807,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 					ui.buff.empty()
 					ui.s.HideCursor()
 				} else {
-					e_readline(event, &ui.buff)
+					e_readline(event, &ui.buff, data.home_dir)
 				}
 			}
 		}
@@ -826,7 +826,7 @@ func e_rename_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			return true
 		}
 	} else {
-		e_readline(event, &ui.buff)
+		e_readline(event, &ui.buff, data.home_dir)
 		return true
 	}
 	ui.s.HideCursor()
