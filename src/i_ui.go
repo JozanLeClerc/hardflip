@@ -53,6 +53,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -74,6 +75,7 @@ type HardUI struct {
 	buff  Buffer
 	drives_buff string
 	msg_buff string
+	match_buff string
 	insert_sel int
 	insert_sel_max int
 	insert_sel_ok bool
@@ -613,6 +615,13 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 	}
 }
 
+func i_draw_match_buff(ui HardUI) {
+	log.Println("match_buff", ui.match_buff)
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, "")
+	i_draw_text(ui.s, 2, ui.dim[H] - 2 - 1, ui.dim[W] - 2, ui.dim[H] - 2 - 1,
+				ui.style[DEF_STYLE], ui.match_buff)
+}
+
 var g_load_count int = -1
 
 func i_draw_load_ui(ui *HardUI, opts HardOpts) {
@@ -791,6 +800,10 @@ func i_ui(data_dir string) {
 			i_prompt_insert(data.ui, data.litems.curr)
 		case HELP_MODE:
 			i_draw_help(&data.ui)
+		}
+		if len(data.ui.match_buff) > 0 {
+			i_draw_match_buff(data.ui)
+			data.ui.match_buff = ""
 		}
 		data.ui.s.Show()
 		e_events(&data, fp)

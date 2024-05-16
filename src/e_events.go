@@ -306,7 +306,7 @@ func e_tab_complete_get_current_dir(str, home_dir string) (string, string) {
 	return "./", file
 }
 
-func e_tab_complete(buffer *Buffer, home_dir string) {
+func e_tab_complete(buffer *Buffer, ui *HardUI, home_dir string) {
 	dir, file := e_tab_complete_get_current_dir(buffer.str(), home_dir)
 	log.Println("cwd:", dir, "file:", file)
 	entries, err := os.ReadDir(dir)
@@ -314,12 +314,19 @@ func e_tab_complete(buffer *Buffer, home_dir string) {
 		return
 	}
 	var match []string
+	var match_sum string
 	for _, v := range entries {
 		if len(v.Name()) >= len(file) &&
 		   v.Name()[:len(file)] == file {
 			match = append(match, v.Name())
+			match_sum += v.Name()
+			if v.IsDir() == true {
+				match_sum += "/"
+			}
+			match_sum += " "
 		}
 	}
+	ui.match_buff = match_sum
 	log.Println("match:", match)
 	if len(match) == 0 {
 		return
@@ -357,7 +364,8 @@ func e_tab_complete(buffer *Buffer, home_dir string) {
 	}
 }
 
-func e_readline(event tcell.EventKey, buffer *Buffer, home_dir string) {
+func e_readline(event tcell.EventKey, buffer *Buffer,
+				ui *HardUI, home_dir string) {
 	if buffer.len() > 0 &&
 	   (event.Key() == tcell.KeyBackspace ||
 	   event.Key() == tcell.KeyBackspace2) {
@@ -400,7 +408,7 @@ func e_readline(event tcell.EventKey, buffer *Buffer, home_dir string) {
 		buffer.cursor += 1
 	} else if event.Key() == tcell.KeyTab ||
 			  event.Key() == tcell.KeyCtrlI {
-		e_tab_complete(buffer, home_dir)
+		e_tab_complete(buffer, ui, home_dir)
 	}
 	if buffer.cursor > buffer.len() {
 		buffer.cursor = buffer.len()
