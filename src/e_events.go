@@ -183,6 +183,12 @@ func e_reload_data(data *HardData) {
 	} else {
 		data.opts = c_get_options(conf_dir, &data.load_err)
 	}
+	if conf_dir == "" {
+		data.colors = DEFAULT_STYLE
+	} else {
+		data.colors = c_get_styles(conf_dir, &data.load_err)
+	}
+	i_init_styles(&data.ui, data.colors)
 	data.data_dir = c_get_data_dir(&data.ui)
 	if len(data.data_dir) == 0 {
 		return

@@ -70,6 +70,18 @@ func c_parse_opts(file string) (HardOpts, error) {
 	return opts, err
 }
 
+func c_parse_styles(file string) (HardStyle, error) {
+	var styles HardStyle
+
+	yaml_file, err := os.ReadFile(file)
+	if err != nil {
+		return styles, err
+	}
+	err = yaml.Unmarshal(yaml_file, &styles)
+	return styles, err
+}
+
+
 func c_read_yaml_file(file string) (*HostNode, error) {
 	var host HostNode
 	yaml_file, err := os.ReadFile(file)

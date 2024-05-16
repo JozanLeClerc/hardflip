@@ -756,34 +756,6 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 			ui.style[i] = tmp.Foreground(tcell.ColorReset)
 		}
 	}
-
-	// ui.style[DEF_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorReset)
-	// ui.style[DIR_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	// ui.style[BOX_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorReset)
-	// ui.style[HEAD_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorReset)
-	// ui.style[ERR_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorRed).Dim(true)
-	// ui.style[TITLE_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	// ui.style[BOT_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorBlue).Dim(true)
-	// ui.style[YANK_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorYellow).Dim(true).Bold(true)
-	// ui.style[MOVE_STYLE] = tcell.StyleDefault.
-	// 	Background(tcell.ColorReset).
-	// 	Foreground(tcell.ColorRed).Dim(true).Bold(true)
 }
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool

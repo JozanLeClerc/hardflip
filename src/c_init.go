@@ -166,6 +166,18 @@ func c_write_options(file string, opts HardOpts, load_err *[]error) {
 	}
 }
 
+func c_write_styles(file string, opts HardStyle, load_err *[]error) {
+	data, err := yaml.Marshal(opts)
+	if err != nil {
+		*load_err = append(*load_err, err)
+		return
+	}
+	err = os.WriteFile(file, data, 0644)
+	if err != nil {
+		*load_err = append(*load_err, err)
+	}
+}
+
 func c_get_options(dir string, load_err *[]error) HardOpts {
 	opts := HardOpts{}
 	file := dir + "/" + CONF_FILE_NAME
@@ -184,6 +196,17 @@ func c_get_options(dir string, load_err *[]error) HardOpts {
 }
 
 func c_get_styles(dir string, load_err *[]error) HardStyle {
-	// TODO: here
-	return DEFAULT_STYLE
+	styles := HardStyle{}
+	file := dir + "/" + STYLE_FILE_NAME
+
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		c_write_styles(file, DEFAULT_STYLE, load_err)
+		return DEFAULT_STYLE
+	}
+	styles, err := c_parse_styles(file)
+	if err != nil {
+		*load_err = append(*load_err, err)
+		return DEFAULT_STYLE
+	}
+	return styles
 }

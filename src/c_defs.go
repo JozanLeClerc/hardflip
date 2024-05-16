@@ -53,6 +53,7 @@ package main
 
 const (
 	CONF_FILE_NAME = "config.yml"
+	STYLE_FILE_NAME = "colors.yml"
 	CONF_DIR_NAME  = "hf"
 	DATA_DIR_NAME  = "hf"
 	VERSION        = "v0.7"
