@@ -229,8 +229,6 @@ func i_draw_bottom_text(ui HardUI, insert *HostNode, insert_err []error) {
 				text = ""
 			} else if insert_err != nil {
 				text = ERROR_KEYS_HINTS
-			} else {
-				text = INSERT_KEYS_HINTS
 			}
 		case HELP_MODE:
 			text = HELP_KEYS_HINTS

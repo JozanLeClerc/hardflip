@@ -53,7 +53,6 @@ package main
 
 import (
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -538,7 +537,7 @@ func i_draw_insert_ssh(ui *HardUI, line int, win Quad,
 	}
 	red = false
 	if line += 2; win.T + line >= win.B { return line }
-	i_draw_text_box(ui, win.T + line, win, "Command (optional)", in.Exec,
+	i_draw_text_box(ui, win.T + line, win, "Command", in.Exec,
 		INS_SSH_EXEC, false, false)
 	if line += 2; win.T + line >= win.B { return line }
 	text = "---- Jump settings ----"

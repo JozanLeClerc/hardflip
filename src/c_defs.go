@@ -66,7 +66,6 @@ m: mkdir -
 ?: help`
 	ERROR_KEYS_HINTS = "[Enter]: ok"
 	CONFIRM_KEYS_HINTS = `y/n: yes - no`
-	INSERT_KEYS_HINTS = ``
 	HELP_KEYS_HINTS = `q: close -
 j: down -
 k: up`
@@ -175,6 +174,7 @@ const (
 	INS_OS_VOLAPI
 	INS_OS_NOTE
 	INS_OS_OK
+	INS_MAX = INS_OS_OK
 )
 
 const (
@@ -182,6 +182,21 @@ const (
 	INSERT_COPY
 	INSERT_MOVE
 	INSERT_EDIT
+)
+
+var (
+	INSERT_HINTS = [INS_MAX]string{
+		"Select the protocol used to connect to your host",
+		"IP or domain name of your host",
+		"Port used for SSH (default: 22)",
+		"User used to log in (default: root)",
+		"Password for your user",
+		"SSH private key used to log in instead of a password",
+		"Optional shell command line that will be run on your host",
+		"IP or domain name of your jump host",
+		"Port used for your jump SSH host (default: 22)",
+		// TODO: fuck this anyway
+	}
 )
 
 var (
