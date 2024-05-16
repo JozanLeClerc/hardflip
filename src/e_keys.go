@@ -763,8 +763,10 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 						data.insert.Jump.Host = ui.buff.str()
 						if len(ui.buff.str()) > 0 {
 							data.insert.Jump.Port = 22
+							data.insert.Jump.Priv = data.opts.DefSSH
 						} else {
 							data.insert.Jump.Port = 0
+							data.insert.Jump.Priv = ""
 						}
 					case INS_SSH_JUMP_PORT,
 						 INS_RDP_JUMP_PORT + len(data.insert.Drive):
