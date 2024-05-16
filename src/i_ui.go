@@ -68,7 +68,7 @@ type Buffer struct {
 type HardUI struct {
 	s     tcell.Screen
 	mode  uint8
-	style [MAX_STYLE + 1]tcell.Style
+	style [STYLE_MAX + 1]tcell.Style
 	dim   [2]int
 	err   [2]string
 	buff  Buffer
@@ -691,34 +691,99 @@ func i_load_ui(data_dir string,
 	return ldirs, litems, *load_err
 }
 
-func i_init_styles(ui *HardUI) {
-	ui.style[DEF_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorReset)
-	ui.style[DIR_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[BOX_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorReset)
-	ui.style[HEAD_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorReset)
-	ui.style[ERR_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorRed).Dim(true)
-	ui.style[TITLE_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorBlue).Dim(true).Bold(true)
-	ui.style[BOT_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorBlue).Dim(true)
-	ui.style[YANK_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorYellow).Dim(true).Bold(true)
-	ui.style[MOVE_STYLE] = tcell.StyleDefault.
-		Background(tcell.ColorReset).
-		Foreground(tcell.ColorRed).Dim(true).Bold(true)
+func i_init_styles(ui *HardUI, styles HardStyle) {
+	for i := 0; i < STYLE_MAX + 1; i++ {
+		tmp := tcell.StyleDefault.Background(tcell.ColorReset)
+		curr_color := "default"
+		switch i {
+		case DEF_STYLE:
+			curr_color = styles.DefColor
+		case DIR_STYLE:
+			curr_color = styles.DirColor
+		case BOX_STYLE:
+			curr_color = styles.BoxColor
+		case HEAD_STYLE:
+			curr_color = styles.HeadColor
+		case ERR_STYLE:
+			curr_color = styles.ErrColor
+		case TITLE_STYLE:
+			curr_color = styles.TitleColor
+		case BOT_STYLE:
+			curr_color = styles.BotColor
+		case YANK_STYLE:
+			curr_color = styles.YankColor
+		case MOVE_STYLE:
+			curr_color = styles.MoveColor
+		default:
+			curr_color = "default"
+		}
+		switch curr_color {
+		case COLORS[COLOR_DEFAULT]:
+			ui.style[i] = tmp.Foreground(tcell.ColorReset)
+		case COLORS[COLOR_BLACK]:
+			ui.style[i] = tmp.Foreground(tcell.ColorBlack).Dim(true)
+		case COLORS[COLOR_RED]:
+			ui.style[i] = tmp.Foreground(tcell.ColorRed).Dim(true)
+		case COLORS[COLOR_GREEN]:
+			ui.style[i] = tmp.Foreground(tcell.ColorGreen)
+		case COLORS[COLOR_YELLOW]:
+			ui.style[i] = tmp.Foreground(tcell.ColorYellow).Dim(true)
+		case COLORS[COLOR_BLUE]:
+			ui.style[i] = tmp.Foreground(tcell.ColorBlue).Dim(true)
+		case COLORS[COLOR_MAGENTA]:
+			ui.style[i] = tmp.Foreground(tcell.ColorPurple).Dim(true)
+		case COLORS[COLOR_CYAN]:
+			ui.style[i] = tmp.Foreground(tcell.ColorTeal)
+		case COLORS[COLOR_WHITE]:
+			ui.style[i] = tmp.Foreground(tcell.ColorWhite).Dim(true)
+		case COLORS[COLOR_BOLD_BLACK]:
+			ui.style[i] = tmp.Foreground(tcell.ColorBlack).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_RED]:
+			ui.style[i] = tmp.Foreground(tcell.ColorRed).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_GREEN]:
+			ui.style[i] = tmp.Foreground(tcell.ColorGreen).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_YELLOW]:
+			ui.style[i] = tmp.Foreground(tcell.ColorYellow).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_BLUE]:
+			ui.style[i] = tmp.Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_MAGENTA]:
+			ui.style[i] = tmp.Foreground(tcell.ColorPurple).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_CYAN]:
+			ui.style[i] = tmp.Foreground(tcell.ColorTeal).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_WHITE]:
+			ui.style[i] = tmp.Foreground(tcell.ColorWhite).Dim(true).Bold(true)
+		default:
+			ui.style[i] = tmp.Foreground(tcell.ColorReset)
+		}
+	}
+
+	// ui.style[DEF_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorReset)
+	// ui.style[DIR_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	// ui.style[BOX_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorReset)
+	// ui.style[HEAD_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorReset)
+	// ui.style[ERR_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorRed).Dim(true)
+	// ui.style[TITLE_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorBlue).Dim(true).Bold(true)
+	// ui.style[BOT_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorBlue).Dim(true)
+	// ui.style[YANK_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorYellow).Dim(true).Bold(true)
+	// ui.style[MOVE_STYLE] = tcell.StyleDefault.
+	// 	Background(tcell.ColorReset).
+	// 	Foreground(tcell.ColorRed).Dim(true).Bold(true)
 }
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
@@ -736,8 +801,6 @@ func i_ui(data_dir string) {
 	if err := ui.s.Init(); err != nil {
 		c_die("view", err)
 	}
-	i_init_styles(&ui)
-	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
 	var load_err []error
 	conf_dir  := c_get_conf_dir(&load_err)
@@ -746,12 +809,16 @@ func i_ui(data_dir string) {
 	} else {
 		opts = c_get_options(conf_dir, &load_err)
 	}
+	styles := c_get_styles(conf_dir, &load_err)
+	i_init_styles(&ui, styles)
+	ui.s.SetStyle(ui.style[DEF_STYLE])
 	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui, &load_err)
 	data := HardData{
 		litems,
 		ldirs,
 		ui,
 		opts,
+		styles,
 		make(map[*DirsNode]*ItemsList),
 		data_dir,
 		home_dir,

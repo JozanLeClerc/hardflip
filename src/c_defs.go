@@ -110,7 +110,7 @@ const (
 	BOT_STYLE
 	YANK_STYLE
 	MOVE_STYLE
-	MAX_STYLE = MOVE_STYLE
+	STYLE_MAX = MOVE_STYLE
 )
 
 const (
@@ -184,8 +184,7 @@ const (
 	INSERT_EDIT
 )
 
-var (
-	INSERT_HINTS = [INS_MAX]string{
+var INSERT_HINTS = [INS_MAX]string{
 		"Select the protocol used to connect to your host",
 		"IP or domain name of your host",
 		"Port used for SSH (default: 22)",
@@ -195,12 +194,10 @@ var (
 		"Optional shell command line that will be run on your host",
 		"IP or domain name of your jump host",
 		"Port used for your jump SSH host (default: 22)",
-		// TODO: fuck this anyway
+		// NOTE: fuck this anyway
 	}
-)
 
-var (
-	HELP_NORMAL_KEYS = [][2]string{
+var HELP_NORMAL_KEYS = [][2]string{
 	{"<down> | j",				"Go to next item"},
 	{"<up> | k",				"Go to previous item"},
 	{"<pgdown> | <c-d>",		"Jump down"},
@@ -224,8 +221,7 @@ var (
 	{"<c-r>",					"Reload data and configuration"},
 	{"?",						"Display this help menu"},
 	{"<c-c> | q",				"Quit"},
-	}
-)
+}
 
 var (
 	HOST_ICONS = [4]string{" ", " ", " ", " "}
@@ -258,3 +254,55 @@ var DEFAULT_OPTS = HardOpts{
 	"",
 }
 
+var DEFAULT_STYLE = HardStyle{
+	DefColor:	COLORS[COLOR_DEFAULT],
+	DirColor:	COLORS[COLOR_BOLD_BLUE],
+	BoxColor:	COLORS[COLOR_DEFAULT],
+	HeadColor:	COLORS[COLOR_DEFAULT],
+	ErrColor:	COLORS[COLOR_RED],
+	TitleColor:	COLORS[COLOR_BOLD_BLUE],
+	BotColor:	COLORS[COLOR_BLUE],
+	YankColor:	COLORS[COLOR_BOLD_YELLOW],
+	MoveColor:	COLORS[COLOR_BOLD_RED],
+}
+
+const (
+	COLOR_DEFAULT = iota
+    COLOR_BLACK
+    COLOR_RED
+    COLOR_GREEN
+    COLOR_YELLOW
+    COLOR_BLUE
+    COLOR_MAGENTA
+    COLOR_CYAN
+    COLOR_WHITE
+    COLOR_BOLD_BLACK
+    COLOR_BOLD_RED
+    COLOR_BOLD_GREEN
+    COLOR_BOLD_YELLOW
+    COLOR_BOLD_BLUE
+    COLOR_BOLD_MAGENTA
+    COLOR_BOLD_CYAN
+    COLOR_BOLD_WHITE
+	COLORS_MAX = COLOR_BOLD_WHITE
+)
+
+var COLORS = [COLORS_MAX + 1]string{
+	"default",
+	"black",
+	"red",
+	"green",
+	"yellow",
+	"blue",
+	"magenta",
+	"cyan",
+	"white",
+	"boldblack",
+	"boldred",
+	"boldgreen",
+	"boldyellow",
+	"boldblue",
+	"boldmagenta",
+	"boldcyan",
+	"boldwhite",
+}

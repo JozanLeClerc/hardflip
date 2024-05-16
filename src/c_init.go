@@ -68,6 +68,18 @@ type HardOpts struct {
 	file    string
 }
 
+type HardStyle struct {
+	DefColor	string `yaml:"default"`
+	DirColor	string `yaml:"dir_color"`
+	BoxColor	string `yaml:"box_color"`
+	HeadColor	string `yaml:"head_color"`
+	ErrColor	string `yaml:"error_color"`
+	TitleColor	string `yaml:"title_color"`
+	BotColor	string `yaml:"bottom_color"`
+	YankColor	string `yaml:"yank_color"`
+	MoveColor	string `yaml:"move_color"`
+}
+
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
@@ -171,3 +183,7 @@ func c_get_options(dir string, load_err *[]error) HardOpts {
 	return opts
 }
 
+func c_get_styles(dir string, load_err *[]error) HardStyle {
+	// TODO: here
+	return DEFAULT_STYLE
+}
