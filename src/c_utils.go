@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_utils.go
- * Mon Jan 29 08:56:55 2024
+ * Thu May 16 09:48:25 2024
  * Joe
  *
  * core funcs
@@ -219,4 +219,16 @@ func c_get_secret_gpg_keyring() [][2]string {
 	}
 	keys = append(keys, [2]string{"plain", ""})
 	return keys
+}
+
+// reverses a string
+// can be useful somehow
+// found here really thanks yazu:
+// https://stackoverflow.com/questions/1752414/how-to-reverse-a-string-in-go
+func c_reverse_string(str string) string {
+    runes := []rune(str)
+    for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
+        runes[i], runes[j] = runes[j], runes[i]
+    }
+    return string(runes)
 }

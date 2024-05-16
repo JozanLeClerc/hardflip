@@ -284,6 +284,8 @@ func e_tab_complete_get_current_dir(str, home_dir string) (string, string) {
 	file := ""
 	if len(str) == 0 {
 		return dir, file
+	} else if len(str) >= 2 && str[0] == '~' && str[1] == '/' {
+		dir = home_dir + str[1:]
 	} else if str[0] == '~' {
 		dir = home_dir + str[1:]
 	} else {
@@ -296,7 +298,7 @@ func e_tab_complete_get_current_dir(str, home_dir string) (string, string) {
 		file += string(dir[i])
 		dir = dir[:i]
 	}
-	// TODO: file is reversed oh no
+	file = c_reverse_string(file)
 	if stat, err := os.Stat(dir);
 	   err == nil && dir[len(dir) - 1] == '/' && stat.IsDir() == true {
 		return dir, file
@@ -323,8 +325,9 @@ func e_tab_complete(buffer *Buffer, home_dir string) {
 		return
 	} else if len(match) == 1 {
 		buffer.insert(dir + match[0])
-		if stat, err := os.Stat(match[0]); err == nil && stat.IsDir() == true {
-			buffer.insert(match[0] + "/")
+		if stat, err := os.Stat(dir + match[0]); err == nil &&
+		   stat.IsDir() == true {
+			buffer.insert(dir + match[0] + "/")
 		}
 	} else {
 		var common []rune
@@ -350,7 +353,7 @@ func e_tab_complete(buffer *Buffer, home_dir string) {
 		if len(common) == 0 {
 			return
 		}
-		buffer.insert(string(common))
+		buffer.insert(dir + string(common))
 	}
 }
 
