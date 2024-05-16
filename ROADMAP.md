@@ -42,7 +42,7 @@
 - [x] scroll insert
 - [x] help
 - [x] rename dirs
-- [ ] better readline
+- [x] better readline
 
 ## v0.8
 

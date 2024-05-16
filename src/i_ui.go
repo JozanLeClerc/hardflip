@@ -53,7 +53,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -616,7 +615,6 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 }
 
 func i_draw_match_buff(ui HardUI) {
-	log.Println("match_buff", ui.match_buff)
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, "")
 	i_draw_text(ui.s, 2, ui.dim[H] - 2 - 1, ui.dim[W] - 2, ui.dim[H] - 2 - 1,
 				ui.style[DEF_STYLE], ui.match_buff)

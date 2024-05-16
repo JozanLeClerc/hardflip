@@ -52,7 +52,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -308,7 +307,6 @@ func e_tab_complete_get_current_dir(str, home_dir string) (string, string) {
 
 func e_tab_complete(buffer *Buffer, ui *HardUI, home_dir string) {
 	dir, file := e_tab_complete_get_current_dir(buffer.str(), home_dir)
-	log.Println("cwd:", dir, "file:", file)
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return
@@ -327,7 +325,6 @@ func e_tab_complete(buffer *Buffer, ui *HardUI, home_dir string) {
 		}
 	}
 	ui.match_buff = match_sum
-	log.Println("match:", match)
 	if len(match) == 0 {
 		return
 	} else if len(match) == 1 {
