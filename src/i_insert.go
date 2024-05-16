@@ -53,6 +53,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -472,9 +473,8 @@ func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
 		" Insert - " + in.Name + " ", true)
 	line := i_insert_follow_cursor(ui.insert_scroll, 2)
-	if line + 2 < win.T {
+	if line <= 0 {
 		ui.s.SetContent(ui.dim[W] / 2, win.T, '▲', nil, ui.style[BOX_STYLE])
-		// FIX: shows in fullscreen for some reason
 	}
 	if win.T + line >= win.B { return }
 	i_draw_text_box(ui, win.T + line, win,
