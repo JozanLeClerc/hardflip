@@ -510,6 +510,8 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 	switch in.Protocol {
 	case PROTOCOL_SSH:
 		in.Port = 22
+		in.Priv = data.opts.DefSSH
+		in.Jump.Priv = data.opts.DefSSH
 	case PROTOCOL_RDP:
 		in.Port = 3389
 		in.Quality = 2
@@ -517,6 +519,7 @@ func e_set_protocol_defaults(data *HardData, in *HostNode) {
 		in.Height = 1200
 		in.Dynamic = true
 		in.drive_keys = nil
+		in.Jump.Priv = data.opts.DefSSH
 	case PROTOCOL_CMD:
 		in.Silent = false
 		in.Shell = []string{"/bin/sh", "-c"}
