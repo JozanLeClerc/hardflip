@@ -797,9 +797,6 @@ func i_ui(data_dir string) {
 				i_prompt_confirm_gpg(data.ui, data.opts)
 			case WELCOME_SSH:
 				i_prompt_def_sshkey(data.ui, data.home_dir)
-			default:
-				c_write_options(data.opts.file, data.opts, &data.load_err)
-				data.ui.mode = NORMAL_MODE
 			}
 		case NORMAL_MODE:
 			if data.litems.head == nil {

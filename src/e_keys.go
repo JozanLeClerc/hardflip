@@ -316,11 +316,11 @@ func e_welcome_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.welcome_screen += 1
 			ui.s.HideCursor()
 			ui.buff.empty()
+			c_write_options(data.opts.file, data.opts, &data.load_err)
+			data.ui.mode = NORMAL_MODE
 		} else {
 			e_readline(event, &ui.buff, ui, data.home_dir)
 		}
-	case WELCOME_END:
-		return false
 	}
 	return false
 }

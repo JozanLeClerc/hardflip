@@ -89,7 +89,6 @@ const (
 	WELCOME_GPG = iota
 	WELCOME_CONFIRM_GPG
 	WELCOME_SSH
-	WELCOME_END
 )
 
 const (
