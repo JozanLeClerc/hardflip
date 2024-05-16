@@ -86,6 +86,13 @@ const (
 )
 
 const (
+	WELCOME_GPG = iota
+	WELCOME_CONFIRM_GPG
+	WELCOME_SSH
+	WELCOME_END
+)
+
+const (
 	W = 0
 	H = 1
 )
@@ -232,6 +239,7 @@ var DEFAULT_OPTS = HardOpts{
 	true,
 	"",
 	false,
+	"",
 	"",
 	"",
 }

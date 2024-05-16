@@ -294,20 +294,33 @@ func e_welcome_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.s.Fini()
 		os.Exit(0)
 	}
-	if len(data.opts.GPG) == 0 {
+	switch ui.welcome_screen {
+	case WELCOME_GPG:
 		if event.Rune() < '1' || event.Rune() > '9' {
 			return true
 		} else {
 			data.opts.GPG = data.keys[event.Rune() - 48 - 1][0]
 			ui.s.HideCursor()
+			ui.welcome_screen += 1
 		}
-	} else {
+	case WELCOME_CONFIRM_GPG:
 		if event.Rune() == 'y' {
-			ui.mode = NORMAL_MODE
-			c_write_options(data.opts.file, data.opts, &data.load_err)
+			ui.welcome_screen += 1
 		} else if event.Rune() == 'n' {
 			data.opts.GPG = ""
+			ui.welcome_screen -= 1
 		}
+	case WELCOME_SSH:
+		if event.Key() == tcell.KeyEnter {
+			data.opts.DefSSH = ui.buff.str()
+			ui.welcome_screen += 1
+			ui.s.HideCursor()
+			ui.buff.empty()
+		} else {
+			e_readline(event, &ui.buff, ui, data.home_dir)
+		}
+	case WELCOME_END:
+		return false
 	}
 	return false
 }

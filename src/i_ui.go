@@ -83,6 +83,7 @@ type HardUI struct {
 	insert_butt bool
 	help_scroll int
 	help_end bool
+	welcome_screen int
 }
 
 type Quad struct {
@@ -107,7 +108,7 @@ func (buffer *Buffer)len() int {
 	return len(buffer.data)
 }
 
-func i_left_right(text_len int, ui *HardUI) (int, int) {
+func i_left_right(text_len int, ui HardUI) (int, int) {
 	left  := (ui.dim[W] / 2) - text_len / 2
 	right := ui.dim[W] - 1
 	if left < 1 {
@@ -204,8 +205,7 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style, title)
 }
 
-func i_draw_bottom_text(ui HardUI, opts HardOpts,
-		insert *HostNode, insert_err []error) {
+func i_draw_bottom_text(ui HardUI, insert *HostNode, insert_err []error) {
 	text := ""
 
 	if len(ui.msg_buff) > 0 {
@@ -221,9 +221,7 @@ func i_draw_bottom_text(ui HardUI, opts HardOpts,
 		case ERROR_MODE:
 			text = ERROR_KEYS_HINTS
 		case WELCOME_MODE:
-			if len(opts.GPG) == 0 {
-				text = ""
-			} else {
+			if ui.welcome_screen == WELCOME_CONFIRM_GPG {
 				text = CONFIRM_KEYS_HINTS
 			}
 		case INSERT_MODE:
@@ -275,8 +273,8 @@ func i_draw_welcome_box(ui HardUI) {
 	if len(VERSION_NAME) > 0 {
 		text += " - " + VERSION_NAME
 	}
-	l, r := ui.dim[W] / 2 - len(text) / 2 + 7,
-			ui.dim[W] / 2 + len(text) / 2 + 1 + 7
+	l, r := ui.dim[W] / 2 + 4,
+			ui.dim[W] - 2
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	if line += 2; line > b_max { return }
@@ -361,19 +359,40 @@ func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 	if opts.GPG == "plain" {
 		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Confirm plaintext ")
 		text := "Really use plaintext to store passwords?"
-		l, r := i_left_right(len(text), &ui)
+		l, r := i_left_right(len(text), ui)
 		i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
 			ui.style[DEF_STYLE], text)
 		return
 	}
 	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Confirm GnuPG key ")
 	text := "Really use this gpg key?"
-	l, r := i_left_right(len(text), &ui)
+	l, r := i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
 		ui.style[DEF_STYLE], text)
-	l, r = i_left_right(len(opts.GPG), &ui)
+	l, r = i_left_right(len(opts.GPG), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
 		ui.style[DEF_STYLE], opts.GPG)
+}
+
+func i_prompt_def_sshkey(ui HardUI, home_dir string) {
+	i_draw_msg(ui.s, 4, ui.style[BOX_STYLE], ui.dim, " Default SSH key ")
+	text := "Please enter here a path for your most used SSH key"
+	l, r := i_left_right(len(text), ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 6, r, ui.dim[H] - 6,
+		ui.style[DEF_STYLE],text)
+	text = "It will be entered by default when adding SSH hosts"
+	l, r = i_left_right(len(text), ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 5, r, ui.dim[H] - 5,
+		ui.style[DEF_STYLE],text)
+	text = "This can save some time"
+	l, r = i_left_right(len(text), ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
+		ui.style[DEF_STYLE],text)
+	text = "Leave empty if you don't want to set a default key"
+	l, r = i_left_right(len(text), ui)
+	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
+		ui.style[DEF_STYLE],text)
+	i_prompt_generic(ui, "SSH private key: ", false, home_dir)
 }
 
 func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
@@ -499,7 +518,7 @@ func i_draw_remove_share(ui HardUI) {
 	text := "Really remove this share?"
 
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Remove share ")
-	left, right := i_left_right(len(text), &ui)
+	left, right := i_left_right(len(text), ui)
 	line := ui.dim[H] - 2 - 1
 	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
 }
@@ -507,7 +526,7 @@ func i_draw_remove_share(ui HardUI) {
 func i_draw_zhosts_box(ui HardUI) {
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
 	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
-	left, right := i_left_right(len(text), &ui)
+	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
 		ui.style[DEF_STYLE], text)
 }
@@ -525,10 +544,10 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 	}
 	file = file[1:]
 	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")
-	left, right := i_left_right(len(text), &ui)
+	left, right := i_left_right(len(text), ui)
 	line := ui.dim[H] - 2 - 2
 	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
-	left, right = i_left_right(len(file), &ui)
+	left, right = i_left_right(len(file), ui)
 	line += 1
 	i_draw_text(ui.s,
 	    left, line, right, line,
@@ -622,7 +641,7 @@ func i_draw_match_buff(ui HardUI) {
 
 var g_load_count int = -1
 
-func i_draw_load_ui(ui *HardUI, opts HardOpts) {
+func i_draw_load_ui(ui *HardUI) {
 	g_load_count += 1
 	if g_load_count % 1000 != 0 {
 		return
@@ -635,10 +654,10 @@ func i_draw_load_ui(ui *HardUI, opts HardOpts) {
 	}
 	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
 		ui.style[BOT_STYLE], text)
-	i_draw_bottom_text(*ui, opts, nil, nil)
+	i_draw_bottom_text(*ui, nil, nil)
 	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
 	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
-	left, right := i_left_right(len(text), ui)
+	left, right := i_left_right(len(text), *ui)
 	i_draw_text(ui.s,
 		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
 		ui.style[DEF_STYLE], text)
@@ -761,24 +780,31 @@ func i_ui(data_dir string) {
 	}
 	for {
 		data.ui.s.Clear()
-		i_draw_bottom_text(data.ui, data.opts, data.insert, data.insert_err)
+		i_draw_bottom_text(data.ui, data.insert, data.insert_err)
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
 		if data.load_err != nil && len(data.load_err) > 0 {
 			data.ui.mode = ERROR_MODE
 		}
-		if data.ui.mode == WELCOME_MODE {
-			i_draw_welcome_box(data.ui)
-			if len(data.opts.GPG) == 0 {
-				i_prompt_gpg(data.ui, data.keys)
-			} else {
-				i_prompt_confirm_gpg(data.ui, data.opts)
-			}
-		} else if data.litems.head == nil {
-			i_draw_zhosts_box(data.ui)
-		}
 		switch data.ui.mode {
+		case WELCOME_MODE:
+			i_draw_welcome_box(data.ui)
+			switch data.ui.welcome_screen {
+			case WELCOME_GPG:
+				i_prompt_gpg(data.ui, data.keys)
+			case WELCOME_CONFIRM_GPG:
+				i_prompt_confirm_gpg(data.ui, data.opts)
+			case WELCOME_SSH:
+				i_prompt_def_sshkey(data.ui, data.home_dir)
+			default:
+				c_write_options(data.opts.file, data.opts, &data.load_err)
+				data.ui.mode = NORMAL_MODE
+			}
+		case NORMAL_MODE:
+			if data.litems.head == nil {
+				i_draw_zhosts_box(data.ui)
+			}
 		case DELETE_MODE:
 			i_draw_delete_msg(data.ui, data.litems.curr)
 		case ERROR_MODE:

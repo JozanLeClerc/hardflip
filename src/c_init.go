@@ -64,6 +64,7 @@ type HardOpts struct {
 	GPG		string `yaml:"gpg"`
 	Perc    bool   `yaml:"percent"`
 	Term	string `yaml:"terminal"`
+	DefSSH	string `yaml:"default_ssh_priv"`
 	file    string
 }
 
@@ -86,7 +87,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		nil,
 	}
 	ldirs.add_back(&dir_node)
-	i_draw_load_ui(ui, opts)
+	i_draw_load_ui(ui)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
@@ -104,7 +105,7 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 				}
 				dir_node.lhost.add_back(host_node)
 			}
-			i_draw_load_ui(ui, opts)
+			i_draw_load_ui(ui)
 		}
 	}
 }
