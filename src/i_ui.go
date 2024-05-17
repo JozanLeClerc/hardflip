@@ -784,6 +784,7 @@ func i_ui(data_dir string) {
 		opts = DEFAULT_OPTS
 	} else {
 		opts = c_get_options(conf_dir, &load_err)
+		// FIX: options not written correctly on welcome mode + void
 	}
 	styles := c_get_styles(conf_dir, &load_err)
 	i_init_styles(&ui, styles)

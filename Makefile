@@ -21,7 +21,7 @@ SHELL			:= /bin/sh
 SRC_DIR			:= ./src/
 SRC_NAME		:= *.go
 SRC				 = $(addprefix ${SRC_DIR}, ${SRC_NAME})
-DEST			:= /usr/local/bin
+DEST			:= /usr
 .DEFAULT_GOAL	:= ${TARGET}
 
 run: ${SRC}
@@ -30,12 +30,12 @@ run: ${SRC}
 ${TARGET}: ${SRC}
 	go build -o ${TARGET} ${SRC_DIR}
 
-install: ${TARGET}
-	mkdir -p ${DEST}
-	cp -f ${TARGET} ${DEST}
+install:
+	mkdir -p ${DEST}/bin
+	cp -f ${TARGET} ${DEST}/bin
 	# man shit
-	# mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	# cp -f man/lowbat.1 $(DESTDIR)$(MANPREFIX)/man1/lowbat.1
+	# mkdir -p $(DESTDIR)/share/man/man1
+	# cp -f man/lowbat.1 $(DESTDIR)/share/man/man1/lowbat.1
 
 clean:
 	go clean

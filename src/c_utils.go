@@ -86,6 +86,7 @@ func c_get_conf_dir(load_err *[]error) string {
 	    if err := os.MkdirAll(ptr, os.ModePerm); err != nil {
 			*load_err = append(*load_err, err)
 	    }
+		return ptr
 	} else if err != nil {
 			*load_err = append(*load_err, err)
 		return ""
