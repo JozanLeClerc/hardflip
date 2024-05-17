@@ -235,7 +235,7 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 		if term == "$TERMINAL" {
 			term = os.Getenv("TERMINAL")
 		}
-		cmd_fmt = append([]string{"setsid", term, "-e"}, cmd_fmt...)
+		cmd_fmt = append([]string{term, "-e"}, cmd_fmt...)
 	}
 	return cmd_fmt, cmd_env
 }
