@@ -721,7 +721,7 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 		case COLORS[COLOR_DEFAULT]:
 			ui.style[i] = tmp.Foreground(tcell.ColorReset)
 		case COLORS[COLOR_BLACK]:
-			ui.style[i] = tmp.Foreground(tcell.ColorBlack).Dim(true)
+			ui.style[i] = tmp.Foreground(tcell.ColorBlack)
 		case COLORS[COLOR_RED]:
 			ui.style[i] = tmp.Foreground(tcell.ColorRed).Dim(true)
 		case COLORS[COLOR_GREEN]:
@@ -731,13 +731,15 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 		case COLORS[COLOR_BLUE]:
 			ui.style[i] = tmp.Foreground(tcell.ColorBlue).Dim(true)
 		case COLORS[COLOR_MAGENTA]:
-			ui.style[i] = tmp.Foreground(tcell.ColorPurple).Dim(true)
+			ui.style[i] = tmp.Foreground(tcell.ColorPurple)
 		case COLORS[COLOR_CYAN]:
 			ui.style[i] = tmp.Foreground(tcell.ColorTeal)
 		case COLORS[COLOR_WHITE]:
 			ui.style[i] = tmp.Foreground(tcell.ColorWhite).Dim(true)
+		case COLORS[COLOR_GRAY]:
+			ui.style[i] = tmp.Foreground(tcell.ColorGray)
 		case COLORS[COLOR_BOLD_BLACK]:
-			ui.style[i] = tmp.Foreground(tcell.ColorBlack).Dim(true).Bold(true)
+			ui.style[i] = tmp.Foreground(tcell.ColorBlack).Bold(true)
 		case COLORS[COLOR_BOLD_RED]:
 			ui.style[i] = tmp.Foreground(tcell.ColorRed).Dim(true).Bold(true)
 		case COLORS[COLOR_BOLD_GREEN]:
@@ -747,11 +749,13 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 		case COLORS[COLOR_BOLD_BLUE]:
 			ui.style[i] = tmp.Foreground(tcell.ColorBlue).Dim(true).Bold(true)
 		case COLORS[COLOR_BOLD_MAGENTA]:
-			ui.style[i] = tmp.Foreground(tcell.ColorPurple).Dim(true).Bold(true)
+			ui.style[i] = tmp.Foreground(tcell.ColorPurple).Bold(true)
 		case COLORS[COLOR_BOLD_CYAN]:
 			ui.style[i] = tmp.Foreground(tcell.ColorTeal).Dim(true).Bold(true)
 		case COLORS[COLOR_BOLD_WHITE]:
 			ui.style[i] = tmp.Foreground(tcell.ColorWhite).Dim(true).Bold(true)
+		case COLORS[COLOR_BOLD_GRAY]:
+			ui.style[i] = tmp.Foreground(tcell.ColorGray).Bold(true)
 		default:
 			ui.style[i] = tmp.Foreground(tcell.ColorReset)
 		}

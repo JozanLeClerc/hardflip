@@ -277,6 +277,7 @@ const (
     COLOR_MAGENTA
     COLOR_CYAN
     COLOR_WHITE
+    COLOR_GRAY
     COLOR_BOLD_BLACK
     COLOR_BOLD_RED
     COLOR_BOLD_GREEN
@@ -285,7 +286,8 @@ const (
     COLOR_BOLD_MAGENTA
     COLOR_BOLD_CYAN
     COLOR_BOLD_WHITE
-	COLORS_MAX = COLOR_BOLD_WHITE
+    COLOR_BOLD_GRAY
+	COLORS_MAX = COLOR_BOLD_GRAY
 )
 
 var COLORS = [COLORS_MAX + 1]string{
@@ -298,6 +300,7 @@ var COLORS = [COLORS_MAX + 1]string{
 	"magenta",
 	"cyan",
 	"white",
+	"gray",
 	"boldblack",
 	"boldred",
 	"boldgreen",
@@ -306,4 +309,5 @@ var COLORS = [COLORS_MAX + 1]string{
 	"boldmagenta",
 	"boldcyan",
 	"boldwhite",
+	"boldgray",
 }
