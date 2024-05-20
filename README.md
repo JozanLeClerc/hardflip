@@ -8,7 +8,7 @@ on macOS.
 Install those if you need them:
 
 + `sshpass` if you are using passwords with SSH (honnestly use keys instead)
-+ `xfreerdp` for RDP. Called `freerdp2-x11` on some distros
++ `xfreerdp` for RDP. Also called `freerdp2-x11` on some distros
 + `openstack` for OpenStack CLI
 + `gpg` to crypt passwords. You can store them in plain text if you prefer but
 I wouldn't recommend that option
@@ -119,7 +119,20 @@ reload your config and colors files.
 
 ## Usage
 
+Usage is straight forward, add some hosts and connect to them. A description
+of the various keybinds are available by pressing the key `?`.
+
+vim-like keybinds are available by default. It is not possible yet to rebind
+keys, maybe in the future.
+
+On first start, you will be prompted to configure GnuPG and default SSH keys.
+
 ## Next
 
 Check `ROADMAP.md` to see the intended upgrades for `hardflip`. VNC hosts and
 fuzzysearch are big ones. But that's pretty much it. Enjoy.
+
+## Bugs
+
+I'm sure there are plenty of bugs. Please open an issue or mail me at
+`rbo@gmx.us` if you find some
