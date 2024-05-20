@@ -83,25 +83,25 @@ Colors for different elements are defined in the `CONFIG_DIR/colors.yml`.
 Name of the elements speak by themselves.
 Here are the available colors (for now):
 
-**default**
-**black**
-**red**
-**green**
-**yellow**
-**blue**
-**magenta**
-**cyan**
-**white**
-**gray**
-**boldblack**
-**boldred**
-**boldgreen**
-**boldyellow**
-**boldblue**
-**boldmagenta**
-**boldcyan**
-**boldwhite**
-**boldgray**
++ **default**
++ **black**
++ **red**
++ **green**
++ **yellow**
++ **blue**
++ **magenta**
++ **cyan**
++ **white**
++ **gray**
++ **boldblack**
++ **boldred**
++ **boldgreen**
++ **boldyellow**
++ **boldblue**
++ **boldmagenta**
++ **boldcyan**
++ **boldwhite**
++ **boldgray**
 
 ## Data
 
