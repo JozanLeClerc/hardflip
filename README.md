@@ -35,4 +35,13 @@ DEST			:= /usr
 
 if you want to install stuff some other place
 
+Example:
+
+```make
+DEST			:= /usr/local
+```
+
+Will install bin and man in the /usr/local/bin /usr/local/share/man... dirs
+BSD style
+
 ## Config
