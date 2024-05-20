@@ -233,3 +233,28 @@ func c_reverse_string(str string) string {
     }
     return string(runes)
 }
+
+// prints the version and exits
+func c_print_version() {
+	fmt.Println("hf " + VERSION + " - " + VERSION_NAME)
+	os.Exit(0)
+}
+
+// prints the help and exits
+func c_print_help() {
+	fmt.Println(`Usage:
+  hf [options]
+
+Options:
+  -h, --help        Prints this help menu
+  -v, --version     Prints the version number and name
+
+Report bugs to <rbo@gmx.us>`)
+	os.Exit(0)
+}
+
+// wrong argument and exit
+func c_not_an_arg(arg string) {
+	fmt.Println("hf: Unknown argument " + arg)
+	os.Exit(1)
+}
