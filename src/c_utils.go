@@ -258,3 +258,16 @@ func c_not_an_arg(arg string) {
 	fmt.Println("hf: Unknown argument " + arg)
 	os.Exit(1)
 }
+
+func c_cli_opts(arg string) {
+	switch arg {
+	case "-v",
+		 "--version":
+		c_print_version()
+	case "-h",
+		 "--help":
+		c_print_help()
+	default:
+		c_not_an_arg(os.Args[1])
+	}
+}

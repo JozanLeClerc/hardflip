@@ -72,16 +72,7 @@ type HardData struct {
 
 func main() {
 	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "-v",
-			 "--version":
-			c_print_version()
-		case "-h",
-			 "--help":
-			c_print_help()
-		default:
-			c_not_an_arg(os.Args[1])
-		}
+		c_cli_opts(os.Args[1])
 	}
 	data_dir := c_get_data_dir(nil)
 	i_ui(data_dir)
