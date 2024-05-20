@@ -3,6 +3,8 @@
 The best TUI tool to connect to your distant hosts. For Linux/BSD. Might work
 on macOS.
 
+![](screens/screen1.png)
+
 ## Dependencies
 
 Install those if you need them:
@@ -10,8 +12,9 @@ Install those if you need them:
 + `sshpass` if you are using passwords with SSH (honnestly use keys instead)
 + `xfreerdp` for RDP. Also called `freerdp2-x11` on some distros
 + `openstack` for OpenStack CLI
-+ `gpg` to crypt passwords. You can store them in plain text if you prefer but
-I wouldn't recommend that option
++ `gpg` to crypt passwords, similarily to
+[pass](https://www.passwordstore.org/). You can store them in plain text if you
+prefer but I wouldn't recommend that option
 + `go`
 + GNU `make`
 
@@ -44,6 +47,16 @@ DEST			:= /usr/local
 will install bin and man in the `/usr/local/bin` `/usr/local/share/man/...` dirs
 BSD style.
 
+## Uninstall
+
+To uninstall `hardflip`, run the following command:
+
+```sh
+sudo make uninstall
+```
+
+But why would you?
+
 ## Config
 
 Configuration files will be stored in your `$XDG_CONFIG_HOME/hf` directory which
@@ -71,7 +84,7 @@ right of the window
 new instance of your set terminal. It was intended to open the connection
 in a new terminal in the background, allowing you to still be using the same
 `hf` while connected to one or several of your hosts. Turns out I can't code
-that it doesn't work at all, just leave that unset
+that, it doesn't work at all, just leave that unset
 + `default_ssh_priv`: (`string`) default SSH private key path. It will be
 entered by default when adding a new SSH host or jump, saving a ton of time.
 Of course it can be changed when adding the host. Leave empty if you don't have

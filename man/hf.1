@@ -1,0 +1,80 @@
+.\" Manpage for hf
+.\" Contact rbo@gmx.us to correct errors and typos.
+.TH hf 1 "20 May 2024" "hf 1.0" "hardflip Reference"
+.SH NAME
+hf \- super fast remote connection manager
+.SH SYNOPSYS
+.B hf
+[\fIOPTION\fR]
+.SH DESCRIPTION
+\fBhf\fR is a TUI program allowing you to keep track of your various
+SSH/RDP/OpenStack hosts.
+.
+Passwords are stored using \fBGnuPG\fR keys or plaintext (depending on your
+setup).
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Prints the help
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Prints the program version
+.SH CONFIGURATION
+.BR hf
+stores its configuration files in the
+.I $XDG_CONFIG_HOME/hf/config.yml
+file. If this variable is unset, it will store it at
+.IR $HOME/.config/hf/config.yml .
+.
+This is the main options files. You can reload the options on-the-go with
+.BR Ctrl+r .
+Here are some options:
+.
+.TP
+.BR icons :
+.I bool
+shows or not icons
+.TP
+.BR loop :
+.I bool
+the program will run again after exiting the host you connected to
+.TP
+.BR gpg :
+.I string
+the gpg key ID you set at first boot. It is used to encrypt passwords. If set
+to **"plain"**, passwords will be stored in plaintext. I don't recommend this
+at all but you might not care
+.TP
+.BR percent :
+.I bool
+shows percent of hosts the cursor is on in the bottom right of the window
+.TP
+.BR terminal :
+.I string
+will spawn the command to connect to your host in a new instance of your set
+terminal. It was intended to open the connection in a new terminal in the
+background, allowing you to still be using the same
+.B hf
+while connected to one or several of your hosts. Turns out I can't code that, it
+doesn't work at all, just leave that unset
+.TP
+.BR default_ssh_priv :
+.I string
+default SSH private key path. It will be entered by default when adding a new
+SSH host or jump, saving a ton of time. Of course it can be changed when adding
+the host. Leave empty if you don't have a main key
+.SH BUGS
+Please note that
+.B hardflip
+was tested only on Linux and FreeBSD at the moment. This is probably full of
+bugs, so please report any bug to me,
+.IR "Joe <rbo@gmx.us>"
+or on GitHub at
+.IR https://github.com/JozanLeClerc/hardflip .
+.SH AUTHOR
+Joe <rbo@gmx.us>
+.SH SEE ALSO
+.IR ssh (1),
+.IR xfreerdpd (1),
+.IR gpg (1),
+.IR remmina (1)

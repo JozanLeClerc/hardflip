@@ -246,7 +246,7 @@ func c_print_help() {
   hf [options]
 
 Options:
-  -h, --help        Prints this help menu
+  -h, --help        Prints this help
   -v, --version     Prints the version number and name
 
 Report bugs to <rbo@gmx.us>`)

@@ -51,9 +51,9 @@
 
 ## v1.0 - wheelbite
 
-- [ ] README.md
-- [ ] man
-- [ ] cli options
+- [x] README.md
+- [x] man
+- [x] cli options
 
 ## v1.1 - 360 hard
 

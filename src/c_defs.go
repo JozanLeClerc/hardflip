@@ -56,8 +56,8 @@ const (
 	STYLE_FILE_NAME = "colors.yml"
 	CONF_DIR_NAME  = "hf"
 	DATA_DIR_NAME  = "hf"
-	VERSION        = "v0.8"
-	VERSION_NAME   = "pre-release"
+	VERSION        = "v1.0"
+	VERSION_NAME   = "wheelbite"
 )
 
 const (
