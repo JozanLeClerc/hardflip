@@ -59,6 +59,7 @@
 
 - [ ] fuzz
 - [ ] undo maybe
+- [ ] better insert form
 
 ## v1.2 - ghetto bird
 

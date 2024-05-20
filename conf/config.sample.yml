@@ -18,3 +18,6 @@ percent: false
 # if commented or unset,
 # the command will replace hardflip
 #terminal: alacritty
+
+# this will be entered by default when adding a new SSH or SSH jump host
+default_ssh_priv: path/to/key
