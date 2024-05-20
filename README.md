@@ -9,9 +9,9 @@ Install those if you need them:
 
 + `sshpass` if you are using passwords with SSH (honnestly use keys instead)
 + `xfreerdp` for RDP. Called `freerdp2-x11` on some distros
-+ `openstack` for OpenStack CLI.
++ `openstack` for OpenStack CLI
 + `gpg` to crypt passwords. You can store them in plain text if you prefer but
-I wouldn't recommend that option.
+I wouldn't recommend that option
 + `go`
 + GNU `make`
 
@@ -75,7 +75,7 @@ all, just leave that unset
 + `default_ssh_priv`: (`string`) default SSH private key path. It will be
 entered by default when adding a new SSH host or jump, saving a ton of time.
 Of course it can be changed when adding the host. Leave empty if you don't have
-a main key.
+a main key
 
 ### `colors.yml`
 
