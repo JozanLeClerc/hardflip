@@ -179,18 +179,19 @@ func c_write_styles(file string, opts HardStyle, load_err *[]error) {
 }
 
 func c_get_options(dir string, load_err *[]error) HardOpts {
-	opts := HardOpts{}
+	opts := DEFAULT_OPTS
 	file := dir + "/" + CONF_FILE_NAME
 
 	if _, err := os.Stat(file); os.IsNotExist(err) {
 		c_write_options(file, DEFAULT_OPTS, load_err)
-		return DEFAULT_OPTS
+		opts.file = file
+		return opts
 	}
 	opts, err := c_parse_opts(file)
 	opts.file = file
 	if err != nil {
 		*load_err = append(*load_err, err)
-		return DEFAULT_OPTS
+		return opts
 	}
 	return opts
 }
