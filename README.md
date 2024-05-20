@@ -68,10 +68,10 @@ recommend this at all but you might not care
 + `percent`: (`bool`) shows percent of hosts the cursor is on in the bottom
 right of the window
 + `terminal`: (`string`) will spawn the command to connect to your host in a
-new instance of your set terminal. It was intended to `setsid` the connection
-in a new terminal, allowing you to still be using the same `hf` while connected
-to one or several of your hosts. Turns out I can't code that it doesn't work at
-all, just leave that unset
+new instance of your set terminal. It was intended to open the connection
+in a new terminal in the background, allowing you to still be using the same
+`hf` while connected to one or several of your hosts. Turns out I can't code
+that it doesn't work at all, just leave that unset
 + `default_ssh_priv`: (`string`) default SSH private key path. It will be
 entered by default when adding a new SSH host or jump, saving a ton of time.
 Of course it can be changed when adding the host. Leave empty if you don't have
