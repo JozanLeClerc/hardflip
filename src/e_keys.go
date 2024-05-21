@@ -189,6 +189,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.insert_method = INSERT_EDIT
 		ui.insert_sel = INS_PROTOCOL
 		ui.insert_sel_ok = false
+		ui.insert_scroll = 0
 	} else if event.Key() == tcell.KeyCtrlR {
 		e_reload_data(data)
 	} else if event.Rune() == 'm' ||
