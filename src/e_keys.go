@@ -397,6 +397,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		} else {
 			e_readline(event, &ui.buff, ui, data.home_dir)
 			data.litems.curr.Host.Name = ui.buff.str()
+			// TODO: here
 		}
 	} else if data.insert != nil {
 		if data.insert_err != nil {
