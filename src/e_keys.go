@@ -177,13 +177,14 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.insert_sel_ok = false
 		ui.insert_scroll = 0
 		tmp := ItemsNode{}
-		tmp_host := HostNode{}
-		tmp.Host = &tmp_host
+		data.insert = &HostNode{}
+		tmp.Host = data.insert
 		if data.litems.curr.is_dir() == true {
-			tmp_host.parent = data.litems.curr.Dirs
+			data.insert.parent = data.litems.curr.Dirs
 		} else {
-			tmp_host.parent = data.litems.curr.Host.parent
+			data.insert.parent = data.litems.curr.Host.parent
 		}
+		e_set_protocol_defaults(data, data.insert)
 		data.litems.add_after(&tmp)
 	} else if event.Rune() == 'e' &&
 			  data.litems.curr != nil &&
@@ -351,6 +352,10 @@ func e_mkdir_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		e_readline(event, &ui.buff, ui, data.home_dir)
 	}
 	return false
+}
+
+func e_insert_name_events(data *HardData, ui *HardUI,
+	event tcell.EventKey) bool {
 }
 
 func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
