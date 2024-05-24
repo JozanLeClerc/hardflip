@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri May 10 15:40:07 2024
+ * Fri, 24 May 2024 17:47:03 +0200
  * Joe
  *
  * insert a new host

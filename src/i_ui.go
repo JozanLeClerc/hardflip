@@ -809,15 +809,16 @@ func i_ui(data_dir string) {
 		data.keys = c_get_secret_gpg_keyring()
 	}
 	fp := [MODE_MAX + 1]key_event_mode_func{
-		NORMAL_MODE:	e_normal_events,
-		DELETE_MODE:	e_delete_events,
-		LOAD_MODE:		e_load_events,
-		ERROR_MODE:		e_error_events,
-		WELCOME_MODE:	e_welcome_events,
-		MKDIR_MODE:		e_mkdir_events,
-		INSERT_MODE:	e_insert_events,
-		RENAME_MODE:	e_rename_events,
-		HELP_MODE:		e_help_events,
+		NORMAL_MODE:		e_normal_events,
+		DELETE_MODE:		e_delete_events,
+		LOAD_MODE:			e_load_events,
+		ERROR_MODE:			e_error_events,
+		WELCOME_MODE:		e_welcome_events,
+		MKDIR_MODE:			e_mkdir_events,
+		INSERT_NAME_MODE:	e_insert_name_events,
+		INSERT_MODE:		e_insert_events,
+		RENAME_MODE:		e_rename_events,
+		HELP_MODE:			e_help_events,
 	}
 	for {
 		data.ui.s.Clear()
@@ -849,14 +850,12 @@ func i_ui(data_dir string) {
 			i_draw_error_msg(data.ui, data.load_err)
 		case MKDIR_MODE:
 			i_prompt_mkdir(data.ui, data.litems.curr)
+		case INSERT_NAME_MODE:
+			i_prompt_insert(data.ui, data.litems.curr)
 		case INSERT_MODE:
-			if data.insert == nil {
-				i_prompt_insert(data.ui, data.litems.curr)
-			} else {
-				i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
-				if data.insert_err != nil {
-					i_draw_insert_err_msg(data.ui, data.insert_err)
-				}
+			i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
+			if data.insert_err != nil {
+				i_draw_insert_err_msg(data.ui, data.insert_err)
 			}
 		case RENAME_MODE:
 			i_prompt_insert(data.ui, data.litems.curr)

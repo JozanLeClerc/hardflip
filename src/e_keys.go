@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_keys.go
- * Mon May 13 10:51:48 2024
+ * Fri May 24 18:02:07 2024
  * Joe
  *
  * events in the keys
@@ -171,7 +171,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		}
 	} else if event.Rune() == 'a' ||
 			  event.Rune() == 'i' {
-		ui.mode = INSERT_MODE
+		ui.mode = INSERT_NAME_MODE
 		ui.insert_method = INSERT_ADD
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
@@ -179,7 +179,12 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		tmp := ItemsNode{}
 		data.insert = &HostNode{}
 		tmp.Host = data.insert
-		if data.litems.curr.is_dir() == true {
+		if data.litems.curr == nil {
+			data.litems.add_back(&tmp)
+			ui.s.Fini()
+			// FIX: segv if void
+			return true
+		} else if data.litems.curr.is_dir() == true {
 			data.insert.parent = data.litems.curr.Dirs
 		} else {
 			data.insert.parent = data.litems.curr.Host.parent
@@ -356,15 +361,25 @@ func e_mkdir_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 
 func e_insert_name_events(data *HardData, ui *HardUI,
 	event tcell.EventKey) bool {
-}
-
-func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
-	if data.insert == nil {
-		if event.Key() == tcell.KeyEscape ||
-		event.Key() == tcell.KeyCtrlC {
+	if event.Key() == tcell.KeyEscape ||
+	event.Key() == tcell.KeyCtrlC {
+		ui.s.HideCursor()
+		ui.mode = NORMAL_MODE
+		ui.insert_sel = 0
+		data.insert = nil
+		ui.buff.empty()
+		tmp := data.litems.curr.prev
+		data.litems.del(data.litems.curr)
+		if tmp == nil {
+			tmp = data.litems.head
+		}
+		data.litems.curr = tmp
+	} else if event.Key() == tcell.KeyEnter {
+		if ui.buff.len() == 0 {
 			ui.s.HideCursor()
 			ui.mode = NORMAL_MODE
 			ui.insert_sel = 0
+			ui.insert_sel_ok = false
 			data.insert = nil
 			ui.buff.empty()
 			tmp := data.litems.curr.prev
@@ -373,486 +388,477 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				tmp = data.litems.head
 			}
 			data.litems.curr = tmp
-		} else if event.Key() == tcell.KeyEnter {
-			if ui.buff.len() == 0 {
-				ui.s.HideCursor()
-				ui.mode = NORMAL_MODE
-				ui.insert_sel = 0
-				ui.insert_sel_ok = false
-				data.insert = nil
-				ui.buff.empty()
-				tmp := data.litems.curr.prev
-				data.litems.del(data.litems.curr)
-				if tmp == nil {
-					tmp = data.litems.head
-				}
-				data.litems.curr = tmp
-				return true
-			}
-			ui.s.HideCursor()
-			data.insert = &HostNode{}
-			e_set_protocol_defaults(data, data.insert)
-			data.insert.Name = ui.buff.str()
-			ui.buff.empty()
-			if data.litems.curr != nil {
-				data.insert.parent = data.litems.curr.path_node()
-			} else {
-				data.insert.parent = data.ldirs.head
-			}
-		} else {
-			e_readline(event, &ui.buff, ui, data.home_dir)
-			data.litems.curr.Host.Name = ui.buff.str()
-			// TODO: here
+			return true
 		}
-	} else if data.insert != nil {
-		if data.insert_err != nil {
-			if event.Rune() != 0 ||
-			   event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyEnter {
-				data.insert_err = nil
+		ui.s.HideCursor()
+		ui.mode = INSERT_MODE
+		ui.buff.empty()
+	} else {
+		e_readline(event, &ui.buff, ui, data.home_dir)
+		data.litems.curr.Host.Name = ui.buff.str()
+		// TODO: here
+	}
+	return false
+}
+
+func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
+	if data.insert == nil {
+		ui.mode = NORMAL_MODE
+		return true
+	}
+	if data.insert_err != nil {
+		if event.Rune() != 0 ||
+		   event.Key() == tcell.KeyEscape ||
+		   event.Key() == tcell.KeyEnter {
+			data.insert_err = nil
+		}
+	} else if ui.insert_sel_ok == false {
+		if event.Key() == tcell.KeyEscape ||
+		   event.Key() == tcell.KeyCtrlC ||
+		   event.Rune() == 'q' {
+			ui.s.HideCursor()
+			ui.mode = NORMAL_MODE
+			ui.insert_sel = 0
+			tmp := data.litems.curr.prev
+			data.litems.del(data.litems.curr)
+			if tmp == nil {
+				tmp = data.litems.head
 			}
-		} else if ui.insert_sel_ok == false {
-			if event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyCtrlC ||
-			   event.Rune() == 'q' {
-				ui.s.HideCursor()
-				ui.mode = NORMAL_MODE
-				ui.insert_sel = 0
-				data.insert = nil
-				ui.buff.empty()
-			} else if event.Rune() == 'j' ||
-					  event.Key() == tcell.KeyDown ||
-					  event.Key() == tcell.KeyTab {
-				if data.insert.Protocol == PROTOCOL_RDP &&
-				   ui.insert_sel == INS_PROTOCOL {
-					ui.insert_sel = INS_RDP_HOST
-				} else if data.insert.Protocol == PROTOCOL_RDP &&
-						  ui.insert_sel == INS_RDP_JUMP_HOST +
-							len(data.insert.Drive) &&
-						  len(data.insert.Jump.Host) == 0 {
-					ui.insert_sel = INS_RDP_NOTE + len(data.insert.Drive)
-				} else if data.insert.Protocol == PROTOCOL_CMD &&
-						  ui.insert_sel == INS_PROTOCOL {
-					ui.insert_sel = INS_CMD_CMD
-				} else if data.insert.Protocol == PROTOCOL_OS &&
-						  ui.insert_sel == INS_PROTOCOL {
-					ui.insert_sel = INS_OS_HOST
-				} else if data.insert.Protocol == PROTOCOL_SSH &&
-						  ui.insert_sel == INS_SSH_JUMP_HOST &&
-						  len(data.insert.Jump.Host) == 0 {
-					ui.insert_sel = INS_SSH_NOTE
-				} else if ui.insert_sel < ui.insert_sel_max {
-					ui.insert_sel += 1
-				}
-				if ui.insert_butt == false {
-					ui.insert_scroll += 2
-				}
-			} else if event.Rune() == 'k' ||
-					  event.Key() == tcell.KeyUp {
-				if data.insert.Protocol == PROTOCOL_RDP &&
-				   ui.insert_sel == INS_RDP_HOST {
-					ui.insert_sel = INS_PROTOCOL
-				} else if data.insert.Protocol == PROTOCOL_RDP &&
-						  ui.insert_sel == INS_RDP_NOTE +
-							len(data.insert.Drive) &&
-						  len(data.insert.Jump.Host) == 0 {
-					ui.insert_sel = INS_RDP_JUMP_HOST + len(data.insert.Drive)
-				} else if data.insert.Protocol == PROTOCOL_CMD &&
-						  ui.insert_sel == INS_CMD_CMD {
-					ui.insert_sel = INS_PROTOCOL
-				} else if data.insert.Protocol == PROTOCOL_OS &&
-						  ui.insert_sel == INS_OS_HOST {
-					ui.insert_sel = INS_PROTOCOL
-				} else if data.insert.Protocol == PROTOCOL_SSH &&
-						  ui.insert_sel == INS_SSH_NOTE &&
-						  len(data.insert.Jump.Host) == 0 {
-					ui.insert_sel = INS_SSH_JUMP_HOST
-				} else if ui.insert_sel > INS_PROTOCOL {
-					ui.insert_sel -= 1
-				}
-				if ui.insert_scroll > 0 {
-					ui.insert_scroll -= 2
-					if ui.insert_scroll < 0 {
-						ui.insert_scroll = 0
-					}
-				}
-			} else if event.Rune() == 'g' ||
-					  event.Rune() == 'h' ||
-					  event.Key() == tcell.KeyLeft {
+			data.litems.curr = tmp
+			data.insert = nil
+			ui.buff.empty()
+		} else if event.Rune() == 'j' ||
+				  event.Key() == tcell.KeyDown ||
+				  event.Key() == tcell.KeyTab {
+			if data.insert.Protocol == PROTOCOL_RDP &&
+			   ui.insert_sel == INS_PROTOCOL {
+				ui.insert_sel = INS_RDP_HOST
+			} else if data.insert.Protocol == PROTOCOL_RDP &&
+					  ui.insert_sel == INS_RDP_JUMP_HOST +
+						len(data.insert.Drive) &&
+					  len(data.insert.Jump.Host) == 0 {
+				ui.insert_sel = INS_RDP_NOTE + len(data.insert.Drive)
+			} else if data.insert.Protocol == PROTOCOL_CMD &&
+					  ui.insert_sel == INS_PROTOCOL {
+				ui.insert_sel = INS_CMD_CMD
+			} else if data.insert.Protocol == PROTOCOL_OS &&
+					  ui.insert_sel == INS_PROTOCOL {
+				ui.insert_sel = INS_OS_HOST
+			} else if data.insert.Protocol == PROTOCOL_SSH &&
+					  ui.insert_sel == INS_SSH_JUMP_HOST &&
+					  len(data.insert.Jump.Host) == 0 {
+				ui.insert_sel = INS_SSH_NOTE
+			} else if ui.insert_sel < ui.insert_sel_max {
+				ui.insert_sel += 1
+			}
+			if ui.insert_butt == false {
+				ui.insert_scroll += 2
+			}
+		} else if event.Rune() == 'k' ||
+				  event.Key() == tcell.KeyUp {
+			if data.insert.Protocol == PROTOCOL_RDP &&
+			   ui.insert_sel == INS_RDP_HOST {
 				ui.insert_sel = INS_PROTOCOL
-				ui.insert_scroll = 0
-			} else if event.Rune() == 'G' ||
-					  event.Rune() == 'l' ||
-					  event.Key() == tcell.KeyRight {
-				ui.insert_sel = ui.insert_sel_max
-				for data.ui.insert_butt == false {
-					ui.insert_scroll += 2
-					i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
-				}
-				data.ui.s.Show()
-			} else if event.Rune() == 'i' ||
-					  event.Rune() == 'a' ||
-					  event.Rune() == ' ' ||
-					  event.Key() == tcell.KeyEnter {
-				ui.insert_sel_ok = true
-				switch ui.insert_sel {
-				case INS_SSH_OK,
-					 INS_RDP_OK + len(data.insert.Drive),
-					 INS_CMD_OK,
-					 INS_OS_OK:
-					ui.insert_sel_ok = false
-					i_insert_check_ok(data, data.insert)
-					if data.insert_err != nil {
-						return true
-					}
-					i_insert_host(data, data.insert)
-				case INS_SSH_HOST,
-					 INS_RDP_HOST,
-					 INS_OS_HOST:
-					ui.buff.insert(data.insert.Host)
-				case INS_SSH_PORT,
-					 INS_RDP_PORT:
-					if data.insert.Port > 0 {
-						ui.buff.insert(strconv.Itoa(int(data.insert.Port)))
-					}
-				case INS_SSH_USER,
-					 INS_RDP_USER,
-					 INS_OS_USER:
-					ui.buff.insert(data.insert.User)
-				case INS_SSH_PASS,
-					 INS_RDP_PASS,
-					 INS_OS_PASS:
-					return true
-				case INS_SSH_PRIV: ui.buff.insert(data.insert.Priv)
-				case INS_SSH_EXEC: ui.buff.insert(data.insert.Exec)
-				case INS_SSH_JUMP_HOST,
-					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
-					ui.buff.insert(data.insert.Jump.Host)
-				case INS_SSH_JUMP_PORT,
-					 INS_RDP_JUMP_PORT + len(data.insert.Drive):
-					if data.insert.Jump.Port > 0 {
-						ui.buff.insert(strconv.Itoa(int(data.insert.Jump.Port)))
-					}
-				case INS_SSH_JUMP_USER,
-					 INS_RDP_JUMP_USER + len(data.insert.Drive):
-					ui.buff.insert(data.insert.Jump.User)
-				case INS_SSH_JUMP_PASS,
-					 INS_RDP_JUMP_PASS + len(data.insert.Drive):
-					return true
-				case INS_SSH_JUMP_PRIV,
-					 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
-					ui.buff.insert(data.insert.Jump.Priv)
-				case INS_RDP_DOMAIN: ui.buff.insert(data.insert.Domain)
-				case INS_RDP_FILE: ui.buff.insert(data.insert.RDPFile)
-				case INS_RDP_SCREENSIZE: return true
-				case INS_RDP_DYNAMIC:
-					ui.insert_sel_ok = false
-					if data.insert.Dynamic == true {
-						data.insert.Dynamic = false
-					} else {
-						data.insert.Dynamic = true
-					}
-					return true
-				case INS_RDP_FULLSCR:
-					ui.insert_sel_ok = false
-					if data.insert.FullScr == true {
-						data.insert.FullScr = false
-					} else {
-						data.insert.FullScr = true
-					}
-					return true
-				case INS_RDP_MULTIMON:
-					ui.insert_sel_ok = false
-					if data.insert.MultiMon == true {
-						data.insert.MultiMon = false
-					} else {
-						data.insert.MultiMon = true
-					}
-					return true
-				case INS_RDP_QUALITY: return true
-				case INS_RDP_DRIVE + len(data.insert.Drive): return true
-				case INS_CMD_CMD: ui.buff.insert(data.insert.Host)
-				case INS_CMD_SHELL: ui.buff.insert(data.insert.Shell[0])
-				case INS_CMD_SILENT:
-					ui.insert_sel_ok = false
-					if data.insert.Silent == true {
-						data.insert.Silent = false
-					} else {
-						data.insert.Silent = true
-					}
-					return true
-				case INS_OS_USERDOMAINID:
-					ui.buff.insert(data.insert.Stack.UserDomainID)
-				case INS_OS_PROJECTID:
-					ui.buff.insert(data.insert.Stack.ProjectID)
-				case INS_OS_REGION:
-					ui.buff.insert(data.insert.Stack.RegionName)
-				case INS_OS_ENDTYPE:
-					ui.buff.insert(data.insert.Stack.EndpointType)
-				case INS_OS_INTERFACE:
-					ui.buff.insert(data.insert.Stack.Interface)
-				case INS_OS_IDAPI:
-					ui.buff.insert(data.insert.Stack.IdentityAPI)
-				case INS_OS_IMGAPI:
-					ui.buff.insert(data.insert.Stack.ImageAPI)
-				case INS_OS_NETAPI:
-					ui.buff.insert(data.insert.Stack.NetworkAPI)
-				case INS_OS_VOLAPI:
-					ui.buff.insert(data.insert.Stack.VolumeAPI)
-				case INS_SSH_NOTE,
-					 INS_RDP_NOTE + len(data.insert.Drive),
-					 INS_CMD_NOTE,
-					 INS_OS_NOTE:
-					ui.buff.insert(data.insert.Note)
+			} else if data.insert.Protocol == PROTOCOL_RDP &&
+					  ui.insert_sel == INS_RDP_NOTE +
+						len(data.insert.Drive) &&
+					  len(data.insert.Jump.Host) == 0 {
+				ui.insert_sel = INS_RDP_JUMP_HOST + len(data.insert.Drive)
+			} else if data.insert.Protocol == PROTOCOL_CMD &&
+					  ui.insert_sel == INS_CMD_CMD {
+				ui.insert_sel = INS_PROTOCOL
+			} else if data.insert.Protocol == PROTOCOL_OS &&
+					  ui.insert_sel == INS_OS_HOST {
+				ui.insert_sel = INS_PROTOCOL
+			} else if data.insert.Protocol == PROTOCOL_SSH &&
+					  ui.insert_sel == INS_SSH_NOTE &&
+					  len(data.insert.Jump.Host) == 0 {
+				ui.insert_sel = INS_SSH_JUMP_HOST
+			} else if ui.insert_sel > INS_PROTOCOL {
+				ui.insert_sel -= 1
+			}
+			if ui.insert_scroll > 0 {
+				ui.insert_scroll -= 2
+				if ui.insert_scroll < 0 {
+					ui.insert_scroll = 0
 				}
 			}
-		} else {
-			if event.Key() == tcell.KeyEscape ||
-			   event.Key() == tcell.KeyCtrlC {
+		} else if event.Rune() == 'g' ||
+				  event.Rune() == 'h' ||
+				  event.Key() == tcell.KeyLeft {
+			ui.insert_sel = INS_PROTOCOL
+			ui.insert_scroll = 0
+		} else if event.Rune() == 'G' ||
+				  event.Rune() == 'l' ||
+				  event.Key() == tcell.KeyRight {
+			ui.insert_sel = ui.insert_sel_max
+			for data.ui.insert_butt == false {
+				ui.insert_scroll += 2
+				i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
+			}
+			data.ui.s.Show()
+		} else if event.Rune() == 'i' ||
+				  event.Rune() == 'a' ||
+				  event.Rune() == ' ' ||
+				  event.Key() == tcell.KeyEnter {
+			ui.insert_sel_ok = true
+			switch ui.insert_sel {
+			case INS_SSH_OK,
+				 INS_RDP_OK + len(data.insert.Drive),
+				 INS_CMD_OK,
+				 INS_OS_OK:
+				ui.insert_sel_ok = false
+				i_insert_check_ok(data, data.insert)
+				if data.insert_err != nil {
+					return true
+				}
+				i_insert_host(data, data.insert)
+			case INS_SSH_HOST,
+				 INS_RDP_HOST,
+				 INS_OS_HOST:
+				ui.buff.insert(data.insert.Host)
+			case INS_SSH_PORT,
+				 INS_RDP_PORT:
+				if data.insert.Port > 0 {
+					ui.buff.insert(strconv.Itoa(int(data.insert.Port)))
+				}
+			case INS_SSH_USER,
+				 INS_RDP_USER,
+				 INS_OS_USER:
+				ui.buff.insert(data.insert.User)
+			case INS_SSH_PASS,
+				 INS_RDP_PASS,
+				 INS_OS_PASS:
+				return true
+			case INS_SSH_PRIV: ui.buff.insert(data.insert.Priv)
+			case INS_SSH_EXEC: ui.buff.insert(data.insert.Exec)
+			case INS_SSH_JUMP_HOST,
+				 INS_RDP_JUMP_HOST + len(data.insert.Drive):
+				ui.buff.insert(data.insert.Jump.Host)
+			case INS_SSH_JUMP_PORT,
+				 INS_RDP_JUMP_PORT + len(data.insert.Drive):
+				if data.insert.Jump.Port > 0 {
+					ui.buff.insert(strconv.Itoa(int(data.insert.Jump.Port)))
+				}
+			case INS_SSH_JUMP_USER,
+				 INS_RDP_JUMP_USER + len(data.insert.Drive):
+				ui.buff.insert(data.insert.Jump.User)
+			case INS_SSH_JUMP_PASS,
+				 INS_RDP_JUMP_PASS + len(data.insert.Drive):
+				return true
+			case INS_SSH_JUMP_PRIV,
+				 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
+				ui.buff.insert(data.insert.Jump.Priv)
+			case INS_RDP_DOMAIN: ui.buff.insert(data.insert.Domain)
+			case INS_RDP_FILE: ui.buff.insert(data.insert.RDPFile)
+			case INS_RDP_SCREENSIZE: return true
+			case INS_RDP_DYNAMIC:
+				ui.insert_sel_ok = false
+				if data.insert.Dynamic == true {
+					data.insert.Dynamic = false
+				} else {
+					data.insert.Dynamic = true
+				}
+				return true
+			case INS_RDP_FULLSCR:
+				ui.insert_sel_ok = false
+				if data.insert.FullScr == true {
+					data.insert.FullScr = false
+				} else {
+					data.insert.FullScr = true
+				}
+				return true
+			case INS_RDP_MULTIMON:
+				ui.insert_sel_ok = false
+				if data.insert.MultiMon == true {
+					data.insert.MultiMon = false
+				} else {
+					data.insert.MultiMon = true
+				}
+				return true
+			case INS_RDP_QUALITY: return true
+			case INS_RDP_DRIVE + len(data.insert.Drive): return true
+			case INS_CMD_CMD: ui.buff.insert(data.insert.Host)
+			case INS_CMD_SHELL: ui.buff.insert(data.insert.Shell[0])
+			case INS_CMD_SILENT:
+				ui.insert_sel_ok = false
+				if data.insert.Silent == true {
+					data.insert.Silent = false
+				} else {
+					data.insert.Silent = true
+				}
+				return true
+			case INS_OS_USERDOMAINID:
+				ui.buff.insert(data.insert.Stack.UserDomainID)
+			case INS_OS_PROJECTID:
+				ui.buff.insert(data.insert.Stack.ProjectID)
+			case INS_OS_REGION:
+				ui.buff.insert(data.insert.Stack.RegionName)
+			case INS_OS_ENDTYPE:
+				ui.buff.insert(data.insert.Stack.EndpointType)
+			case INS_OS_INTERFACE:
+				ui.buff.insert(data.insert.Stack.Interface)
+			case INS_OS_IDAPI:
+				ui.buff.insert(data.insert.Stack.IdentityAPI)
+			case INS_OS_IMGAPI:
+				ui.buff.insert(data.insert.Stack.ImageAPI)
+			case INS_OS_NETAPI:
+				ui.buff.insert(data.insert.Stack.NetworkAPI)
+			case INS_OS_VOLAPI:
+				ui.buff.insert(data.insert.Stack.VolumeAPI)
+			case INS_SSH_NOTE,
+				 INS_RDP_NOTE + len(data.insert.Drive),
+				 INS_CMD_NOTE,
+				 INS_OS_NOTE:
+				ui.buff.insert(data.insert.Note)
+			}
+		}
+	} else {
+		if event.Key() == tcell.KeyEscape ||
+		   event.Key() == tcell.KeyCtrlC {
+			ui.insert_sel_ok = false
+			ui.buff.empty()
+			ui.drives_buff = ""
+			ui.s.HideCursor()
+		}
+		if len(data.insert.Drive) > 0 &&
+		   (ui.insert_sel >= INS_RDP_DRIVE &&
+		   ui.insert_sel < INS_RDP_DRIVE +
+		   len(data.insert.Drive)) {
+			if event.Rune() == 'y' ||
+			event.Rune() == 'Y' ||
+			event.Key() == tcell.KeyEnter {
+				delete(data.insert.Drive,
+					   data.insert.drive_keys[
+					   ui.insert_sel - INS_RDP_DRIVE])
+				if len(data.insert.Drive) == 0 {
+					data.insert.Drive = nil
+				}
+				e_set_drive_keys(data)
+			}
+			ui.insert_sel_ok = false
+			return true
+		}
+		switch ui.insert_sel {
+		case INS_PROTOCOL:
+			if event.Rune() < '1' || event.Rune() > '4' {
 				ui.insert_sel_ok = false
 				ui.buff.empty()
-				ui.drives_buff = ""
+				ui.s.HideCursor()
+				return true
+			} else {
+				filename := data.insert.filename
+				name := data.insert.Name
+				parent := data.insert.parent
+				data.insert = nil
+				data.insert = &HostNode{}
+				data.insert.Name = name
+				data.insert.parent = parent
+				data.insert.filename = filename
+				data.insert.Protocol = int8(event.Rune() - 48 - 1)
+				ui.insert_sel_ok = false
+				ui.s.HideCursor()
+				e_set_protocol_defaults(data, data.insert)
+			}
+		case INS_RDP_SCREENSIZE:
+			if event.Rune() < '1' || event.Rune() > '7' {
+				ui.insert_sel_ok = false
+				ui.buff.empty()
+				ui.s.HideCursor()
+				return true
+			} else {
+				s := strings.Split(
+					RDP_SCREENSIZE[uint8(event.Rune() - 48 - 1)],
+					"x")
+				if len(s) != 2 {
+					return true
+				}
+				tmp, _ := strconv.Atoi(s[W])
+				data.insert.Width = uint16(tmp)
+				tmp, _ = strconv.Atoi(s[H])
+				data.insert.Height = uint16(tmp)
+				ui.insert_sel_ok = false
 				ui.s.HideCursor()
 			}
-			if len(data.insert.Drive) > 0 &&
-			   (ui.insert_sel >= INS_RDP_DRIVE &&
-			   ui.insert_sel < INS_RDP_DRIVE +
-			   len(data.insert.Drive)) {
-				if event.Rune() == 'y' ||
-				event.Rune() == 'Y' ||
-				event.Key() == tcell.KeyEnter {
-					delete(data.insert.Drive,
-						   data.insert.drive_keys[
-						   ui.insert_sel - INS_RDP_DRIVE])
-					if len(data.insert.Drive) == 0 {
-						data.insert.Drive = nil
-					}
-					e_set_drive_keys(data)
-				}
+		case INS_RDP_QUALITY:
+			if event.Rune() < '1' || event.Rune() > '3' {
 				ui.insert_sel_ok = false
+				ui.buff.empty()
+				ui.s.HideCursor()
 				return true
+			} else {
+				data.insert.Quality = uint8(event.Rune() - 48 - 1)
+				ui.insert_sel_ok = false
+				ui.s.HideCursor()
 			}
-			switch ui.insert_sel {
-			case INS_PROTOCOL:
-				if event.Rune() < '1' || event.Rune() > '4' {
-					ui.insert_sel_ok = false
-					ui.buff.empty()
-					ui.s.HideCursor()
-					return true
-				} else {
-					filename := data.insert.filename
-					name := data.insert.Name
-					parent := data.insert.parent
-					data.insert = nil
-					data.insert = &HostNode{}
-					data.insert.Name = name
-					data.insert.parent = parent
-					data.insert.filename = filename
-					data.insert.Protocol = int8(event.Rune() - 48 - 1)
-					ui.insert_sel_ok = false
-					ui.s.HideCursor()
-					e_set_protocol_defaults(data, data.insert)
-				}
-			case INS_RDP_SCREENSIZE:
-				if event.Rune() < '1' || event.Rune() > '7' {
-					ui.insert_sel_ok = false
-					ui.buff.empty()
-					ui.s.HideCursor()
-					return true
-				} else {
-					s := strings.Split(
-						RDP_SCREENSIZE[uint8(event.Rune() - 48 - 1)],
-						"x")
-					if len(s) != 2 {
-						return true
-					}
-					tmp, _ := strconv.Atoi(s[W])
-					data.insert.Width = uint16(tmp)
-					tmp, _ = strconv.Atoi(s[H])
-					data.insert.Height = uint16(tmp)
-					ui.insert_sel_ok = false
-					ui.s.HideCursor()
-				}
-			case INS_RDP_QUALITY:
-				if event.Rune() < '1' || event.Rune() > '3' {
-					ui.insert_sel_ok = false
-					ui.buff.empty()
-					ui.s.HideCursor()
-					return true
-				} else {
-					data.insert.Quality = uint8(event.Rune() - 48 - 1)
-					ui.insert_sel_ok = false
-					ui.s.HideCursor()
-				}
-			case INS_RDP_DRIVE + len(data.insert.Drive):
-				if len(ui.drives_buff) == 0 {
-					if event.Key() == tcell.KeyEnter {
-						if ui.buff.len() == 0 {
-							ui.insert_sel_ok = false
-							ui.drives_buff = ""
-							ui.buff.empty()
-							ui.s.HideCursor()
-							return true
-						}
-						ui.drives_buff = ui.buff.str()
-						ui.buff.empty()
-					} else {
-						e_readline(event, &ui.buff, ui, data.home_dir)
-					}
-				} else {
-					if event.Key() == tcell.KeyEnter {
-						if ui.buff.len() == 0 {
-							ui.insert_sel_ok = false
-							ui.drives_buff = ""
-							ui.buff.empty()
-							ui.s.HideCursor()
-							return true
-						}
-						if len(data.insert.Drive) == 0 {
-							data.insert.Drive = make(map[string]string)
-						}
-						data.insert.Drive[ui.drives_buff] = ui.buff.str()
-						e_set_drive_keys(data)
+		case INS_RDP_DRIVE + len(data.insert.Drive):
+			if len(ui.drives_buff) == 0 {
+				if event.Key() == tcell.KeyEnter {
+					if ui.buff.len() == 0 {
 						ui.insert_sel_ok = false
 						ui.drives_buff = ""
 						ui.buff.empty()
 						ui.s.HideCursor()
-					} else {
-						e_readline(event, &ui.buff, ui, data.home_dir)
+						return true
 					}
+					ui.drives_buff = ui.buff.str()
+					ui.buff.empty()
+				} else {
+					e_readline(event, &ui.buff, ui, data.home_dir)
 				}
-			case INS_SSH_HOST,
-				 INS_SSH_PORT,
-				 INS_SSH_USER,
-				 INS_SSH_PASS,
-				 INS_SSH_PRIV,
-				 INS_SSH_EXEC,
-				 INS_SSH_JUMP_HOST,
-				 INS_SSH_JUMP_PORT,
-				 INS_SSH_JUMP_USER,
-				 INS_SSH_JUMP_PASS,
-				 INS_SSH_JUMP_PRIV,
-				 INS_RDP_JUMP_HOST + len(data.insert.Drive),
-				 INS_RDP_JUMP_PORT + len(data.insert.Drive),
-				 INS_RDP_JUMP_USER + len(data.insert.Drive),
-				 INS_RDP_JUMP_PASS + len(data.insert.Drive),
-				 INS_RDP_JUMP_PRIV + len(data.insert.Drive),
-				 INS_SSH_NOTE,
-				 INS_RDP_HOST,
-				 INS_RDP_PORT,
-				 INS_RDP_DOMAIN,
-				 INS_RDP_USER,
-				 INS_RDP_PASS,
-				 INS_RDP_FILE,
-				 INS_RDP_NOTE + len(data.insert.Drive),
-				 INS_CMD_CMD,
-				 INS_CMD_SHELL,
-				 INS_CMD_NOTE,
-				 INS_OS_HOST,
-				 INS_OS_USER,
-				 INS_OS_PASS,
-				 INS_OS_USERDOMAINID,
-				 INS_OS_PROJECTID,
-				 INS_OS_REGION,
-				 INS_OS_ENDTYPE,
-				 INS_OS_INTERFACE,
-				 INS_OS_IDAPI,
-				 INS_OS_IMGAPI,
-				 INS_OS_NETAPI,
-				 INS_OS_VOLAPI,
-				 INS_OS_NOTE:
+			} else {
 				if event.Key() == tcell.KeyEnter {
-					switch ui.insert_sel {
-					case INS_SSH_HOST,
-						 INS_RDP_HOST,
-						 INS_OS_HOST:
-						data.insert.Host = ui.buff.str()
-					case INS_SSH_PORT,
-						 INS_RDP_PORT:
-						tmp, _ := strconv.Atoi(ui.buff.str())
-						data.insert.Port = uint16(tmp)
-					case INS_SSH_USER,
-						 INS_RDP_USER,
-						 INS_OS_USER:
-						data.insert.User = ui.buff.str()
-					case INS_SSH_PASS,
-						 INS_RDP_PASS,
-						 INS_OS_PASS:
-						if ui.buff.len() == 0 {
-							data.insert.Pass = ""
-							return true
-						} else {
-							data.insert.Pass, _ = c_encrypt_str(ui.buff.str(),
-													data.opts.GPG)
-						}
-					case INS_SSH_PRIV: data.insert.Priv = ui.buff.str()
-					case INS_SSH_EXEC: data.insert.Exec = ui.buff.str()
-					case INS_SSH_JUMP_HOST,
-						 INS_RDP_JUMP_HOST + len(data.insert.Drive):
-						data.insert.Jump.Host = ui.buff.str()
-						if len(ui.buff.str()) > 0 {
-							data.insert.Jump.Port = 22
-							data.insert.Jump.Priv = data.opts.DefSSH
-						} else {
-							data.insert.Jump.Port = 0
-							data.insert.Jump.Priv = ""
-						}
-					case INS_SSH_JUMP_PORT,
-						 INS_RDP_JUMP_PORT + len(data.insert.Drive):
-						tmp, _ := strconv.Atoi(ui.buff.str())
-						data.insert.Jump.Port = uint16(tmp)
-					case INS_SSH_JUMP_USER,
-						 INS_RDP_JUMP_USER + len(data.insert.Drive):
-						data.insert.Jump.User = ui.buff.str()
-					case INS_SSH_JUMP_PASS,
-						 INS_RDP_JUMP_PASS + len(data.insert.Drive):
-						if len(ui.buff.str()) == 0 {
-							data.insert.Jump.Pass = ""
-						} else {
-							data.insert.Jump.Pass, _ =
-							c_encrypt_str(ui.buff.str(), data.opts.GPG)
-						}
-					case INS_SSH_JUMP_PRIV,
-						 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
-						data.insert.Jump.Priv = ui.buff.str()
-					case INS_RDP_DOMAIN:
-						data.insert.Domain = ui.buff.str()
-					case INS_RDP_FILE:
-						data.insert.RDPFile = ui.buff.str()
-					case INS_CMD_CMD:
-						data.insert.Host = ui.buff.str()
-					case INS_CMD_SHELL:
-						data.insert.Shell[0] = ui.buff.str()
-					case INS_OS_USERDOMAINID:
-						data.insert.Stack.UserDomainID = ui.buff.str()
-					case INS_OS_PROJECTID:
-						data.insert.Stack.ProjectID = ui.buff.str()
-					case INS_OS_REGION:
-						data.insert.Stack.RegionName = ui.buff.str()
-					case INS_OS_ENDTYPE:
-						data.insert.Stack.EndpointType = ui.buff.str()
-					case INS_OS_INTERFACE:
-						data.insert.Stack.Interface = ui.buff.str()
-					case INS_OS_IDAPI:
-						data.insert.Stack.IdentityAPI = ui.buff.str()
-					case INS_OS_IMGAPI:
-						data.insert.Stack.ImageAPI = ui.buff.str()
-					case INS_OS_NETAPI:
-						data.insert.Stack.NetworkAPI = ui.buff.str()
-					case INS_OS_VOLAPI:
-						data.insert.Stack.VolumeAPI = ui.buff.str()
-					case INS_SSH_NOTE,
-						 INS_RDP_NOTE + len(data.insert.Drive),
-						 INS_CMD_NOTE,
-						 INS_OS_NOTE:
-						data.insert.Note = ui.buff.str()
+					if ui.buff.len() == 0 {
+						ui.insert_sel_ok = false
+						ui.drives_buff = ""
+						ui.buff.empty()
+						ui.s.HideCursor()
+						return true
 					}
+					if len(data.insert.Drive) == 0 {
+						data.insert.Drive = make(map[string]string)
+					}
+					data.insert.Drive[ui.drives_buff] = ui.buff.str()
+					e_set_drive_keys(data)
 					ui.insert_sel_ok = false
+					ui.drives_buff = ""
 					ui.buff.empty()
 					ui.s.HideCursor()
 				} else {
 					e_readline(event, &ui.buff, ui, data.home_dir)
 				}
+			}
+		case INS_SSH_HOST,
+			 INS_SSH_PORT,
+			 INS_SSH_USER,
+			 INS_SSH_PASS,
+			 INS_SSH_PRIV,
+			 INS_SSH_EXEC,
+			 INS_SSH_JUMP_HOST,
+			 INS_SSH_JUMP_PORT,
+			 INS_SSH_JUMP_USER,
+			 INS_SSH_JUMP_PASS,
+			 INS_SSH_JUMP_PRIV,
+			 INS_RDP_JUMP_HOST + len(data.insert.Drive),
+			 INS_RDP_JUMP_PORT + len(data.insert.Drive),
+			 INS_RDP_JUMP_USER + len(data.insert.Drive),
+			 INS_RDP_JUMP_PASS + len(data.insert.Drive),
+			 INS_RDP_JUMP_PRIV + len(data.insert.Drive),
+			 INS_SSH_NOTE,
+			 INS_RDP_HOST,
+			 INS_RDP_PORT,
+			 INS_RDP_DOMAIN,
+			 INS_RDP_USER,
+			 INS_RDP_PASS,
+			 INS_RDP_FILE,
+			 INS_RDP_NOTE + len(data.insert.Drive),
+			 INS_CMD_CMD,
+			 INS_CMD_SHELL,
+			 INS_CMD_NOTE,
+			 INS_OS_HOST,
+			 INS_OS_USER,
+			 INS_OS_PASS,
+			 INS_OS_USERDOMAINID,
+			 INS_OS_PROJECTID,
+			 INS_OS_REGION,
+			 INS_OS_ENDTYPE,
+			 INS_OS_INTERFACE,
+			 INS_OS_IDAPI,
+			 INS_OS_IMGAPI,
+			 INS_OS_NETAPI,
+			 INS_OS_VOLAPI,
+			 INS_OS_NOTE:
+			if event.Key() == tcell.KeyEnter {
+				switch ui.insert_sel {
+				case INS_SSH_HOST,
+					 INS_RDP_HOST,
+					 INS_OS_HOST:
+					data.insert.Host = ui.buff.str()
+				case INS_SSH_PORT,
+					 INS_RDP_PORT:
+					tmp, _ := strconv.Atoi(ui.buff.str())
+					data.insert.Port = uint16(tmp)
+				case INS_SSH_USER,
+					 INS_RDP_USER,
+					 INS_OS_USER:
+					data.insert.User = ui.buff.str()
+				case INS_SSH_PASS,
+					 INS_RDP_PASS,
+					 INS_OS_PASS:
+					if ui.buff.len() == 0 {
+						data.insert.Pass = ""
+						return true
+					} else {
+						data.insert.Pass, _ = c_encrypt_str(ui.buff.str(),
+												data.opts.GPG)
+					}
+				case INS_SSH_PRIV: data.insert.Priv = ui.buff.str()
+				case INS_SSH_EXEC: data.insert.Exec = ui.buff.str()
+				case INS_SSH_JUMP_HOST,
+					 INS_RDP_JUMP_HOST + len(data.insert.Drive):
+					data.insert.Jump.Host = ui.buff.str()
+					if len(ui.buff.str()) > 0 {
+						data.insert.Jump.Port = 22
+						data.insert.Jump.Priv = data.opts.DefSSH
+					} else {
+						data.insert.Jump.Port = 0
+						data.insert.Jump.Priv = ""
+					}
+				case INS_SSH_JUMP_PORT,
+					 INS_RDP_JUMP_PORT + len(data.insert.Drive):
+					tmp, _ := strconv.Atoi(ui.buff.str())
+					data.insert.Jump.Port = uint16(tmp)
+				case INS_SSH_JUMP_USER,
+					 INS_RDP_JUMP_USER + len(data.insert.Drive):
+					data.insert.Jump.User = ui.buff.str()
+				case INS_SSH_JUMP_PASS,
+					 INS_RDP_JUMP_PASS + len(data.insert.Drive):
+					if len(ui.buff.str()) == 0 {
+						data.insert.Jump.Pass = ""
+					} else {
+						data.insert.Jump.Pass, _ =
+						c_encrypt_str(ui.buff.str(), data.opts.GPG)
+					}
+				case INS_SSH_JUMP_PRIV,
+					 INS_RDP_JUMP_PRIV + len(data.insert.Drive):
+					data.insert.Jump.Priv = ui.buff.str()
+				case INS_RDP_DOMAIN:
+					data.insert.Domain = ui.buff.str()
+				case INS_RDP_FILE:
+					data.insert.RDPFile = ui.buff.str()
+				case INS_CMD_CMD:
+					data.insert.Host = ui.buff.str()
+				case INS_CMD_SHELL:
+					data.insert.Shell[0] = ui.buff.str()
+				case INS_OS_USERDOMAINID:
+					data.insert.Stack.UserDomainID = ui.buff.str()
+				case INS_OS_PROJECTID:
+					data.insert.Stack.ProjectID = ui.buff.str()
+				case INS_OS_REGION:
+					data.insert.Stack.RegionName = ui.buff.str()
+				case INS_OS_ENDTYPE:
+					data.insert.Stack.EndpointType = ui.buff.str()
+				case INS_OS_INTERFACE:
+					data.insert.Stack.Interface = ui.buff.str()
+				case INS_OS_IDAPI:
+					data.insert.Stack.IdentityAPI = ui.buff.str()
+				case INS_OS_IMGAPI:
+					data.insert.Stack.ImageAPI = ui.buff.str()
+				case INS_OS_NETAPI:
+					data.insert.Stack.NetworkAPI = ui.buff.str()
+				case INS_OS_VOLAPI:
+					data.insert.Stack.VolumeAPI = ui.buff.str()
+				case INS_SSH_NOTE,
+					 INS_RDP_NOTE + len(data.insert.Drive),
+					 INS_CMD_NOTE,
+					 INS_OS_NOTE:
+					data.insert.Note = ui.buff.str()
+				}
+				ui.insert_sel_ok = false
+				ui.buff.empty()
+				ui.s.HideCursor()
+			} else {
+				e_readline(event, &ui.buff, ui, data.home_dir)
 			}
 		}
 	}
