@@ -656,6 +656,7 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 				data.insert.parent = parent
 				data.insert.filename = filename
 				data.insert.Protocol = int8(event.Rune() - 48 - 1)
+				data.litems.curr.Host.Protocol = data.insert.Protocol
 				ui.insert_sel_ok = false
 				ui.s.HideCursor()
 				e_set_protocol_defaults(data, data.insert)

@@ -183,12 +183,12 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 		0,
 		nil,
 		insert,
-		data.litems.curr,
+		data.litems.curr.prev,
 		next,
 	}
 	curr := data.litems.curr
 	if curr != nil {
-		data.litems.add_after(item)
+		data.litems.overwrite(item)
 		// curr.next = item
 		// if curr.next.next != nil {
 		// 	data.litems.curr.next.next.prev = item
