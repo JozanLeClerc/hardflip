@@ -51,8 +51,6 @@
 
 package main
 
-import "fmt"
-
 func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
@@ -121,10 +119,6 @@ func i_draw_host_panel(ui HardUI, icons bool,
 	}
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false && ptr.Host != nil {
-			fmt.Println(ptr);
-			fmt.Println(ptr.ID);
-			fmt.Println(ptr.Host);
-			fmt.Println(ptr.Host.parent);
 			i_host_panel_host(ui,
 							  icons,
 							  ptr.Host.parent.Depth,

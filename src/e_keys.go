@@ -180,10 +180,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		data.insert = &HostNode{}
 		tmp.Host = data.insert
 		if data.litems.curr == nil {
-			data.litems.add_back(&tmp)
-			ui.s.Fini()
-			// FIX: segv if void
-			return true
+			tmp.Host.parent = data.ldirs.head
 		} else if data.litems.curr.is_dir() == true {
 			data.insert.parent = data.litems.curr.Dirs
 		} else {
