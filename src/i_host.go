@@ -117,6 +117,9 @@ func i_draw_host_panel(ui HardUI, icons bool,
 	if litems == nil || litems.head == nil {
 		return
 	}
+	if ui.mode == FUZZ_MODE {
+		return
+	}
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false && ptr.Host != nil {
 			i_host_panel_host(ui,
