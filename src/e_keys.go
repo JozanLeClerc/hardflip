@@ -393,8 +393,6 @@ func e_insert_name_events(data *HardData, ui *HardUI,
 	} else {
 		e_readline(event, &ui.buff, ui, data.home_dir)
 		data.litems.curr.Host.Name = ui.buff.str()
-		// TODO: here
-		// TODO: test first and last and yo
 	}
 	return false
 }
@@ -924,5 +922,6 @@ func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.buff.empty()
 		return true
 	}
+	// TODO: here
 	return false
 }
