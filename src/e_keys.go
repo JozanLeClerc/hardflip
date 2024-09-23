@@ -76,10 +76,6 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if event.Key() == tcell.KeyCtrlU ||
 			  event.Key() == tcell.KeyPgUp {
 		data.litems.inc(-(ui.dim[H] / 3))
-	} else if event.Key() == tcell.KeyCtrlF {
-		// TODO: maybe keymap these
-	} else if event.Key() == tcell.KeyCtrlB {
-		// TODO: maybe keymap these
 	} else if event.Rune() == '}' ||
 			  event.Rune() == ']' {
 		if next := data.litems.curr.next_dir(); next != nil {
@@ -262,6 +258,10 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		} else {
 			ui.buff.insert(data.litems.curr.Dirs.Name)
 		}
+	} else if (event.Rune() == '/' ||
+	           event.Key() == tcell.KeyCtrlF) &&
+	           data.litems.curr != nil {
+		ui.mode = FUZZ_MODE
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
 		ui.help_scroll = 0
@@ -912,6 +912,17 @@ func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.help_scroll += 1
 			i_draw_help(ui)
 		}
+	}
+	return false
+}
+
+func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
+	if event.Key() == tcell.KeyEscape ||
+	   event.Key() == tcell.KeyCtrlC {
+		ui.s.HideCursor()
+		ui.mode = NORMAL_MODE
+		ui.buff.empty()
+		return true
 	}
 	return false
 }

@@ -83,7 +83,8 @@ const (
 	INSERT_MODE
 	RENAME_MODE
 	HELP_MODE
-	MODE_MAX = HELP_MODE
+	FUZZ_MODE
+	MODE_MAX = FUZZ_MODE
 )
 
 const (
@@ -221,6 +222,7 @@ var HELP_NORMAL_KEYS = [][2]string{
 	{"e",						"Edit selected host"},
 	{"c | C | A",				"Rename selected item"},
 	{"<c-r>",					"Reload data and configuration"},
+	{"/ | <c-f>",				"Fuzzy search"},
 	{"?",						"Display this help menu"},
 	{"<c-c> | q",				"Quit"},
 }

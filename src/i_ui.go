@@ -512,6 +512,15 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		ui.buff.cursor, ui.dim[H] - 1)
 }
 
+func i_prompt_fuzz(ui HardUI) {
+	prompt := "Search: "
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE], prompt)
+	ui.s.ShowCursor(len(prompt) + 1 +
+		ui.buff.cursor, ui.dim[H] - 1)
+}
+
 func i_draw_remove_share(ui HardUI) {
 	text := "Really remove this share?"
 
@@ -819,6 +828,7 @@ func i_ui(data_dir string) {
 		INSERT_MODE:		e_insert_events,
 		RENAME_MODE:		e_rename_events,
 		HELP_MODE:			e_help_events,
+		FUZZ_MODE:			e_fuzz_events,
 	}
 	for {
 		data.ui.s.Clear()
@@ -861,6 +871,8 @@ func i_ui(data_dir string) {
 			i_prompt_insert(data.ui, data.litems.curr)
 		case HELP_MODE:
 			i_draw_help(&data.ui)
+		case FUZZ_MODE:
+			i_prompt_fuzz(data.ui)
 		}
 		if len(data.ui.match_buff) > 0 {
 			i_draw_match_buff(data.ui)
