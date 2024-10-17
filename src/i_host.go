@@ -51,7 +51,7 @@
 
 package main
 
-func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
+func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8, depth uint16,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
 	if dir == curr {
@@ -59,7 +59,7 @@ func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 		style = style.Reverse(true)
 	}
 	text := " "
-	for i := 0; i < int(dir.Depth) - 2; i++ {
+	for i := 0; i < int(depth) - 2; i++ {
 		text += "  "
 	}
 	if icons == true {
@@ -117,7 +117,9 @@ func i_draw_host_panel(ui HardUI, icons bool,
 	if litems == nil || litems.head == nil {
 		return
 	}
-	if ui.mode == FUZZ_MODE {
+	if ui.mode == FUZZ_MODE && data.lfuzz != nil {
+		i_draw_host_panel_fuzzy(ui, icons, data.lfuzz, data)
+		// TODO: draw fuzz list
 		return
 	}
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
@@ -136,8 +138,40 @@ func i_draw_host_panel(ui HardUI, icons bool,
 				dir_icon = 1
 			}
 			i_host_panel_dirs(ui, icons, dir_icon,
+							  ptr.Dirs.Depth,
 							  ptr.Dirs,
 							  litems.curr.Dirs,
+							  line)
+			line++
+		}
+	}
+}
+
+func i_draw_host_panel_fuzzy(ui HardUI, icons bool,
+					   lfuzz *ItemsList, data *HardData) {
+	line := 1
+	if lfuzz == nil || lfuzz.head == nil {
+		return
+	}
+	for ptr := lfuzz.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
+		if ptr.is_dir() == false && ptr.Host != nil {
+			i_host_panel_host(ui,
+							  icons,
+							  0,
+							  ptr.Host,
+							  lfuzz.curr.Host,
+							  data.yank,
+							  line)
+			line++
+		} else if ptr.Dirs != nil {
+			var dir_icon uint8
+			if data.folds[ptr.Dirs] != nil {
+				dir_icon = 1
+			}
+			i_host_panel_dirs(ui, icons, dir_icon,
+							  0,
+							  ptr.Dirs,
+							  lfuzz.curr.Dirs,
 							  line)
 			line++
 		}

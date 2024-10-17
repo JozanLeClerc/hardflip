@@ -517,6 +517,9 @@ func i_prompt_fuzz(ui HardUI) {
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
 	ui.s.ShowCursor(len(prompt) + 1 +
 		ui.buff.cursor, ui.dim[H] - 1)
 }
@@ -810,6 +813,7 @@ func i_ui(data_dir string) {
 		load_err,
 		nil,
 		[][2]string{},
+		nil,
 		nil,
 		nil,
 	}

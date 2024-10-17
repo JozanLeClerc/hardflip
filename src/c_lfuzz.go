@@ -42,39 +42,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_hardflip.go
- * Wed Mar 27 13:48:53 2024
+ * hardflip: src/c_lfuzz.go
+ * Thu, 17 Oct 2024 13:22:18 +0200
  * Joe
  *
- * the main
+ * fuzz hard
  */
 
 package main
 
-import "os"
-
-// the main data structure, holds up everything important
-type HardData struct {
-	litems	*ItemsList
-	ldirs	*DirsList
-	ui		HardUI
-	opts	HardOpts
-	colors	HardStyle
-	folds	map[*DirsNode]*ItemsList
-	data_dir string
-	home_dir string
-	load_err []error
-	insert_err []error
-	keys	[][2]string
-	insert	*HostNode
-	yank	*ItemsNode
-	lfuzz	*FuzzList
+type FuzzNode struct {
+	ptr  *ItemsNode
+	name string
+	prev *FuzzNode
+	next *FuzzNode
 }
 
-func main() {
-	if len(os.Args) > 1 {
-		c_cli_opts(os.Args[1])
+type FuzzList struct {
+	head *FuzzNode
+	last *FuzzNode
+	curr *FuzzNode
+	draw *FuzzNode
+}
+
+// adds an item node to the list
+func (lfuzz *FuzzList) add_back(node *ItemsNode) {
+	if litems.head == nil {
+		litems.head = node
+		litems.last = litems.head
+		litems.curr = litems.head
+		litems.draw = litems.head
+		return
 	}
-	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir)
+	last := litems.last
+	node.ID = last.ID + 1
+	node.prev = last
+	last.next = node
+	litems.last = last.next
 }
+
