@@ -261,7 +261,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if (event.Rune() == '/' ||
 	           event.Key() == tcell.KeyCtrlF) &&
 	           data.litems.curr != nil {
-		data.lfuzz = data.litems
+		e_create_fuzz_list(data)
 		ui.mode = FUZZ_MODE
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
@@ -937,17 +937,22 @@ func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	return false
 }
 
-func e_update_lfuzz(buff Buffer, lfuzz *ItemsList) {
+func e_create_fuzz_list(data *HardData) {
+	if data.litems.head == nil {
+		return
+	}
+	for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
+		data.lfuzz.add_back(ptr)
+	}
+}
+
+func e_update_lfuzz(buff Buffer, lfuzz *FuzzList) {
 	if lfuzz.head == nil {
 		return
 	}
 	for ptr := lfuzz.head; ptr != nil; ptr = ptr.next {
 		var name_runes []rune
-		if ptr.is_dir() == false {
-			name_runes = []rune(ptr.Host.Name)
-		} else {
-			name_runes = []rune(ptr.Dirs.Name)
-		}
+		name_runes = []rune(ptr.name)
 		var end_runes []rune
 		for _, buff_ptr := range buff.data {
 			for _, name_ptr := range name_runes {

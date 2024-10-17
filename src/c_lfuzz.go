@@ -65,19 +65,63 @@ type FuzzList struct {
 	draw *FuzzNode
 }
 
-// adds an item node to the list
+// adds a fuzz node to the list
 func (lfuzz *FuzzList) add_back(node *ItemsNode) {
-	if litems.head == nil {
-		litems.head = node
-		litems.last = litems.head
-		litems.curr = litems.head
-		litems.draw = litems.head
+	name := ""
+	if node.is_dir() == false {
+		name = node.Host.Name
+	} else {
+		name = node.Dirs.Name
+	}
+	fuzz_node := &FuzzNode{
+		node,
+		name,
+		nil,
+		nil,
+	}
+	if lfuzz.head == nil {
+		lfuzz.head = fuzz_node
+		lfuzz.last = lfuzz.head
+		lfuzz.curr = lfuzz.head
+		lfuzz.draw = lfuzz.head
 		return
 	}
-	last := litems.last
-	node.ID = last.ID + 1
-	node.prev = last
-	last.next = node
-	litems.last = last.next
+	last := lfuzz.last
+	fuzz_node.prev = last
+	last.next = fuzz_node
+	lfuzz.last = last.next
 }
 
+// removes n fuzz node from the list
+func (lfuzz *FuzzList) del(item *FuzzNode) {
+    if lfuzz.head == nil {
+        return
+    }
+    if lfuzz.head == item {
+        lfuzz.head = lfuzz.head.next
+		if lfuzz.head == nil {
+			lfuzz.last, lfuzz.curr, lfuzz.draw = nil, nil, nil
+			return
+		}
+		lfuzz.head.prev = nil
+		lfuzz.curr, lfuzz.draw = lfuzz.head, lfuzz.head
+        return
+    }
+	if lfuzz.last == item {
+		lfuzz.last = lfuzz.last.prev
+		lfuzz.last.next = nil
+		lfuzz.curr = lfuzz.last
+		if lfuzz.draw == item {
+			lfuzz.draw = lfuzz.last
+		}
+		return
+	}
+    ptr := lfuzz.head
+    for ptr.next != nil && ptr.next != item {
+        ptr = ptr.next
+    }
+    if ptr.next == item {
+        ptr.next = ptr.next.next
+		ptr.next.prev = ptr
+    }
+}

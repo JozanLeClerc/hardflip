@@ -148,11 +148,12 @@ func i_draw_host_panel(ui HardUI, icons bool,
 }
 
 func i_draw_host_panel_fuzzy(ui HardUI, icons bool,
-					   lfuzz *ItemsList, data *HardData) {
+					   lfuzz *FuzzList, data *HardData) {
 	line := 1
 	if lfuzz == nil || lfuzz.head == nil {
 		return
 	}
+	// TODO: find a way
 	for ptr := lfuzz.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ptr.is_dir() == false && ptr.Host != nil {
 			i_host_panel_host(ui,
