@@ -155,24 +155,25 @@ func i_draw_host_panel_fuzzy(ui HardUI, icons bool,
 	}
 	// TODO: find a way
 	for ptr := lfuzz.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
-		if ptr.is_dir() == false && ptr.Host != nil {
+		item := ptr.ptr
+		if item.is_dir() == false && item.Host != nil {
 			i_host_panel_host(ui,
 							  icons,
 							  0,
-							  ptr.Host,
-							  lfuzz.curr.Host,
+							  item.Host,
+							  lfuzz.curr.ptr.Host,
 							  data.yank,
 							  line)
 			line++
-		} else if ptr.Dirs != nil {
+		} else if item.Dirs != nil {
 			var dir_icon uint8
-			if data.folds[ptr.Dirs] != nil {
+			if data.folds[item.Dirs] != nil {
 				dir_icon = 1
 			}
 			i_host_panel_dirs(ui, icons, dir_icon,
 							  0,
-							  ptr.Dirs,
-							  lfuzz.curr.Dirs,
+							  item.Dirs,
+							  lfuzz.curr.ptr.Dirs,
 							  line)
 			line++
 		}
