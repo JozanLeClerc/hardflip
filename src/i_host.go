@@ -126,7 +126,6 @@ func i_draw_host_panel(ui HardUI, icons bool,
 	// }
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ui.mode == FUZZ_MODE && i_fuzz_check(ptr, &ui) == false {
-			// TODO: here
 			continue
 		}
 		if ptr.is_dir() == false && ptr.Host != nil {
@@ -176,6 +175,7 @@ func i_fuzz_check(ptr *ItemsNode, ui *HardUI) bool {
 		if len(end_runes) == 0 {
 			return false
 		}
+		// TODO: here
 	}
 	return true
 }
