@@ -62,6 +62,7 @@ import (
 func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	if event.Key() == tcell.KeyCtrlC ||
 	   event.Rune() == 'q' {
+		write_log("exit")
 		ui.s.Fini()
 		os.Exit(0)
 	} else if event.Rune() == 'j' ||
@@ -941,6 +942,7 @@ func e_create_fuzz_list(data *HardData) {
 	if data.litems.head == nil {
 		return
 	}
+	data.lfuzz = &FuzzList{}
 	for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
 		data.lfuzz.add_back(ptr)
 	}

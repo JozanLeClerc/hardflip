@@ -1,3 +1,5 @@
+// +build !debug
+
 /*
  * ========================
  * =====    ===============
@@ -42,40 +44,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * hardflip: src/c_hardflip.go
+ * hardflip: src/c_release.go
  * Wed Mar 27 13:48:53 2024
  * Joe
  *
- * the main
+ * debug shit
  */
 
 package main
 
-import "os"
-
-// the main data structure, holds up everything important
-type HardData struct {
-	litems	*ItemsList
-	ldirs	*DirsList
-	ui		HardUI
-	opts	HardOpts
-	colors	HardStyle
-	folds	map[*DirsNode]*ItemsList
-	data_dir string
-	home_dir string
-	load_err []error
-	insert_err []error
-	keys	[][2]string
-	insert	*HostNode
-	yank	*ItemsNode
-	lfuzz	*FuzzList
+func init_logger() {
 }
 
-func main() {
-	init_logger()
-	if len(os.Args) > 1 {
-		c_cli_opts(os.Args[1])
-	}
-	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir)
+func write_log(msg any) {
 }
