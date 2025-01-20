@@ -68,7 +68,6 @@ type HardData struct {
 	keys	[][2]string
 	insert	*HostNode
 	yank	*ItemsNode
-	lfuzz	*FuzzList
 }
 
 func main() {

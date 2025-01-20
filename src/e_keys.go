@@ -262,7 +262,6 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if (event.Rune() == '/' ||
 	           event.Key() == tcell.KeyCtrlF) &&
 	           data.litems.curr != nil {
-		e_create_fuzz_list(data)
 		ui.mode = FUZZ_MODE
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
@@ -922,50 +921,34 @@ func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.s.HideCursor()
 		ui.mode = NORMAL_MODE
 		ui.buff.empty()
-		data.lfuzz = nil
 		return true
 	} else if event.Key() == tcell.KeyEnter {
 		// TODO: select fuzzed item
 		ui.s.HideCursor()
 		ui.mode = NORMAL_MODE
 		ui.buff.empty()
-		data.lfuzz = nil
 	} else {
 		e_readline(event, &ui.buff, ui, data.home_dir)
-		e_update_lfuzz(ui.buff, data.lfuzz)
 	}
 	// TODO: here
 	return false
 }
 
-func e_create_fuzz_list(data *HardData) {
-	if data.litems.head == nil {
-		return
-	}
-	data.lfuzz = &FuzzList{}
-	for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
-		data.lfuzz.add_back(ptr)
-	}
-}
-
-func e_update_lfuzz(buff Buffer, lfuzz *FuzzList) {
-	if lfuzz.head == nil {
-		return
-	}
-	for ptr := lfuzz.head; ptr != nil; ptr = ptr.next {
-		var name_runes []rune
-		name_runes = []rune(ptr.name)
-		var end_runes []rune
-		for _, buff_ptr := range buff.data {
-			for _, name_ptr := range name_runes {
-				if buff_ptr == name_ptr {
-					end_runes = append(end_runes, buff_ptr)
-					continue
-				}
-			}
-		}
-		if len(end_runes) == 0 {
-			lfuzz.del(ptr)
-		}
-	}
-}
+// func e_update_lfuzz(buff Buffer) {
+// 	for ptr := lfuzz.head; ptr != nil; ptr = ptr.next {
+// 		var name_runes []rune
+// 		name_runes = []rune(ptr.name)
+// 		var end_runes []rune
+// 		for _, buff_ptr := range buff.data {
+// 			for _, name_ptr := range name_runes {
+// 				if buff_ptr == name_ptr {
+// 					end_runes = append(end_runes, buff_ptr)
+// 					continue
+// 				}
+// 			}
+// 		}
+// 		if len(end_runes) == 0 {
+// 			lfuzz.del(ptr)
+// 		}
+// 	}
+// }
