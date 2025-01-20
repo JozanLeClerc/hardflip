@@ -930,7 +930,6 @@ func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else {
 		e_readline(event, &ui.buff, ui, data.home_dir)
 	}
-	// TODO: here
 	return false
 }
 

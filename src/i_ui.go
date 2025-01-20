@@ -205,6 +205,33 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		box_style, title)
 }
 
+func i_set_box_style(ui *HardUI) {
+	tmp := tcell.StyleDefault.Background(tcell.ColorReset)
+
+	switch ui.mode {
+	case NORMAL_MODE,
+		 LOAD_MODE,
+		 WELCOME_MODE,
+		 HELP_MODE:
+		// FIX: with custom config for default ayayaya
+		ui.style[BOX_STYLE]  = tmp.Foreground(tcell.ColorReset)
+		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorReset)
+	case DELETE_MODE,
+		 ERROR_MODE:
+		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorRed).Dim(true)
+		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorRed).Dim(true)
+	case MKDIR_MODE,
+		 INSERT_NAME_MODE,
+		 INSERT_MODE,
+		 RENAME_MODE:
+		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
+		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
+	case FUZZ_MODE:
+		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorPurple)
+		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorPurple)
+	}
+}
+
 func i_draw_bottom_text(ui HardUI, insert *HostNode, insert_err []error) {
 	text := ""
 
@@ -835,6 +862,7 @@ func i_ui(data_dir string) {
 	}
 	for {
 		data.ui.s.Clear()
+		i_set_box_style(&data.ui)
 		i_draw_bottom_text(data.ui, data.insert, data.insert_err)
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)

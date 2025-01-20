@@ -467,6 +467,8 @@ func i_info_note(ui HardUI, host *HostNode, line int) {
 func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 	type info_func func(HardUI, *HostNode, int) int
 
+	if ui.mode == FUZZ_MODE {
+	}
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " Infos ", false)

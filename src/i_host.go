@@ -110,6 +110,8 @@ func i_host_panel_host(ui HardUI, icons bool,
 
 func i_draw_host_panel(ui HardUI, icons bool,
 					   litems *ItemsList, data *HardData) {
+	if ui.mode == FUZZ_MODE {
+	}
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " Hosts ", false)
@@ -124,6 +126,7 @@ func i_draw_host_panel(ui HardUI, icons bool,
 	// }
 	for ptr := litems.draw; ptr != nil && line < ui.dim[H] - 2; ptr = ptr.next {
 		if ui.mode == FUZZ_MODE && i_fuzz_check(ptr, &ui) == false {
+			// TODO: here
 			continue
 		}
 		if ptr.is_dir() == false && ptr.Host != nil {
