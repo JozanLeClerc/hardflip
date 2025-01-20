@@ -173,9 +173,9 @@ func i_fuzz_check(ptr *ItemsNode, ui *HardUI) bool {
 				end_runes = append(end_runes, buff_ptr)
 			}
 		}
-	}
-	if len(end_runes) == 0 {
-		return false
+		if len(end_runes) == 0 {
+			return false
+		}
 	}
 	return true
 }
