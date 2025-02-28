@@ -239,9 +239,7 @@ func i_draw_bottom_text(ui HardUI, insert *HostNode, insert_err []error) {
 		text = ui.msg_buff
 	} else {
 	switch ui.mode {
-		case NORMAL_MODE,
-			 INSERT_NAME_MODE,
-			 RENAME_MODE:
+		case NORMAL_MODE:
 			text = NORMAL_KEYS_HINTS
 		case DELETE_MODE:
 			text = CONFIRM_KEYS_HINTS
@@ -513,54 +511,32 @@ func i_prompt_dir(ui HardUI, prompt string, home_dir string) {
 	ui.s.ShowCursor(len(prompt) + 1 + ui.buff.cursor, ui.dim[H] - 1)
 }
 
-func i_prompt_insert(ui HardUI, litems *ItemsList, icons bool, curr *ItemsNode) {
-	// path := "/"
-	// if curr != nil {
-	// 	if ui.mode == RENAME_MODE {
-	// 		if curr.is_dir() == false {
-	// 			path = curr.path()
-	// 		} else {
-	// 			path = curr.Dirs.Parent.path()
-	// 		}
-	// 	} else {
-	// 		path = curr.path()
-	// 	}
-	// }
-	// path = path[1:]
-	// prompt := "Name: "
-	// i_draw_text(ui.s,
-	// 	1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-	// 	ui.style[DEF_STYLE], prompt)
-	// i_draw_text(ui.s, len(prompt) + 1,
-	// 	ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-	// 	ui.style[DEF_STYLE], path)
-	// i_draw_text(ui.s, len(prompt) + 1 + len(path),
-	// 	ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-	// 	ui.style[DEF_STYLE].Bold(true), ui.buff.str())
-	// ui.s.ShowCursor(len(prompt) + 1 + len(path) +
-	// 	ui.buff.cursor, ui.dim[H] - 1)
-	// FIX: fix this shit
-
-	logger.Println("draw: ", litems.draw.ID)
-	logger.Println("curr: ", litems.curr.ID)
-	spaces := 1
-	depth := 0
-	ptr := litems.curr;
-	if ptr.is_dir() == false && ptr.Host != nil {
-		depth = int(ptr.Host.parent.Depth)
-		for i := 0; i < depth + 1 - 2; i++ {
-			spaces += 2
-		}
-	} else if ptr.Dirs != nil {
-		depth = int(ptr.Dirs.Depth)
-		for i := 0; i < int(depth) - 2; i++ {
-			spaces += 2
+func i_prompt_insert(ui HardUI, curr *ItemsNode) {
+	path := "/"
+	if curr != nil {
+		if ui.mode == RENAME_MODE {
+			if curr.is_dir() == false {
+				path = curr.path()
+			} else {
+				path = curr.Dirs.Parent.path()
+			}
+		} else {
+			path = curr.path()
 		}
 	}
-	if icons == true {
-		spaces += 2
-	}
-	ui.s.ShowCursor(1 + spaces + ui.buff.cursor, 1 + litems.curr.ID - litems.draw.ID)
+	path = path[1:]
+	prompt := "Name: "
+	i_draw_text(ui.s,
+		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE], prompt)
+	i_draw_text(ui.s, len(prompt) + 1,
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE], path)
+	i_draw_text(ui.s, len(prompt) + 1 + len(path),
+		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
+		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
+	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
+		ui.buff.cursor, ui.dim[H] - 1)
 }
 
 func i_prompt_fuzz(ui HardUI) {
@@ -916,16 +892,14 @@ func i_ui(data_dir string) {
 		case MKDIR_MODE:
 			i_prompt_mkdir(data.ui, data.litems.curr)
 		case INSERT_NAME_MODE:
-			i_prompt_insert(data.ui, data.litems,
-				data.opts.Icon, data.litems.curr)
+			i_prompt_insert(data.ui, data.litems.curr)
 		case INSERT_MODE:
-			// i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
+			i_draw_insert_panel(&data.ui, data.insert, data.home_dir)
 			if data.insert_err != nil {
 				i_draw_insert_err_msg(data.ui, data.insert_err)
 			}
 		case RENAME_MODE:
-			i_prompt_insert(data.ui, data.litems,
-				data.opts.Icon, data.litems.curr)
+			i_prompt_insert(data.ui, data.litems.curr)
 		case HELP_MODE:
 			i_draw_help(&data.ui)
 		case FUZZ_MODE:

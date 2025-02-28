@@ -173,18 +173,18 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.insert_sel = 0
 		ui.insert_sel_ok = false
 		ui.insert_scroll = 0
-		tmp := ItemsNode{}
+		// tmp := ItemsNode{}
 		data.insert = &HostNode{}
-		tmp.Host = data.insert
-		if data.litems.curr == nil {
-			tmp.Host.parent = data.ldirs.head
-		} else if data.litems.curr.is_dir() == true {
-			data.insert.parent = data.litems.curr.Dirs
-		} else {
-			data.insert.parent = data.litems.curr.Host.parent
-		}
-		e_set_protocol_defaults(data, data.insert)
-		data.litems.add_after(&tmp)
+		// tmp.Host = data.insert
+		// if data.litems.curr == nil {
+		// 	tmp.Host.parent = data.ldirs.head
+		// } else if data.litems.curr.is_dir() == true {
+		// 	data.insert.parent = data.litems.curr.Dirs
+		// } else {
+		// 	data.insert.parent = data.litems.curr.Host.parent
+		// }
+		// e_set_protocol_defaults(data, data.insert)
+		// data.litems.add_after(&tmp)
 	} else if event.Rune() == 'e' &&
 			  data.litems.curr != nil &&
 			  data.litems.curr.is_dir() == false {
@@ -366,13 +366,6 @@ func e_insert_name_events(data *HardData, ui *HardUI,
 		ui.insert_sel = 0
 		data.insert = nil
 		ui.buff.empty()
-		tmp := data.litems.curr.prev
-		data.litems.del(data.litems.curr)
-		if tmp == nil {
-			tmp = data.litems.head
-		}
-		data.litems.curr = tmp
-		data.litems.reset_id()
 	} else if event.Key() == tcell.KeyEnter {
 		if ui.buff.len() == 0 {
 			ui.s.HideCursor()
@@ -381,20 +374,16 @@ func e_insert_name_events(data *HardData, ui *HardUI,
 			ui.insert_sel_ok = false
 			data.insert = nil
 			ui.buff.empty()
-			tmp := data.litems.curr.prev
-			data.litems.del(data.litems.curr)
-			if tmp == nil {
-				tmp = data.litems.head
-			}
-			data.litems.curr = tmp
 			return true
 		}
+		data.insert.Name = ui.buff.str()
+		data.insert.parent = data.litems.curr.Host.parent
+		e_set_protocol_defaults(data, data.insert)
 		ui.s.HideCursor()
 		ui.mode = INSERT_MODE
 		ui.buff.empty()
 	} else {
 		e_readline(event, &ui.buff, ui, data.home_dir)
-		data.litems.curr.Host.Name = ui.buff.str()
 	}
 	return false
 }
@@ -417,12 +406,6 @@ func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.s.HideCursor()
 			ui.mode = NORMAL_MODE
 			ui.insert_sel = 0
-			tmp := data.litems.curr.prev
-			data.litems.del(data.litems.curr)
-			if tmp == nil {
-				tmp = data.litems.head
-			}
-			data.litems.curr = tmp
 			data.insert = nil
 			ui.buff.empty()
 		} else if event.Rune() == 'j' ||
