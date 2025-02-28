@@ -372,6 +372,7 @@ func e_insert_name_events(data *HardData, ui *HardUI,
 			tmp = data.litems.head
 		}
 		data.litems.curr = tmp
+		data.litems.reset_id()
 	} else if event.Key() == tcell.KeyEnter {
 		if ui.buff.len() == 0 {
 			ui.s.HideCursor()
