@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_insert.go
- * Fri, 24 May 2024 17:47:03 +0200
+ * Tue, 26 Aug 2025 18:40:46 +0200
  * Joe
  *
  * insert a new host
@@ -183,12 +183,12 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 		0,
 		nil,
 		insert,
-		data.litems.curr.prev,
+		data.litems.curr,
 		next,
 	}
 	curr := data.litems.curr
 	if curr != nil {
-		data.litems.overwrite(item)
+		data.litems.add_after(item)
 		// curr.next = item
 		// if curr.next.next != nil {
 		// 	data.litems.curr.next.next.prev = item

@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_host.go
- * Tue Jan 23 18:11:24 2024
+ * Tue, 26 Aug 2025 18:38:20 +0200
  * Joe
  *
  * interfacing hosts
@@ -51,14 +51,14 @@
 
 package main
 
-func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8, depth uint16,
+func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
 	if dir == curr {
 		style = style.Reverse(true)
 	}
 	text := " "
-	for i := 0; i < int(depth) - 2; i++ {
+	for i := 0; i < int(dir.Depth) - 2; i++ {
 		text += "  "
 	}
 	if icons == true {
@@ -131,7 +131,6 @@ func i_draw_host_panel(ui HardUI, icons bool,
 				dir_icon = 1
 			}
 			i_host_panel_dirs(ui, icons, dir_icon,
-							  ptr.Dirs.Depth,
 							  ptr.Dirs,
 							  litems.curr.Dirs,
 							  line)
