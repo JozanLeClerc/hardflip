@@ -251,7 +251,6 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	           event.Key() == tcell.KeyCtrlF) &&
 	           data.litems.curr != nil {
 		c_fuzz(data)
-		// TODO: fzf here
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
 		ui.help_scroll = 0
