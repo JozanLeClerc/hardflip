@@ -226,9 +226,6 @@ func i_set_box_style(ui *HardUI) {
 		 RENAME_MODE:
 		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
 		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
-	case FUZZ_MODE:
-		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorPurple)
-		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorPurple)
 	}
 }
 
@@ -536,18 +533,6 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
 	ui.s.ShowCursor(len(prompt) + 1 + len(path) +
-		ui.buff.cursor, ui.dim[H] - 1)
-}
-
-func i_prompt_fuzz(ui HardUI) {
-	prompt := "Search: "
-	i_draw_text(ui.s,
-		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE], prompt)
-	i_draw_text(ui.s, len(prompt) + 1,
-		ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
-		ui.style[DEF_STYLE].Bold(true), ui.buff.str())
-	ui.s.ShowCursor(len(prompt) + 1 +
 		ui.buff.cursor, ui.dim[H] - 1)
 }
 
@@ -867,7 +852,7 @@ func i_ui(data_dir string) {
 		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
-		if data.load_err != nil && len(data.load_err) > 0 {
+		if len(data.load_err) > 0 {
 			data.ui.mode = ERROR_MODE
 		}
 		switch data.ui.mode {
@@ -902,8 +887,6 @@ func i_ui(data_dir string) {
 			i_prompt_insert(data.ui, data.litems.curr)
 		case HELP_MODE:
 			i_draw_help(&data.ui)
-		case FUZZ_MODE:
-			i_prompt_fuzz(data.ui)
 		}
 		if len(data.ui.match_buff) > 0 {
 			i_draw_match_buff(data.ui)
