@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Thu Apr 25 16:20:41 2024
+ * Tue, 26 Aug 2025 18:48:33 +0200
  * Joe
  *
  * interfacing with the user
