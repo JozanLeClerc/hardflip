@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/i_ui.go
- * Tue, 26 Aug 2025 18:48:33 +0200
+ * Tue, 26 Aug 2025 18:55:49 +0200
  * Joe
  *
  * interfacing with the user
@@ -580,9 +580,7 @@ func i_draw_insert_err_msg(ui HardUI, insert_err []error) {
 	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(insert_err)
-	if line < 0 {
-		line = 0
-	}
+	line = max(line, 0)
 	for _, err := range insert_err {
 		line += 1
 		err_str := fmt.Sprintf("%v", err)
@@ -596,9 +594,7 @@ func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(load_err)
-	if line < 0 {
-		line = 0
-	}
+	line = max(line, 0)
 	for _, err := range load_err {
 		line += 1
 		err_str := fmt.Sprintf("%v", err)
@@ -715,7 +711,7 @@ func i_load_ui(data_dir string,
 }
 
 func i_init_styles(ui *HardUI, styles HardStyle) {
-	for i := 0; i < STYLE_MAX + 1; i++ {
+	for i := range STYLE_MAX + 1 {
 		tmp := tcell.StyleDefault.Background(tcell.ColorReset)
 		curr_color := "default"
 		switch i {

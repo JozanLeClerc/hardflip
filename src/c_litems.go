@@ -83,25 +83,25 @@ func (litems *ItemsList) add_back(node *ItemsNode) {
 }
 
 // replaces an item
-func (litems *ItemsList) overwrite(node *ItemsNode) {
-	if litems.head == nil || litems.curr == nil {
-		litems.add_back(node)
-		return
-	}
-	curr := litems.curr
-	node.prev = curr.prev
-	node.next = curr.next
-	if node.next != nil {
-		curr.next.prev = node
-	}
-	if litems.last == curr {
-		litems.last = node
-	}
-	if curr.prev != nil {
-		curr.prev.next = node
-	}
-	litems.curr = node
-}
+// func (litems *ItemsList) overwrite(node *ItemsNode) {
+// 	if litems.head == nil || litems.curr == nil {
+// 		litems.add_back(node)
+// 		return
+// 	}
+// 	curr := litems.curr
+// 	node.prev = curr.prev
+// 	node.next = curr.next
+// 	if node.next != nil {
+// 		curr.next.prev = node
+// 	}
+// 	if litems.last == curr {
+// 		litems.last = node
+// 	}
+// 	if curr.prev != nil {
+// 		curr.prev.next = node
+// 	}
+// 	litems.curr = node
+// }
 
 // adds an item node to the list after the current selected item
 func (litems *ItemsList) add_after(node *ItemsNode) {

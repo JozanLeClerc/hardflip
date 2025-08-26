@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/c_exec.go
- * Tue Apr 23 17:47:58 2024
+ * Tue, 26 Aug 2025 19:17:04 +0200
  * Joe
  *
  * exec the command at some point
@@ -104,7 +104,10 @@ func c_format_ssh(host *HostNode, pass string) ([]string, []string) {
 		cmd_fmt = append(cmd_fmt, "sshpass", "-p", pass)
 	}
 
-	cmd_fmt = append(cmd_fmt, "ssh", "-F", "none")
+	cmd_fmt = append(cmd_fmt, "ssh", "-F", "none",
+		"-o", "StrictHostKeyChecking=no",
+		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "LogLevel=ERROR")
 	if len(host.Priv) > 0 {
 		cmd_fmt = append(cmd_fmt, "-i", host.Priv)
 	}
@@ -157,13 +160,13 @@ func c_format_rdp(host *HostNode, pass string) ([]string, []string) {
 			cmd_fmt = append(cmd_fmt, "/drive:" + share + "," + path)
 		}
 	}
-	if host.Quality == 0 {
+	switch host.Quality {
+	case 0:
 		cmd_fmt = append(cmd_fmt,
 			"-aero", "-menu-anims", "-window-drag", "-wallpaper",
 			"-decorations", "-fonts", "-themes",
 			"/bpp:8", "/compression-level:2")
-	} else if host.Quality == 1 {
-	} else if host.Quality == 2 {
+	case 2:
 		cmd_fmt = append(cmd_fmt,
 			"+aero", "+menu-anims", "+window-drag",
 			"+decorations", "+fonts", "+themes", "/gfx:RFX", "/rfx", "/gdi:hw",

@@ -77,35 +77,35 @@ func (ldirs *DirsList) add_back(node *DirsNode) {
 }
 
 // removes a dir node from the list
-func (ldirs *DirsList) del(dir *DirsNode) {
-	if ldirs.head == nil {
-		return
-	}
-	if ldirs.head == dir {
-		ldirs.head = ldirs.head.next
-		if ldirs.head == nil {
-			ldirs.last = nil
-			return
-		}
-		return
-	}
-	if ldirs.last == dir {
-		ptr := ldirs.head
-		for ptr.next != nil {
-			ptr = ptr.next
-		}
-		ldirs.last = ptr
-		ldirs.last.next = nil
-		return
-	}
-	ptr := ldirs.head
-	for ptr.next != nil && ptr.next != dir {
-		ptr = ptr.next
-	}
-	if ptr.next == dir {
-		ptr.next = ptr.next.next
-	}
-}
+// func (ldirs *DirsList) del(dir *DirsNode) {
+// 	if ldirs.head == nil {
+// 		return
+// 	}
+// 	if ldirs.head == dir {
+// 		ldirs.head = ldirs.head.next
+// 		if ldirs.head == nil {
+// 			ldirs.last = nil
+// 			return
+// 		}
+// 		return
+// 	}
+// 	if ldirs.last == dir {
+// 		ptr := ldirs.head
+// 		for ptr.next != nil {
+// 			ptr = ptr.next
+// 		}
+// 		ldirs.last = ptr
+// 		ldirs.last.next = nil
+// 		return
+// 	}
+// 	ptr := ldirs.head
+// 	for ptr.next != nil && ptr.next != dir {
+// 		ptr = ptr.next
+// 	}
+// 	if ptr.next == dir {
+// 		ptr.next = ptr.next.next
+// 	}
+// }
 
 // returns a string with the full path of the dir
 func (dir *DirsNode) path() string {
@@ -122,14 +122,14 @@ func (dir *DirsNode) path() string {
 	return path
 }
 
-func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
-	if ldirs.head == dir {
-		return dir
-	}
-	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
-		if ptr.next == dir {
-			return ptr
-		}
-	}
-	return nil
-}
+// func (ldirs *DirsList) prev(dir *DirsNode) *DirsNode {
+// 	if ldirs.head == dir {
+// 		return dir
+// 	}
+// 	for ptr := ldirs.head; ptr != nil; ptr = ptr.next {
+// 		if ptr.next == dir {
+// 			return ptr
+// 		}
+// 	}
+// 	return nil
+// }

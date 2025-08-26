@@ -349,8 +349,7 @@ func e_mkdir_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 func e_insert_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	if data.insert == nil {
 		if event.Key() == tcell.KeyEscape ||
-		   event.Key() == tcell.KeyCtrlC ||
-		   event.Rune() == 'q' {
+		   event.Key() == tcell.KeyCtrlC {
 			ui.s.HideCursor()
 			ui.mode = NORMAL_MODE
 			ui.insert_sel = 0

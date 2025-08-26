@@ -153,12 +153,12 @@ func (lhost *HostList) del(host *HostNode) {
     }
 }
 
-func (lhost *HostList) count() int {
-	curr := lhost.head
-	var count int
-
-	for count = 0; curr != nil; count++ {
-		curr = curr.next
-	}
-	return count
-}
+// func (lhost *HostList) count() int {
+// 	curr := lhost.head
+// 	var count int
+//
+// 	for count = 0; curr != nil; count++ {
+// 		curr = curr.next
+// 	}
+// 	return count
+// }

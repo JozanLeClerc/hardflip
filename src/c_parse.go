@@ -90,7 +90,7 @@ func c_read_yaml_file(file string) (*HostNode, error) {
 		return nil, err
 	}
 	if err := yaml.Unmarshal(yaml_file, &host); err != nil {
-		err = errors.New(fmt.Sprintf("%s: %v", file, err))
+		err = fmt.Errorf("%s: %v", file, err)
 		return nil, err
 	}
 	if len(host.Name) == 0 {

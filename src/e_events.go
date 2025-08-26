@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * hardflip: src/e_events.go
- * Thu Apr 11 16:00:44 2024
+ * Tue, 26 Aug 2025 19:02:24 +0200
  * Joe
  *
  * events in the code
@@ -52,6 +52,7 @@
 package main
 
 import (
+	"maps"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -98,7 +99,7 @@ func e_unfold_dir(data *HardData, item *ItemsNode) {
 		return
 	}
 	// single empty dir
-	if start == item && end == end { // HACK: i forgot why end == end
+	if start == item {
 		e_set_unfold(data, item)
 		return
 	}
@@ -545,9 +546,7 @@ func e_deep_copy_host(base *HostNode) HostNode {
 	new_host = *base
 	if base.Drive != nil {
 		new_host.Drive = make(map[string]string, len(base.Drive))
-		for k, v := range base.Drive {
-			new_host.Drive[k] = v
-		}
+		maps.Copy(new_host.Drive, base.Drive)
 	}
 	if base.Shell != nil {
 		new_host.Shell = make([]string, len(base.Shell))

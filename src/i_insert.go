@@ -211,9 +211,10 @@ func i_insert_check_ok(data *HardData, in *HostNode) {
 	if len(in.Host) == 0 {
 		if (in.Protocol == PROTOCOL_RDP && len(in.RDPFile) > 0) == false {
 			text := "no host"
-			if in.Protocol == PROTOCOL_CMD {
+			switch in.Protocol {
+			case PROTOCOL_CMD:
 				text = "no command"
-			} else if in.Protocol == PROTOCOL_OS {
+			case PROTOCOL_OS:
 				text = "no endpoint"
 			}
 			data.insert_err = append(data.insert_err, errors.New(text))
@@ -326,7 +327,7 @@ func i_draw_text_box(ui *HardUI, line int, dim Quad, label, content string,
 		tbox_style = tbox_style.Foreground(tcell.ColorRed)
 	}
 	spaces := ""
-	for i := 0; i < tbox_size; i++ {
+	for range tbox_size {
 		spaces += " "
 	}
 	i_draw_text(ui.s, ui.dim[W] / 2, line, dim.R, line,
@@ -348,11 +349,11 @@ func i_draw_ok_butt(ui *HardUI, dim Quad, line, id, selected int) {
 		style = style.Reverse(true).Dim(false)
 	}
 	buff := "["
-	for i := 0; i < butt_size / 2 - len(txt); i++ {
+	for range butt_size / 2 - len(txt) {
 		buff += " "
 	}
 	buff += txt
-	for i := 0; i < butt_size / 2 - len(txt); i++ {
+	for range butt_size / 2 - len(txt) {
 		buff += " "
 	}
 	buff += "]"
