@@ -908,31 +908,10 @@ func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.buff.empty()
 		return true
 	} else if event.Key() == tcell.KeyEnter {
-		// TODO: select fuzzed item
 		ui.s.HideCursor()
 		ui.mode = NORMAL_MODE
 		ui.buff.empty()
 	} else {
-		e_readline(event, &ui.buff, ui, data.home_dir)
 	}
 	return false
 }
-
-// func e_update_lfuzz(buff Buffer) {
-// 	for ptr := lfuzz.head; ptr != nil; ptr = ptr.next {
-// 		var name_runes []rune
-// 		name_runes = []rune(ptr.name)
-// 		var end_runes []rune
-// 		for _, buff_ptr := range buff.data {
-// 			for _, name_ptr := range name_runes {
-// 				if buff_ptr == name_ptr {
-// 					end_runes = append(end_runes, buff_ptr)
-// 					continue
-// 				}
-// 			}
-// 		}
-// 		if len(end_runes) == 0 {
-// 			lfuzz.del(ptr)
-// 		}
-// 	}
-// }

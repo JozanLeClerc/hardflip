@@ -63,6 +63,7 @@
 
 ## v1.2 - ghetto bird
 
+- [ ] ssh port rdr
 - [ ] vnc
 - [ ] tree-like branches
 

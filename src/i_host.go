@@ -55,7 +55,6 @@ func i_host_panel_dirs(ui HardUI, icons bool, dir_icon uint8, depth uint16,
 	dir *DirsNode, curr *DirsNode, line int) {
 	style := ui.style[DIR_STYLE]
 	if dir == curr {
-		// style = style.Background(tcell.ColorBlack)
 		style = style.Reverse(true)
 	}
 	text := " "
