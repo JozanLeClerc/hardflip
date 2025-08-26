@@ -837,7 +837,6 @@ func i_ui(data_dir string) {
 		INSERT_MODE:	e_insert_events,
 		RENAME_MODE:	e_rename_events,
 		HELP_MODE:		e_help_events,
-		FUZZ_MODE:		e_fuzz_events,
 	}
 	for {
 		data.ui.s.Clear()

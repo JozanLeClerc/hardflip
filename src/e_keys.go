@@ -250,7 +250,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	} else if (event.Rune() == '/' ||
 	           event.Key() == tcell.KeyCtrlF) &&
 	           data.litems.curr != nil {
-		// ui.mode = FUZZ_MODE
+		c_fuzz(data)
 		// TODO: fzf here
 	} else if event.Rune() == '?' {
 		ui.mode = HELP_MODE
@@ -881,22 +881,6 @@ func e_help_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.help_scroll += 1
 			i_draw_help(ui)
 		}
-	}
-	return false
-}
-
-func e_fuzz_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
-	if event.Key() == tcell.KeyEscape ||
-	   event.Key() == tcell.KeyCtrlC {
-		ui.s.HideCursor()
-		ui.mode = NORMAL_MODE
-		ui.buff.empty()
-		return true
-	} else if event.Key() == tcell.KeyEnter {
-		ui.s.HideCursor()
-		ui.mode = NORMAL_MODE
-		ui.buff.empty()
-	} else {
 	}
 	return false
 }
