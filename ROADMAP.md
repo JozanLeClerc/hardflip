@@ -58,18 +58,18 @@
 ## v1.1 - 360 hard
 
 - [ ] fuzz
-- [ ] undo maybe
 - [ ] better insert form
+- [ ] ssh port rdr
 
 ## v1.2 - ghetto bird
 
-- [ ] ssh port rdr
 - [ ] vnc
 - [ ] tree-like branches
 
 ## v1.3 - late flip
 
 - [ ] sorting options (yea like never)
+- [ ] undo maybe
 
 ## v1.4
 

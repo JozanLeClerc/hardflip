@@ -61,15 +61,16 @@ const (
 )
 
 const (
-	NORMAL_KEYS_HINTS = `a/i: insert host -
-m: mkdir -
-[C-r]: reload -
-?: help`
-	ERROR_KEYS_HINTS = "[Enter]: ok"
-	CONFIRM_KEYS_HINTS = `y/n: yes - no`
-	HELP_KEYS_HINTS = `q: close -
-j: down -
-k: up`
+	NORMAL_KEYS_HINTS = `add host: a/i: |
+mkdir: m |
+reload: <c-r> |
+search: / |
+keybinds: ?`
+	ERROR_KEYS_HINTS = "ok: [Enter]"
+	CONFIRM_KEYS_HINTS = `yes-no: y/n`
+	HELP_KEYS_HINTS = `close: q |
+down: j |
+up: k`
 )
 
 const (

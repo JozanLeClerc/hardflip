@@ -313,9 +313,6 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		ui.s.Fini()
 		os.Exit(0)
 	} else if silent == false {
-		if err := ui.s.Resume(); err != nil {
-			ui.s.Fini()
-			c_die("view", err)
-		}
+		c_resume_or_die(ui)
 	}
 }

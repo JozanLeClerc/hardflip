@@ -157,6 +157,15 @@ func c_error_mode(msg string, err error, ui *HardUI) {
 	ui.err[ERROR_ERR] = err_str
 }
 
+// c_resume_or_die attempts to resume a previously suspended tcell.Screen
+// it will kill the program using c_die() in case of resume failure
+func c_resume_or_die(ui *HardUI) {
+	if err := ui.s.Resume(); err != nil {
+		ui.s.Fini()
+		c_die("view", err)
+	}
+}
+
 // c_encrypt_str encrypts a string with the given gpgkey
 func c_encrypt_str(str string, gpg string) (string, error) {
 	if len(gpg) == 0 || gpg == "plain" {
