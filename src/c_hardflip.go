@@ -71,7 +71,6 @@ type HardData struct {
 }
 
 func main() {
-	init_logger()
 	if len(os.Args) > 1 {
 		c_cli_opts(os.Args[1])
 	}

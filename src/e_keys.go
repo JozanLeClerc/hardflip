@@ -62,7 +62,6 @@ import (
 func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 	if event.Key() == tcell.KeyCtrlC ||
 	   event.Rune() == 'q' {
-		write_log("exit")
 		ui.s.Fini()
 		os.Exit(0)
 	} else if event.Rune() == 'j' ||
