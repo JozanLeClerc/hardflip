@@ -52,14 +52,13 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os/exec"
+	"path/filepath"
 	"strings"
-	"time"
 )
 
-func c_init_pipes(ui *HardUI,
+func c_fuzz_init_pipes(ui *HardUI,
 	search *exec.Cmd) (io.WriteCloser, io.ReadCloser) {
 	stdin, err := search.StdinPipe()
 	if err != nil {
@@ -76,13 +75,29 @@ func c_init_pipes(ui *HardUI,
 	return stdin, stdout
 }
 
+func c_fuzz_find_item(str_out string, litems *ItemsList) (*ItemsNode) {
+	var ptr *ItemsNode
+
+	path, name := filepath.Split(str_out)
+	path = "/" + path
+	for ptr = litems.head; ptr != nil; ptr = ptr.next {
+		if ptr.is_dir() == true {
+			continue
+		}
+		if strings.Compare(name, ptr.Host.Name) == 0 && strings.Compare(path, ptr.path()) == 0 {
+			return ptr
+		}
+	}
+	return nil
+}
+
 func c_fuzz(data *HardData, ui *HardUI) {
 	if err := ui.s.Suspend(); err != nil {
 		c_error_mode("screen", err, ui)
 		return
 	}
 	search := exec.Command("fzf")
-	stdin, stdout := c_init_pipes(ui, search)
+	stdin, stdout := c_fuzz_init_pipes(ui, search)
 	if stdin == nil || stdout == nil {
 		return
 	}
@@ -106,7 +121,13 @@ func c_fuzz(data *HardData, ui *HardUI) {
 		c_die("search stdout", err)
 	}
 	str_out := strings.TrimSuffix(string(output), "\n")
-	fmt.Printf("[%s]\n", str_out)
-	time.Sleep(3 * time.Second)
 	c_resume_or_die(ui)
+	if len(str_out) > 0 {
+		item := c_fuzz_find_item(str_out, data.litems)
+		if item == nil {
+			c_error_mode("item not found", nil, ui)
+			return
+		}
+		data.litems.curr = item
+	}
 }
