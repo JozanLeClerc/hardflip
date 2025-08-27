@@ -59,21 +59,21 @@ import (
 	"time"
 )
 
-func c_list_items(litems *ItemsList, stdin io.WriteCloser) {
-	for ptr := litems.head; ptr != nil; ptr = ptr.next {
-		var forebears []string
-
-		if ptr.is_dir() == true {
-			continue
-		}
-		for rptr := ptr.Host.parent; len(rptr.Name) > 0; rptr = rptr.Parent {
-			forebears = append(forebears, rptr.Name)
-		}
-		for i := len(forebears) - 1; i >= 0; i-- {
-			io.WriteString(stdin, forebears[i] + "/")
-		}
-		io.WriteString(stdin, ptr.Host.Name + "\n")
+func c_init_pipes(ui *HardUI,
+	search *exec.Cmd) (io.WriteCloser, io.ReadCloser) {
+	stdin, err := search.StdinPipe()
+	if err != nil {
+		c_error_mode("search stdin pipe", err, ui)
+		c_resume_or_die(ui)
+		return nil, nil
 	}
+	stdout, err := search.StdoutPipe()
+	if err != nil {
+		c_error_mode("search stdout pipe", err, ui)
+		c_resume_or_die(ui)
+		return nil, nil
+	}
+	return stdin, stdout
 }
 
 func c_fuzz(data *HardData, ui *HardUI) {
@@ -82,16 +82,8 @@ func c_fuzz(data *HardData, ui *HardUI) {
 		return
 	}
 	search := exec.Command("fzf")
-	stdin, err := search.StdinPipe()
-	if err != nil {
-		c_error_mode("search stdin pipe", err, ui)
-		c_resume_or_die(ui)
-		return
-	}
-	stdout, err := search.StdoutPipe()
-	if err != nil {
-		c_error_mode("search stdout pipe", err, ui)
-		c_resume_or_die(ui)
+	stdin, stdout := c_init_pipes(ui, search)
+	if stdin == nil || stdout == nil {
 		return
 	}
 	if err := search.Start(); err != nil {
@@ -101,12 +93,17 @@ func c_fuzz(data *HardData, ui *HardUI) {
 	}
 	go func() {
 		defer stdin.Close()
-		c_list_items(data.litems, stdin)
+		for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
+			if ptr.is_dir() == true {
+				continue
+			}
+			io.WriteString(stdin, ptr.path()[1:] + ptr.Host.Name + "\n")
+		}
 	}()
 	output, err := io.ReadAll(stdout)
 	if err != nil {
 		ui.s.Fini()
-		c_die("fuck it failed", err)
+		c_die("search stdout", err)
 	}
 	str_out := strings.TrimSuffix(string(output), "\n")
 	fmt.Printf("[%s]\n", str_out)
