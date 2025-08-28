@@ -84,7 +84,7 @@ func c_fuzz_find_item(str_out string, litems *ItemsList) (*ItemsNode) {
 		if ptr.is_dir() == true {
 			continue
 		}
-		if strings.Compare(name, ptr.Host.Name) == 0 && strings.Compare(path, ptr.path()) == 0 {
+		if name == ptr.Host.Name && path == ptr.path() {
 			return ptr
 		}
 	}

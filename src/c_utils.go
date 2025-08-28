@@ -252,13 +252,13 @@ func c_print_version() {
 
 // prints the help and exits
 func c_print_help() {
-	fmt.Println(`Usage:
+	fmt.Println(`usage:
   hf [options]
 
-Options:`)
+options:`)
 	flag.PrintDefaults()
 	fmt.Println(`
-Report bugs to <rbo@gmx.us>`)
+report bugs to <rbo@gmx.us>`)
 	os.Exit(0)
 }
 
@@ -269,7 +269,7 @@ func c_not_an_arg(arg string) {
 }
 
 func c_cli_opts() (bool, bool) {
-	h := flag.Bool("h", false, "print this help")
+	h := flag.Bool("h", false, "show usage")
 	n := flag.Bool("n", false, "disable loop mode")
 	s := flag.Bool("s", false, "search-only mode (implies -n)")
 	v := flag.Bool("v", false, "print the version number and name")
