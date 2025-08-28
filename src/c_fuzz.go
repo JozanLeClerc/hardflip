@@ -92,9 +92,11 @@ func c_fuzz_find_item(str_out string, litems *ItemsList) (*ItemsNode) {
 }
 
 func c_fuzz(data *HardData, ui *HardUI) {
-	if err := ui.s.Suspend(); err != nil {
-		c_error_mode("screen", err, ui)
-		return
+	if ui.s != nil {
+		if err := ui.s.Suspend(); err != nil {
+			c_error_mode("screen", err, ui)
+			return
+		}
 	}
 	search := exec.Command("fzf")
 	stdin, stdout := c_fuzz_init_pipes(ui, search)
@@ -103,7 +105,9 @@ func c_fuzz(data *HardData, ui *HardUI) {
 	}
 	if err := search.Start(); err != nil {
 		c_error_mode("fzf", err, ui)
-		c_resume_or_die(ui)
+		if ui.s != nil {
+			c_resume_or_die(ui)
+		}
 		return
 	}
 	go func() {
@@ -117,15 +121,21 @@ func c_fuzz(data *HardData, ui *HardUI) {
 	}()
 	output, err := io.ReadAll(stdout)
 	if err != nil {
-		ui.s.Fini()
+		if ui.s != nil {
+			ui.s.Fini()
+		}
 		c_die("search stdout", err)
 	}
 	str_out := strings.TrimSuffix(string(output), "\n")
-	c_resume_or_die(ui)
+	if ui.s != nil {
+		c_resume_or_die(ui)
+	}
 	if len(str_out) > 0 {
 		item := c_fuzz_find_item(str_out, data.litems)
 		if item == nil {
-			c_error_mode("item not found", nil, ui)
+			if ui.s != nil {
+				c_error_mode("item not found", nil, ui)
+			}
 			return
 		}
 		data.litems.curr = item

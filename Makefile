@@ -27,7 +27,7 @@ DEST			:= /usr
 .DEFAULT_GOAL	:= ${TARGET}
 
 run: ${SRC}
-	go run ${SRC_DIR}
+	go run ${SRC_DIR} -s
 
 ${TARGET}: ${SRC}
 	go build -o ${TARGET} ${SRC_DIR}
