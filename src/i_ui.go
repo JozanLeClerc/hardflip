@@ -783,7 +783,7 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
 
-func i_ui(data_dir string, no_loop bool) {
+func i_ui(data_dir string, no_loop, search_mode bool) {
 	home_dir, _ := os.UserHomeDir()
 	ui := HardUI{}
 	opts := HardOpts{}
@@ -825,6 +825,8 @@ func i_ui(data_dir string, no_loop bool) {
 		[][2]string{},
 		nil,
 		nil,
+		no_loop,
+		search_mode,
 	}
 	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
 		data.ui.mode = WELCOME_MODE

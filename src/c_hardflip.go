@@ -68,14 +68,16 @@ type HardData struct {
 	keys	[][2]string
 	insert	*HostNode
 	yank	*ItemsNode
+	n_arg	bool
+	s_arg	bool
 }
 
 func main() {
-	var n_opt, _ bool
+	var n_arg, s_arg bool
 
 	if len(os.Args) > 1 {
-		n_opt, _ = c_cli_opts()
+		n_arg, s_arg = c_cli_opts()
 	}
 	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir, n_opt)
+	i_ui(data_dir, n_arg, s_arg)
 }

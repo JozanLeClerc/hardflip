@@ -4,7 +4,6 @@ go 1.25.0
 
 require (
 	github.com/gdamore/tcell/v2 v2.9.0
-	github.com/jessevdk/go-flags v1.6.1
 	golang.org/x/term v0.34.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.33.4

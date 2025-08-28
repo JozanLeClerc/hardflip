@@ -183,6 +183,9 @@ func e_reload_data(data *HardData) {
 		data.opts = DEFAULT_OPTS
 	} else {
 		data.opts = c_get_options(conf_dir, &data.load_err)
+		if data.n_arg == true {
+			data.opts.Loop = false
+		}
 	}
 	if conf_dir == "" {
 		data.colors = DEFAULT_STYLE
