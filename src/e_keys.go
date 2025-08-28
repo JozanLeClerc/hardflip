@@ -187,7 +187,12 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		ui.insert_sel_ok = false
 		ui.insert_scroll = 0
 	} else if event.Key() == tcell.KeyCtrlR {
+		if err := ui.s.Suspend(); err != nil {
+			c_error_mode("screen", err, ui)
+			return true
+		}
 		e_reload_data(data)
+		c_resume_or_die(ui)
 	} else if event.Rune() == 'm' ||
 			  event.Key() == tcell.KeyF7 {
 		ui.mode = MKDIR_MODE
@@ -273,10 +278,6 @@ func e_delete_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 		}
 	}
 	return false
-}
-
-func e_load_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
-	return true
 }
 
 func e_error_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {

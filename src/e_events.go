@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"maps"
 	"os"
 
@@ -178,8 +179,9 @@ func e_reload_data(data *HardData) {
 			tmp_parent_path = data.litems.curr.Host.parent.path()
 		}
 	}
+	fmt.Println("reloading config...")
 	conf_dir  := c_get_conf_dir(&data.load_err)
-	if conf_dir == "" {
+	if len(conf_dir) == 0 {
 		data.opts = DEFAULT_OPTS
 	} else {
 		data.opts = c_get_options(conf_dir, &data.load_err)
@@ -187,19 +189,19 @@ func e_reload_data(data *HardData) {
 			data.opts.Loop = false
 		}
 	}
-	if conf_dir == "" {
+	if len(conf_dir) == 0 {
 		data.colors = DEFAULT_STYLE
 	} else {
 		data.colors = c_get_styles(conf_dir, &data.load_err)
 	}
 	i_init_styles(&data.ui, data.colors)
+	fmt.Println("reloading data...")
 	data.data_dir = c_get_data_dir(&data.ui)
 	if len(data.data_dir) == 0 {
 		return
 	}
-	g_load_count = -1
-	data.ldirs, data.litems, data.load_err = i_load_ui(data.data_dir, data.opts,
-		&data.ui, &data.load_err)
+	data.ldirs, data.litems, data.load_err = i_load_data(data.data_dir, data.opts,
+		&data.load_err)
 	data.folds = make(map[*DirsNode]*ItemsList)
 	if tmp_name == "" {
 		data.litems.curr = data.litems.head

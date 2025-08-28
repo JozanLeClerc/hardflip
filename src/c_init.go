@@ -52,6 +52,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -85,7 +86,7 @@ type HardStyle struct {
 func c_recurse_data_dir(dir, root string, opts HardOpts,
 		ldirs *DirsList,
 		name string, parent *DirsNode, depth uint16,
-		ui *HardUI, load_err *[]error) {
+		load_err *[]error) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		*load_err = append(*load_err, err)
@@ -99,12 +100,11 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 		nil,
 	}
 	ldirs.add_back(&dir_node)
-	i_draw_load_ui(ui)
 	for _, file := range files {
 		filename := file.Name()
 		if file.IsDir() == true {
 			c_recurse_data_dir(dir + filename + "/", root, opts, ldirs,
-				file.Name(), &dir_node, depth + 1, ui, load_err)
+				file.Name(), &dir_node, depth + 1, load_err)
 		} else if filepath.Ext(filename) == ".yml" {
 			host_node, err := c_read_yaml_file(root + dir + filename)
 			if err != nil {
@@ -117,16 +117,14 @@ func c_recurse_data_dir(dir, root string, opts HardOpts,
 				}
 				dir_node.lhost.add_back(host_node)
 			}
-			i_draw_load_ui(ui)
 		}
 	}
 }
 
-func c_load_data_dir(dir string, opts HardOpts,
-		ui *HardUI, load_err *[]error) (*DirsList) {
+func c_load_data_dir(dir string, opts HardOpts, load_err *[]error) (*DirsList) {
 	ldirs := DirsList{}
 
-	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, ui, load_err)
+	c_recurse_data_dir("", dir + "/", opts, &ldirs, "", nil, 1, load_err)
 	return &ldirs
 }
 
@@ -210,4 +208,59 @@ func c_get_styles(dir string, load_err *[]error) HardStyle {
 		return DEFAULT_STYLE
 	}
 	return styles
+}
+
+func i_load_data(data_dir string,
+				 opts HardOpts,
+				 load_err *[]error) (*DirsList, *ItemsList, []error) {
+	ldirs := c_load_data_dir(data_dir, opts, load_err)
+	litems := c_load_litems(ldirs)
+	if len(*load_err) == 0 {
+		*load_err = nil
+	}
+	return ldirs, litems, *load_err
+}
+
+func c_init_hard(data_dir string, no_loop, search_mode bool) (*HardData) {
+	ui := HardUI{}
+	var load_err []error
+
+	fmt.Println("loading config...")
+	home_dir, _ := os.UserHomeDir()
+	opts := HardOpts{}
+	conf_dir  := c_get_conf_dir(&load_err)
+	if len(conf_dir) == 0 {
+		opts = DEFAULT_OPTS
+	} else {
+		opts = c_get_options(conf_dir, &load_err)
+	}
+	if no_loop == true {
+		opts.Loop = false
+	}
+	styles := c_get_styles(conf_dir, &load_err)
+	i_init_styles(&ui, styles)
+	fmt.Println("loading data...")
+	ldirs, litems, load_err := i_load_data(data_dir, opts, &load_err)
+	data := HardData{
+		litems,
+		ldirs,
+		ui,
+		opts,
+		styles,
+		make(map[*DirsNode]*ItemsList),
+		data_dir,
+		home_dir,
+		load_err,
+		nil,
+		[][2]string{},
+		nil,
+		nil,
+		no_loop,
+		search_mode,
+	}
+	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
+		data.ui.mode = WELCOME_MODE
+		data.keys = c_get_secret_gpg_keyring()
+	}
+	return &data
 }

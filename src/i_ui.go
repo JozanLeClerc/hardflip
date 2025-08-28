@@ -210,10 +210,9 @@ func i_set_box_style(ui *HardUI) {
 
 	switch ui.mode {
 	case NORMAL_MODE,
-		 LOAD_MODE,
 		 WELCOME_MODE,
 		 HELP_MODE:
-		// FIX: with custom config for default ayayaya
+		// TODO: with custom config for default ayayaya
 		ui.style[BOX_STYLE]  = tmp.Foreground(tcell.ColorReset)
 		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorReset)
 	case DELETE_MODE,
@@ -239,8 +238,6 @@ func i_draw_bottom_text(ui HardUI, insert *HostNode, insert_err []error) {
 			text = NORMAL_KEYS_HINTS
 		case DELETE_MODE:
 			text = CONFIRM_KEYS_HINTS
-		case LOAD_MODE:
-			text = "Loading..."
 		case ERROR_MODE:
 			text = ERROR_KEYS_HINTS
 		case WELCOME_MODE:
@@ -656,60 +653,6 @@ func i_draw_match_buff(ui HardUI) {
 				ui.style[DEF_STYLE], ui.match_buff)
 }
 
-var g_load_count int = -1
-
-func i_draw_load_ui(ui *HardUI) {
-	g_load_count += 1
-	if g_load_count % 1000 != 0 {
-		return
-	}
-	i_draw_host_panel(*ui, false, nil, nil)
-	i_draw_info_panel(*ui, false, nil)
-	text := ""
-	for i := 0; i < ui.dim[W] - 1; i++ {
-		text += " "
-	}
-	i_draw_text(ui.s, 1, ui.dim[H] - 1, ui.dim[W], ui.dim[H] - 1,
-		ui.style[BOT_STYLE], text)
-	i_draw_bottom_text(*ui, nil, nil)
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Loading ")
-	text = "Loading " + strconv.Itoa(g_load_count) + " hosts"
-	left, right := i_left_right(len(text), *ui)
-	i_draw_text(ui.s,
-		left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
-		ui.style[DEF_STYLE], text)
-	ui.s.Show()
-	ui.s.PostEvent(nil)
-	event := ui.s.PollEvent()
-	switch event := event.(type) {
-	case *tcell.EventResize:
-		ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-		ui.s.Sync()
-	case *tcell.EventKey:
-		if event.Key() == tcell.KeyCtrlC ||
-		event.Rune() == 'q' {
-			ui.s.Fini()
-			os.Exit(0)
-		}
-	}
-}
-
-func i_load_ui(data_dir string,
-			   opts HardOpts,
-			   ui *HardUI,
-			   load_err *[]error) (*DirsList, *ItemsList, []error) {
-	ui.mode = LOAD_MODE
-	ldirs := c_load_data_dir(data_dir, opts, ui, load_err)
-	litems := c_load_litems(ldirs)
-	if ui.mode != ERROR_MODE {
-		ui.mode = NORMAL_MODE
-	}
-	if len(*load_err) == 0 {
-		*load_err = nil
-	}
-	return ldirs, litems, *load_err
-}
-
 func i_init_styles(ui *HardUI, styles HardStyle) {
 	for i := range STYLE_MAX + 1 {
 		tmp := tcell.StyleDefault.Background(tcell.ColorReset)
@@ -783,59 +726,21 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
 
-func i_ui(data_dir string, no_loop, search_mode bool) {
-	home_dir, _ := os.UserHomeDir()
-	ui := HardUI{}
-	opts := HardOpts{}
+func i_ui(data *HardData) {
 	var err error
 
-	ui.s, err = tcell.NewScreen()
+	data.ui.s, err = tcell.NewScreen()
 	if err != nil {
 		c_die("view", err)
 	}
-	if err := ui.s.Init(); err != nil {
+	if err := data.ui.s.Init(); err != nil {
 		c_die("view", err)
 	}
-	ui.dim[W], ui.dim[H], _ = term.GetSize(0)
-	var load_err []error
-	conf_dir  := c_get_conf_dir(&load_err)
-	if len(conf_dir) == 0 {
-		opts = DEFAULT_OPTS
-	} else {
-		opts = c_get_options(conf_dir, &load_err)
-	}
-	if no_loop == true {
-		opts.Loop = false
-	}
-	styles := c_get_styles(conf_dir, &load_err)
-	i_init_styles(&ui, styles)
-	ui.s.SetStyle(ui.style[DEF_STYLE])
-	ldirs, litems, load_err := i_load_ui(data_dir, opts, &ui, &load_err)
-	data := HardData{
-		litems,
-		ldirs,
-		ui,
-		opts,
-		styles,
-		make(map[*DirsNode]*ItemsList),
-		data_dir,
-		home_dir,
-		load_err,
-		nil,
-		[][2]string{},
-		nil,
-		nil,
-		no_loop,
-		search_mode,
-	}
-	if data.opts.GPG == DEFAULT_OPTS.GPG && data.litems.head == nil {
-		data.ui.mode = WELCOME_MODE
-		data.keys = c_get_secret_gpg_keyring()
-	}
+	data.ui.dim[W], data.ui.dim[H], _ = term.GetSize(0)
+	data.ui.s.SetStyle(data.ui.style[DEF_STYLE])
 	fp := [MODE_MAX + 1]key_event_mode_func{
 		NORMAL_MODE:	e_normal_events,
 		DELETE_MODE:	e_delete_events,
-		LOAD_MODE:		e_load_events,
 		ERROR_MODE:		e_error_events,
 		WELCOME_MODE:	e_welcome_events,
 		MKDIR_MODE:		e_mkdir_events,
@@ -847,7 +752,7 @@ func i_ui(data_dir string, no_loop, search_mode bool) {
 		data.ui.s.Clear()
 		i_set_box_style(&data.ui)
 		i_draw_bottom_text(data.ui, data.insert, data.insert_err)
-		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, &data)
+		i_draw_host_panel(data.ui, data.opts.Icon, data.litems, data)
 		i_draw_info_panel(data.ui, data.opts.Perc, data.litems)
 		i_draw_scrollhint(data.ui, data.litems)
 		if len(data.load_err) > 0 {
@@ -893,6 +798,6 @@ func i_ui(data_dir string, no_loop, search_mode bool) {
 			data.ui.match_buff = ""
 		}
 		data.ui.s.Show()
-		e_events(&data, fp)
+		e_events(data, fp)
 	}
 }

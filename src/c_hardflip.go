@@ -79,5 +79,6 @@ func main() {
 		n_arg, s_arg = c_cli_opts()
 	}
 	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir, n_arg, s_arg)
+	data := c_init_hard(data_dir, n_arg, s_arg)
+	i_ui(data)
 }

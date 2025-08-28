@@ -262,12 +262,6 @@ report bugs to <rbo@gmx.us>`)
 	os.Exit(0)
 }
 
-// wrong argument and exit
-func c_not_an_arg(arg string) {
-	fmt.Println("hf: Unknown argument " + arg)
-	os.Exit(1)
-}
-
 func c_cli_opts() (bool, bool) {
 	h := flag.Bool("h", false, "show usage")
 	n := flag.Bool("n", false, "disable loop mode")
