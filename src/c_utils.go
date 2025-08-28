@@ -54,6 +54,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -254,10 +255,9 @@ func c_print_help() {
 	fmt.Println(`Usage:
   hf [options]
 
-Options:
-  -h, --help        Prints this help
-  -v, --version     Prints the version number and name
-
+Options:`)
+	flag.PrintDefaults()
+	fmt.Println(`
 Report bugs to <rbo@gmx.us>`)
 	os.Exit(0)
 }
@@ -268,15 +268,17 @@ func c_not_an_arg(arg string) {
 	os.Exit(1)
 }
 
-func c_cli_opts(arg string) {
-	switch arg {
-	case "-v",
-		 "--version":
-		c_print_version()
-	case "-h",
-		 "--help":
+func c_cli_opts() (bool, bool) {
+	h := flag.Bool("h", false, "print this help")
+	n := flag.Bool("n", false, "disable loop mode")
+	s := flag.Bool("s", false, "search-only mode (implies -n)")
+	v := flag.Bool("v", false, "print the version number and name")
+	flag.Parse()
+	if *h == true {
 		c_print_help()
-	default:
-		c_not_an_arg(os.Args[1])
 	}
+	if *v == true {
+		c_print_version()
+	}
+	return *n, *s
 }

@@ -783,7 +783,7 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 
 type key_event_mode_func func(*HardData, *HardUI, tcell.EventKey) bool
 
-func i_ui(data_dir string) {
+func i_ui(data_dir string, no_loop bool) {
 	home_dir, _ := os.UserHomeDir()
 	ui := HardUI{}
 	opts := HardOpts{}
@@ -803,6 +803,9 @@ func i_ui(data_dir string) {
 		opts = DEFAULT_OPTS
 	} else {
 		opts = c_get_options(conf_dir, &load_err)
+	}
+	if no_loop == true {
+		opts.Loop = false
 	}
 	styles := c_get_styles(conf_dir, &load_err)
 	i_init_styles(&ui, styles)

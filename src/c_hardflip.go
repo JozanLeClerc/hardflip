@@ -71,9 +71,11 @@ type HardData struct {
 }
 
 func main() {
+	var n_opt, _ bool
+
 	if len(os.Args) > 1 {
-		c_cli_opts(os.Args[1])
+		n_opt, _ = c_cli_opts()
 	}
 	data_dir := c_get_data_dir(nil)
-	i_ui(data_dir)
+	i_ui(data_dir, n_opt)
 }
