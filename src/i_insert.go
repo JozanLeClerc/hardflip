@@ -167,14 +167,6 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 		data.insert = nil
 		return nil
 	}
-	// HACK: not sure if this is necessary
-	// if data.litems.curr.is_dir() == true {
-	// 	data.litems.curr.Dirs.lhost.add_back(insert)
-	// } else {
-	// 	tmp_next := data.litems.curr.Host.next
-	// 	data.litems.curr.Host.next = insert
-	// 	data.litems.curr.Host.next.next = tmp_next
-	// }
 	var next *ItemsNode = nil
 	if data.litems.curr != nil {
 		next = data.litems.curr.next
@@ -189,11 +181,6 @@ func i_insert_host(data *HardData, insert *HostNode) error {
 	curr := data.litems.curr
 	if curr != nil {
 		data.litems.add_after(item)
-		// curr.next = item
-		// if curr.next.next != nil {
-		// 	data.litems.curr.next.next.prev = item
-		// }
-		// data.litems.curr = data.litems.curr.next
 	} else {
 		data.litems.add_back(item)
 		data.litems.curr = data.litems.head
