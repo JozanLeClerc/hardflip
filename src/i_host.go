@@ -110,7 +110,7 @@ func i_draw_host_panel(ui HardUI, icons bool,
 					   litems *ItemsList, data *HardData) {
 	i_draw_box(ui.s, 0, 0,
 		ui.dim[W] / 3, ui.dim[H] - 2,
-		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " Hosts ", false)
+		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " hosts ", false)
 	line := 1
 	if litems == nil || litems.head == nil {
 		return

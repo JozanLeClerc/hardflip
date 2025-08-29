@@ -252,6 +252,7 @@ func e_normal_events(data *HardData, ui *HardUI, event tcell.EventKey) bool {
 			ui.buff.insert(data.litems.curr.Dirs.Name)
 		}
 	} else if (event.Rune() == '/' ||
+			   event.Rune() == 'f' ||
 	           event.Key() == tcell.KeyCtrlF) &&
 	           data.litems.curr != nil {
 		c_fuzz(data, ui)

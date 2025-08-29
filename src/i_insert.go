@@ -471,7 +471,7 @@ func i_draw_insert_panel(ui *HardUI, in *HostNode, home_dir string) {
 	i_draw_box(ui.s,
 		win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
-		" Insert - " + in.Name + " ", true)
+		" insert - " + in.Name + " ", true)
 	line := i_insert_follow_cursor(ui.insert_scroll, 2)
 	if line <= 0 {
 		ui.s.SetContent(ui.dim[W] / 2, win.T, '▲', nil, ui.style[BOX_STYLE])

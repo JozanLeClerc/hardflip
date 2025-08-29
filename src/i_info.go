@@ -469,7 +469,7 @@ func i_draw_info_panel(ui HardUI, percent bool, litems *ItemsList) {
 
 	i_draw_box(ui.s, (ui.dim[W] / 3), 0,
 		ui.dim[W] - 1, ui.dim[H] - 2,
-		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " Infos ", false)
+		ui.style[BOX_STYLE], ui.style[HEAD_STYLE], " infos ", false)
 	ui.s.SetContent(ui.dim[W] / 3, 0, tcell.RuneTTee, nil, ui.style[BOX_STYLE])
 	ui.s.SetContent(ui.dim[W] / 3, ui.dim[H] - 2,
 		tcell.RuneBTee, nil, ui.style[BOX_STYLE])

@@ -67,7 +67,7 @@ func i_draw_help(ui *HardUI) {
 	i_draw_box(ui.s,
 		win.L, win.T, win.R, win.B,
 		ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
-		" Keys ", true)
+		" keys ", true)
 	line := 0
 	line -= ui.help_scroll
 	if line < 0 {
@@ -94,7 +94,7 @@ func i_help_normal(ui HardUI, win Quad, line *int) bool {
 			return false
 		}
 		i := delim - 1 - len(v[0])
-		if i < 0 { i = 0 }
+		i = max(i, 0)
 		i_draw_text(ui.s, win.L + 1 + i, win.T + 1 + *line, win.L + delim,
 			win.T + 1 + *line, ui.style[BOT_STYLE], v[0])
 		i_draw_text(ui.s, win.L + delim + 1, win.T + 1 + *line, win.R,
