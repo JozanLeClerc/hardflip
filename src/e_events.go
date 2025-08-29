@@ -168,6 +168,12 @@ func e_fold_dir(data *HardData, item *ItemsNode) {
 }
 
 func e_reload_data(data *HardData) {
+	if data.ui.s != nil {
+		if err := data.ui.s.Suspend(); err != nil {
+			c_error_mode("screen", err, &data.ui)
+			return
+		}
+	}
 	tmp_name := ""
 	tmp_parent_path := ""
 	if data.litems.curr != nil {
@@ -179,7 +185,6 @@ func e_reload_data(data *HardData) {
 			tmp_parent_path = data.litems.curr.Host.parent.path()
 		}
 	}
-	// FIX: dirty visual bug rename dir mkdir
 	fmt.Println("reloading config...")
 	conf_dir  := c_get_conf_dir(&data.load_err)
 	if len(conf_dir) == 0 {
@@ -199,6 +204,7 @@ func e_reload_data(data *HardData) {
 	fmt.Println("reloading data...")
 	data.data_dir = c_get_data_dir(&data.ui)
 	if len(data.data_dir) == 0 {
+		c_resume_or_die(&data.ui)
 		return
 	}
 	data.ldirs, data.litems, data.load_err = i_load_data(data.data_dir, data.opts,
@@ -206,6 +212,7 @@ func e_reload_data(data *HardData) {
 	data.folds = make(map[*DirsNode]*ItemsList)
 	if tmp_name == "" {
 		data.litems.curr = data.litems.head
+		c_resume_or_die(&data.ui)
 		return
 	}
 	for curr := data.litems.head; curr != nil; curr = curr.next {
@@ -213,6 +220,7 @@ func e_reload_data(data *HardData) {
 			if curr.Dirs.Name == tmp_name {
 				if curr.Dirs.Parent.path() == tmp_parent_path {
 					data.litems.curr = curr
+					c_resume_or_die(&data.ui)
 					return
 				}
 			}
@@ -220,12 +228,14 @@ func e_reload_data(data *HardData) {
 			if curr.Host.filename == tmp_name {
 				if curr.Host.parent.path() == tmp_parent_path {
 					data.litems.curr = curr
+					c_resume_or_die(&data.ui)
 					return
 				}
 			}
 		}
 	}
 	data.litems.curr = data.litems.head
+	c_resume_or_die(&data.ui)
 }
 
 func e_delete_dir(data *HardData) error {
