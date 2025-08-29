@@ -59,8 +59,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func c_parse_opts(file string) (HardOpts, error) {
-	var opts HardOpts
+func c_parse_opts(file string, defaults HardOpts) (HardOpts, error) {
+	opts := defaults
 
 	yaml_file, err := os.ReadFile(file)
 	if err != nil {

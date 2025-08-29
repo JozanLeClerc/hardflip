@@ -15,6 +15,7 @@ Install those if you need them:
 + `gpg` to crypt passwords, similarily to
 [pass](https://www.passwordstore.org/). You can store them in plain text if you
 prefer but I wouldn't recommend that option
++ `fzf`
 + `go`
 + GNU `make`
 
@@ -89,6 +90,8 @@ that, it doesn't work at all, just leave that unset
 entered by default when adding a new SSH host or jump, saving a ton of time.
 Of course it can be changed when adding the host. Leave empty if you don't have
 a main key
++ `fuzzy_finder`: (`string`) custom path for the fuzzy search program. For you
+`skim` nerds. Defaults to `fzf` if not set
 
 ### `colors.yml`
 
@@ -140,9 +143,13 @@ keys, maybe in the future.
 
 On first start, you will be prompted to configure GnuPG and default SSH keys.
 
+### Options
+
+`man hf` for more infos.
+
 ## Next
 
-Check `ROADMAP.md` to see the intended upgrades for `hardflip`. VNC hosts and
+Check [ROADMAP.md](ROADMAP.md) to see the intended upgrades for `hardflip`. VNC hosts and
 fuzzysearch are big ones. But that's pretty much it. Enjoy.
 
 ## Bugs

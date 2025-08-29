@@ -240,6 +240,7 @@ var DEFAULT_OPTS = HardOpts{
 	false,
 	"",
 	"",
+	"fzf",
 	"",
 }
 

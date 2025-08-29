@@ -1,6 +1,6 @@
 .\" Manpage for hf
 .\" Contact rbo@gmx.us to correct errors and typos.
-.TH hf 1 "20 May 2024" "hf 1.0" "hardflip Reference"
+.TH hf 1 "28 August 2025" "hf 1.0" "hardflip Reference"
 .SH NAME
 hf \- super fast remote connection manager
 .SH SYNOPSYS
@@ -14,11 +14,26 @@ Passwords are stored using \fBGnuPG\fR keys or plaintext (depending on your
 setup).
 .SH OPTIONS
 .TP
-\fB\-h\fR, \fB\-\-help\fR
-Prints the help
+\fB\-h\fR
+prints the usage and exit
 .TP
-\fB\-v\fR, \fB\-\-version\fR
-Prints the program version
+\fB\-n\fR
+disables loop mode, ignoring the \fBloop\fR setting from
+.IR config.yml .
+See
+.B CONFIGURATION
+.TP
+\fB\-s\fR
+starts in search mode using
+.IR fzf (1).
+The program will not run the TUI and search directly through the existing hosts.
+Contrary to search mode from within the TUI, selecting an host will execute
+the configuration directly. Using this option will exit the program at the end
+of the session or if the search was cancelled. This option implies \fB\-n\fR.
+.IR config.yml .
+.TP
+\fB\-v\fR
+prints the program version and exit
 .SH CONFIGURATION
 .BR hf
 stores its configuration files in the
@@ -33,46 +48,68 @@ Here are some options:
 .TP
 .BR icons :
 .I bool
+.RS 4
 shows or not icons
+.RE
 .TP
 .BR loop :
 .I bool
+.RS 4
 the program will run again after exiting the host you connected to
+.RE
 .TP
 .BR gpg :
 .I string
+.RS 4
 the gpg key ID you set at first boot. It is used to encrypt passwords. If set
 to **"plain"**, passwords will be stored in plaintext. I don't recommend this
 at all but you might not care
+.RE
 .TP
 .BR percent :
 .I bool
+.RS 4
 shows percent of hosts the cursor is on in the bottom right of the window
+.RE
 .TP
 .BR terminal :
 .I string
+.RS 4
 will spawn the command to connect to your host in a new instance of your set
 terminal. It was intended to open the connection in a new terminal in the
 background, allowing you to still be using the same
 .B hf
 while connected to one or several of your hosts. Turns out I can't code that, it
 doesn't work at all, just leave that unset
+.RE
 .TP
 .BR default_ssh_priv :
 .I string
+.RS 4
 default SSH private key path. It will be entered by default when adding a new
 SSH host or jump, saving a ton of time. Of course it can be changed when adding
 the host. Leave empty if you don't have a main key
+.RE
+.TP
+.BR fuzzy_finder :
+.I string
+.RS 4
+custom path for the fuzzy search program. For you
+.IR skim
+nerds. Defaults to
+.IR fzf
+if not set
+.RE
 .SH BUGS
 Please note that
 .B hardflip
-was tested only on Linux and FreeBSD at the moment. This is probably full of
+was only tested on Linux and FreeBSD at the moment. This is probably full of
 bugs, so please report any bug to me,
-.IR "Joe <rbo@gmx.us>"
+.IR "joe <rbo@gmx.us>"
 or on GitHub at
 .IR https://github.com/JozanLeClerc/hardflip .
 .SH AUTHOR
-Joe <rbo@gmx.us>
+joe <rbo@gmx.us>
 .SH SEE ALSO
 .IR ssh (1),
 .IR xfreerdpd (1),

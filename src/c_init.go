@@ -66,6 +66,7 @@ type HardOpts struct {
 	Perc    bool   `yaml:"percent"`
 	Term	string `yaml:"terminal"`
 	DefSSH	string `yaml:"default_ssh_priv"`
+	Fuzzer	string `yaml:"fuzzy_finder"`
 	file    string
 }
 
@@ -185,7 +186,7 @@ func c_get_options(dir string, load_err *[]error) HardOpts {
 		opts.file = file
 		return opts
 	}
-	opts, err := c_parse_opts(file)
+	opts, err := c_parse_opts(file, opts)
 	opts.file = file
 	if err != nil {
 		*load_err = append(*load_err, err)

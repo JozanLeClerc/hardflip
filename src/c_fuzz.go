@@ -98,24 +98,30 @@ func c_fuzz(data *HardData, ui *HardUI) (bool) {
 			return false
 		}
 	}
-	search := exec.Command("fzf")
+	search := exec.Command(data.opts.Fuzzer)
 	stdin, stdout := c_fuzz_init_pipes(ui, search)
 	if stdin == nil || stdout == nil {
 		return false
 	}
 	if err := search.Start(); err != nil {
 		if ui.s != nil {
-			c_error_mode("fzf", err, ui)
+			c_error_mode("fuzzy finder", err, ui)
 			c_resume_or_die(ui)
 			return false
 		} else {
-			c_die("fzf", err)
+			c_die("fuzzy finder", err)
 		}
 	}
 	go func() {
 		defer stdin.Close()
 		for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
 			if ptr.is_dir() == true {
+				// } else if data.litems.curr.Dirs != nil &&
+				// 		  data.folds[data.litems.curr.Dirs] == nil {
+				// 	e_fold_dir(data, data.litems.curr)
+				// } else {
+				// 	e_unfold_dir(data, data.litems.curr)
+				// }
 				continue
 			}
 			io.WriteString(stdin, ptr.path()[1:] + ptr.Host.Name + "\n")

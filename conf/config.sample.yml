@@ -19,5 +19,9 @@ percent: false
 # the command will replace hardflip
 #terminal: alacritty
 
-# this will be entered by default when adding a new SSH or SSH jump host
+# this will be entered by default when adding a new SSH or SSH jump host to win
+# some time
 default_ssh_priv: path/to/key
+
+# fuzzy finder program used in search (keybind /) and -s mode
+#fuzzy_finder: fzf
