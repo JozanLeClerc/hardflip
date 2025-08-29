@@ -179,6 +179,7 @@ func e_reload_data(data *HardData) {
 			tmp_parent_path = data.litems.curr.Host.parent.path()
 		}
 	}
+	// FIX: dirty visual bug rename dir mkdir
 	fmt.Println("reloading config...")
 	conf_dir  := c_get_conf_dir(&data.load_err)
 	if len(conf_dir) == 0 {
