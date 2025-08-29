@@ -292,12 +292,13 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host.Protocol == PROTOCOL_CMD {
 		silent = host.Silent
 	}
-	if silent == false {
+	if silent == false && ui != nil {
 		if err := ui.s.Suspend(); err != nil {
 			c_error_mode("screen", err, ui)
 			return
 		}
-	} else {
+	} else if ui != nil {
+
 		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Exec ")
 		text := "running command..."
 		left, right := i_left_right(len(text), *ui)
@@ -306,13 +307,13 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		ui.s.Show()
 	}
 	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent);
-	   err != nil && host.Protocol == PROTOCOL_CMD {
+	err != nil && host.Protocol == PROTOCOL_CMD {
 		c_error_mode(err_str, err, ui)
 	}
 	if opts.Loop == false {
 		ui.s.Fini()
 		os.Exit(0)
-	} else if silent == false {
+	} else if silent == false && ui != nil {
 		c_resume_or_die(ui)
 	}
 }

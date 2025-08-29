@@ -82,7 +82,8 @@ func main() {
 	data := c_init_hard(data_dir, n_arg, s_arg)
 	if s_arg == true {
 		c_fuzz(data, &data.ui)
-		// TODO: exec instantly here
+		c_exec(data.litems.curr.Host, data.opts, nil)
+		return
 	}
 	i_ui(data)
 }
