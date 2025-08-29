@@ -57,7 +57,7 @@
 
 ## v1.1 - 360 hard
 
-- [ ] fuzz
+- [x] fuzz
 - [ ] better insert form
 - [ ] ssh port rdr
 

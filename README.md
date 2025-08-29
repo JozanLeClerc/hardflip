@@ -141,9 +141,39 @@ of the various keybinds are available by pressing the key `?`.
 vim-like keybinds are available by default. It is not possible yet to rebind
 keys, maybe in the future.
 
-On first start, you will be prompted to configure GnuPG and default SSH keys.
+On first start, you will be prompted to configure GnuPG (for passwords
+encryption) and default SSH keys.
 
-### Options
+### Search mode
+
+A quick **search mode** is implemented using the vim-like keybinds `/`, `f`
+or `Ctrl+f`. This calls a fuzzy finder (`fzf` by default). You can change the
+default fuzzy finder in the config file (see Config) for any program that
+behaves the same way ([fzf](https://github.com/junegunn/fzf),
+[skim](https://github.com/skim-rs/skim), even
+[dmenu](https://tools.suckless.org/dmenu/), `rofi` not tested but probably
+works too).
+
+Note that when starting search mode, all previously folded folders will be
+unfolded in order to search through them all. This is because I am a very
+bad programmer and my code is utter crap.
+
+A **search-only** mode can be started by running `hf -s`. This will start
+directly in and `fzf` prompt (or any other set up fuzzy finder) and execute
+the selected host session uppon validation. This runs in no-loop mode, so
+`hardflip` will exit when the session ends or if the search is cancelled. This
+is useful when bound to a key in your window manager, to spawn a quick remote
+session. Bind this to your favorite key for example :
+
+```sh
+alacritty -e hf -s
+```
+
+I was intending to implement a basic search in case the `fzf` bin (or any other
+set up fuzzy finder) was not found, but I gave up at least for now. Install
+[fzf](https://github.com/junegunn/fzf) or no search for you.
+
+### CLI Options
 
 `man hf` for more infos.
 

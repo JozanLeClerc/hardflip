@@ -116,12 +116,9 @@ func c_fuzz(data *HardData, ui *HardUI) (bool) {
 		defer stdin.Close()
 		for ptr := data.litems.head; ptr != nil; ptr = ptr.next {
 			if ptr.is_dir() == true {
-				// } else if data.litems.curr.Dirs != nil &&
-				// 		  data.folds[data.litems.curr.Dirs] == nil {
-				// 	e_fold_dir(data, data.litems.curr)
-				// } else {
-				// 	e_unfold_dir(data, data.litems.curr)
-				// }
+				if ptr.Dirs != nil && data.folds[ptr.Dirs] != nil {
+					e_unfold_dir(data, ptr)
+				}
 				continue
 			}
 			io.WriteString(stdin, ptr.path()[1:] + ptr.Host.Name + "\n")
