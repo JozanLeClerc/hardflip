@@ -211,12 +211,14 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 		return nil, nil
 	}
 	if len(gpg) > 0 && gpg != "plain" && len(host.Pass) > 0 {
-		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " GnuPG ")
-		text := "decryption using gpg..."
-		left, right := i_left_right(len(text), *ui)
-		i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,
-			ui.style[DEF_STYLE], text)
-		ui.s.Show()
+		if ui.s != nil {
+			i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " GnuPG ")
+			text := "decryption using gpg..."
+			left, right := i_left_right(len(text), *ui)
+			i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,
+				ui.style[DEF_STYLE], text)
+			ui.s.Show()
+		}
 		var err error
 		pass, err = c_decrypt_str(host.Pass)
 		if err != nil {
@@ -292,12 +294,12 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 	if host.Protocol == PROTOCOL_CMD {
 		silent = host.Silent
 	}
-	if silent == false && ui != nil {
+	if silent == false && ui.s != nil {
 		if err := ui.s.Suspend(); err != nil {
 			c_error_mode("screen", err, ui)
 			return
 		}
-	} else if ui != nil {
+	} else if ui.s != nil {
 
 		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Exec ")
 		text := "running command..."
@@ -307,13 +309,13 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		ui.s.Show()
 	}
 	if err, err_str := c_exec_cmd(cmd_fmt, cmd_env, silent);
-	err != nil && host.Protocol == PROTOCOL_CMD {
+	   err != nil && host.Protocol == PROTOCOL_CMD {
 		c_error_mode(err_str, err, ui)
 	}
 	if opts.Loop == false {
 		ui.s.Fini()
 		os.Exit(0)
-	} else if silent == false && ui != nil {
+	} else if silent == false && ui.s != nil {
 		c_resume_or_die(ui)
 	}
 }

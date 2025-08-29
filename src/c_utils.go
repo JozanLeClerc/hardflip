@@ -149,6 +149,9 @@ func c_die(str string, err error) {
 }
 
 func c_error_mode(msg string, err error, ui *HardUI) {
+	if ui == nil {
+		return
+	}
 	ui.mode = ERROR_MODE
 	err_str := ""
 	if err != nil {

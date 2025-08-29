@@ -82,7 +82,7 @@ func main() {
 	data := c_init_hard(data_dir, n_arg, s_arg)
 	if s_arg == true {
 		if c_fuzz(data, &data.ui) == true {
-			c_exec(data.litems.curr.Host, data.opts, nil)
+			c_exec(data.litems.curr.Host, data.opts, &data.ui)
 		}
 		return
 	}

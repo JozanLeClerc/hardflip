@@ -104,7 +104,7 @@ func c_fuzz(data *HardData, ui *HardUI) (bool) {
 		return false
 	}
 	if err := search.Start(); err != nil {
-		if ui != nil {
+		if ui.s != nil {
 			c_error_mode("fzf", err, ui)
 			c_resume_or_die(ui)
 			return false
