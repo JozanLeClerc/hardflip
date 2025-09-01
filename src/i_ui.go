@@ -296,11 +296,11 @@ func i_draw_welcome_box(ui HardUI) {
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
 	if line += 2; line > b_max { return }
-	text = `Welcome to hardflip!`
+	text = `welcome to hardflip!`
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
-	text = `Please select the gpg key ID to be used`
+	text = `please select the gpg key ID to be used`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
@@ -310,12 +310,12 @@ func i_draw_welcome_box(ui HardUI) {
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
-	text = `Set gpg key can be modified in the config file`
+	text = `set gpg key can be modified in the config file`
 	if line += 1; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
 	i_draw_text(ui.s, l, line, r, line, ui.style[DEF_STYLE], text)
-	text = `If you don't want to use GnuPG for password`
+	text = `if you don't want to use GnuPG for password`
 	if line += 2; line > b_max { return }
 	l, r = ui.dim[W] / 2 - len(text) / 2, ui.dim[W] / 2 + len(text) / 2 + 1
 	if l < l_max { l = l_max }; if r > r_max { r = r_max }
