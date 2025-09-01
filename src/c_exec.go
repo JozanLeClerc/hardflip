@@ -212,7 +212,8 @@ func c_format_cmd(host *HostNode, opts HardOpts,
 	}
 	if len(gpg) > 0 && gpg != "plain" && len(host.Pass) > 0 {
 		if ui.s != nil {
-			i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " GnuPG ")
+			i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE],
+					   ui.dim, " GnuPG ")
 			text := "decryption using gpg..."
 			left, right := i_left_right(len(text), *ui)
 			i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,
@@ -301,7 +302,8 @@ func c_exec(host *HostNode, opts HardOpts, ui *HardUI) {
 		}
 	} else if ui.s != nil {
 
-		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Exec ")
+		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+				   " exec ")
 		text := "running command..."
 		left, right := i_left_right(len(text), *ui)
 		i_draw_text(ui.s, left, ui.dim[H] - 3, right, ui.dim[H] - 3,

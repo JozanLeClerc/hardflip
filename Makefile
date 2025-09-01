@@ -36,16 +36,16 @@ install:
 	mkdir -p ${DEST}/bin
 	cp -f ${TARGET} ${DEST}/bin/hf
 	mkdir -p ${DEST}/share/man/man1
-	gzip -k ${MAN_DIR}/${MAN_SRC}
-	mv -f ${MAN_DIR}/${MAN_SRC}.gz ${DEST}/share/man/man1/${MAN_SRC}.gz
+	gzip -k ${MAN_DIR}${MAN_SRC}
+	mv -f ${MAN_DIR}${MAN_SRC}.gz ${DEST}/share/man/man1/${MAN_SRC}.gz
 
 uninstall:
 	rm -f ${DEST}/bin/hf
 	rm -f ${DEST}/share/man/man1/${MAN_SRC}.gz
 
 release: ${SRC}
-	gzip -k ${MAN_DIR}/${MAN_SRC}
-	mv -f ${MAN_DIR}/${MAN_SRC}.gz .
+	gzip -k ${MAN_DIR}${MAN_SRC}
+	mv -f ${MAN_DIR}${MAN_SRC}.gz .
 	GOOS=darwin GOARCH=arm64   go build -o ${TARGET} ${SRC_DIR}
 	tar -zcf hf_v1.0_darwin_arm64.tar.gz  ${TARGET} ${MAN_SRC}.gz README.md LICENSE
 	rm -f ${TARGET}

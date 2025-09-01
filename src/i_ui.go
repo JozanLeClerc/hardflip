@@ -173,7 +173,7 @@ func i_draw_box(s tcell.Screen, x1, y1, x2, y2 int,
 	i_draw_text(s, x1 + 1, y1, x2 - 1, y1, head_style, title)
 }
 
-func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
+func i_draw_msg(s tcell.Screen, lines int, box_style, head_style tcell.Style,
 	dim [2]int, title string) {
 
 	lines += 1
@@ -202,7 +202,7 @@ func i_draw_msg(s tcell.Screen, lines int, box_style tcell.Style,
 		}
 	}
 	i_draw_text(s, 1, dim[H] - 2 - lines, len(title) + 2, dim[H] - 2 - lines,
-		box_style, title)
+		head_style, title)
 }
 
 func i_set_box_style(ui *HardUI) {
@@ -218,12 +218,12 @@ func i_set_box_style(ui *HardUI) {
 	case DELETE_MODE,
 		 ERROR_MODE:
 		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorRed).Dim(true)
-		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorRed).Dim(true)
+		// ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorRed).Dim(true)
 	case MKDIR_MODE,
 		 INSERT_MODE,
 		 RENAME_MODE:
 		ui.style[BOX_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
-		ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
+		// ui.style[HEAD_STYLE] = tmp.Foreground(tcell.ColorBlue).Dim(true)
 	}
 }
 
@@ -349,7 +349,8 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 	if lines == 1 {
 		lines = 2
 	}
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " GnuPG keys ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+		" GnuPG keys ")
 	for k, v := range keys {
 		text := ""
 		if v[0] != "plain" {
@@ -375,15 +376,17 @@ func i_prompt_gpg(ui HardUI, keys [][2]string) {
 
 func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 	if opts.GPG == "plain" {
-		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Confirm plaintext ")
-		text := "Really use plaintext to store passwords?"
+		i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+				   " confirm plaintext ")
+		text := "really use plaintext to store passwords?"
 		l, r := i_left_right(len(text), ui)
 		i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
 			ui.style[DEF_STYLE], text)
 		return
 	}
-	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Confirm GnuPG key ")
-	text := "Really use this gpg key?"
+	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " confirm GnuPG key ")
+	text := "really use this gpg key?"
 	l, r := i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
 		ui.style[DEF_STYLE], text)
@@ -393,20 +396,21 @@ func i_prompt_confirm_gpg(ui HardUI, opts HardOpts) {
 }
 
 func i_prompt_def_sshkey(ui HardUI, home_dir string) {
-	i_draw_msg(ui.s, 4, ui.style[BOX_STYLE], ui.dim, " Default SSH key ")
-	text := "Please enter here a path for your most used SSH key"
+	i_draw_msg(ui.s, 4, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " default SSH key ")
+	text := "please enter here a path for your most used SSH key"
 	l, r := i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 6, r, ui.dim[H] - 6,
 		ui.style[DEF_STYLE],text)
-	text = "It will be entered by default when adding SSH hosts"
+	text = "it will be entered by default when adding SSH hosts"
 	l, r = i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 5, r, ui.dim[H] - 5,
 		ui.style[DEF_STYLE],text)
-	text = "This can save some time"
+	text = "this can save some time"
 	l, r = i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 4, r, ui.dim[H] - 4,
 		ui.style[DEF_STYLE],text)
-	text = "Leave empty if you don't want to set a default key"
+	text = "leave empty if you don't want to set a default key"
 	l, r = i_left_right(len(text), ui)
 	i_draw_text(ui.s, l, ui.dim[H] - 3, r, ui.dim[H] - 3,
 		ui.style[DEF_STYLE],text)
@@ -435,7 +439,8 @@ func i_prompt_mkdir(ui HardUI, curr *ItemsNode) {
 
 func i_prompt_list(ui HardUI, name, prompt string, list []string) {
 	i := len(list)
-	i_draw_msg(ui.s, i, ui.style[BOX_STYLE], ui.dim, " " + name + " ")
+	i_draw_msg(ui.s, i, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " " + name + " ")
 	for k, v := range list {
 		i_draw_text(ui.s, 2, ui.dim[H] - 2 - i,
 					ui.dim[W] - 2, ui.dim[H] - 2 - i,
@@ -518,7 +523,7 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 		}
 	}
 	path = path[1:]
-	prompt := "Name: "
+	prompt := "name: "
 	i_draw_text(ui.s,
 		1, ui.dim[H] - 1, ui.dim[W] - 1, ui.dim[H] - 1,
 		ui.style[DEF_STYLE], prompt)
@@ -533,17 +538,19 @@ func i_prompt_insert(ui HardUI, curr *ItemsNode) {
 }
 
 func i_draw_remove_share(ui HardUI) {
-	text := "Really remove this share?"
+	text := "really remove this share?"
 
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " Remove share ")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " remove share ")
 	left, right := i_left_right(len(text), ui)
 	line := ui.dim[H] - 2 - 1
 	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
 }
 
 func i_draw_zhosts_box(ui HardUI) {
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, " No hosts ")
-	text := "Hosts list empty. Add hosts/folders by pressing (a/m)"
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " no hosts ")
+	text := "hosts list empty, add hosts/folders by pressing (a/m)"
 	left, right := i_left_right(len(text), ui)
 	i_draw_text(ui.s, left, ui.dim[H] - 2 - 1, right, ui.dim[H] - 2 - 1,
 		ui.style[DEF_STYLE], text)
@@ -555,13 +562,14 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 
 	file = item.path()
 	if item.is_dir() == true {
-		text = "Really delete this directory and all of its content?"
+		text = "really delete this directory and all of its content?"
 	} else {
-		text = "Really delete this host?"
+		text = "really delete this host?"
 		file += item.Host.filename
 	}
 	file = file[1:]
-	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.dim, " Delete ")
+	i_draw_msg(ui.s, 2, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " delete ")
 	left, right := i_left_right(len(text), ui)
 	line := ui.dim[H] - 2 - 2
 	i_draw_text(ui.s, left, line, right, line, ui.style[DEF_STYLE], text)
@@ -574,7 +582,8 @@ func i_draw_delete_msg(ui HardUI, item *ItemsNode) {
 
 func i_draw_insert_err_msg(ui HardUI, insert_err []error) {
 	lines := len(insert_err)
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Errors ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(insert_err)
 	line = max(line, 0)
@@ -588,7 +597,8 @@ func i_draw_insert_err_msg(ui HardUI, insert_err []error) {
 
 func i_draw_load_error_msg(ui HardUI, load_err []error) {
 	lines := len(load_err)
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Load time errors ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " load time errors ")
 	left, right := 1, ui.dim[W] - 1
 	line := ui.dim[H] - 2 - 1 - len(load_err)
 	line = max(line, 0)
@@ -609,7 +619,8 @@ func i_draw_error_msg(ui HardUI, load_err []error) {
 	if len(ui.err[ERROR_ERR]) == 0 {
 		lines = 1
 	}
-	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.dim, " Error ")
+	i_draw_msg(ui.s, lines, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim,
+			   " error ")
 	left, right := 1, ui.dim[W] - 2
 	line := ui.dim[H] - 2 - 2
 	if len(ui.err[ERROR_ERR]) == 0 {
@@ -648,7 +659,7 @@ func i_draw_scrollhint(ui HardUI, litems *ItemsList) {
 }
 
 func i_draw_match_buff(ui HardUI) {
-	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.dim, "")
+	i_draw_msg(ui.s, 1, ui.style[BOX_STYLE], ui.style[HEAD_STYLE], ui.dim, "")
 	i_draw_text(ui.s, 2, ui.dim[H] - 2 - 1, ui.dim[W] - 2, ui.dim[H] - 2 - 1,
 				ui.style[DEF_STYLE], ui.match_buff)
 }

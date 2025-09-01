@@ -354,81 +354,81 @@ func i_draw_insert_inputs(ui HardUI, in *HostNode, home_dir string) {
 	}
 	switch ui.insert_sel {
 	case INS_PROTOCOL:
-		i_prompt_list(ui, "Connection type", "Type:",
+		i_prompt_list(ui, "connection type", "type:",
 					  PROTOCOL_STR[:])
 	case INS_SSH_HOST,
 		 INS_SSH_JUMP_HOST,
 		 INS_RDP_JUMP_HOST + len(in.Drive),
 		 INS_RDP_HOST:
-		i_prompt_generic(ui, "Host/IP: ", false, "")
+		i_prompt_generic(ui, "host/IP: ", false, "")
 	case INS_SSH_PORT,
 		 INS_SSH_JUMP_PORT,
 		 INS_RDP_JUMP_PORT + len(in.Drive),
 		 INS_RDP_PORT:
-		i_prompt_generic(ui, "Port: ", false, "")
+		i_prompt_generic(ui, "port: ", false, "")
 	case INS_SSH_USER,
 		 INS_SSH_JUMP_USER,
 		 INS_RDP_JUMP_USER + len(in.Drive),
 		 INS_RDP_USER,
 		 INS_OS_USER:
-		i_prompt_generic(ui, "User: ", false, "")
+		i_prompt_generic(ui, "user: ", false, "")
 	case INS_SSH_PASS,
 		 INS_SSH_JUMP_PASS,
 		 INS_RDP_JUMP_PASS + len(in.Drive),
 		 INS_RDP_PASS,
 		 INS_OS_PASS:
-		i_prompt_generic(ui, "Pass: ", true, "")
+		i_prompt_generic(ui, "pass: ", true, "")
 	case INS_SSH_PRIV,
 		 INS_SSH_JUMP_PRIV,
 		 INS_RDP_JUMP_PRIV + len(in.Drive):
-		i_prompt_generic(ui, "Private key: ", false, home_dir)
+		i_prompt_generic(ui, "private key: ", false, home_dir)
 	case INS_SSH_EXEC:
-		i_prompt_generic(ui, "Command: ", false, "")
+		i_prompt_generic(ui, "command: ", false, "")
 	case INS_SSH_NOTE,
 		 INS_RDP_NOTE + len(in.Drive),
 		 INS_CMD_NOTE,
 		 INS_OS_NOTE:
-		i_prompt_generic(ui, "Note: ", false, "")
+		i_prompt_generic(ui, "note: ", false, "")
 	case INS_RDP_DOMAIN:
-		i_prompt_generic(ui, "Domain: ", false, "")
+		i_prompt_generic(ui, "domain: ", false, "")
 	case INS_RDP_FILE:
 		i_prompt_generic(ui, "RDP file: ", false, home_dir)
 	case INS_RDP_SCREENSIZE:
-		i_prompt_list(ui, "Window size", "Size:",
+		i_prompt_list(ui, "window size", "size:",
 					  RDP_SCREENSIZE[:])
 	case INS_RDP_QUALITY:
-		i_prompt_list(ui, "Quality", "Quality:",
+		i_prompt_list(ui, "quality", "quality:",
 					  RDP_QUALITY[:])
 	case INS_RDP_DRIVE + len(in.Drive):
 		if len(ui.drives_buff) == 0 {
-			i_prompt_generic(ui, "Name: ", false, "")
+			i_prompt_generic(ui, "name: ", false, "")
 		} else {
-			i_prompt_dir(ui, "Local directory: ", home_dir)
+			i_prompt_dir(ui, "local directory: ", home_dir)
 		}
 	case INS_CMD_CMD:
-		i_prompt_generic(ui, "Command: ", false, "")
+		i_prompt_generic(ui, "command: ", false, "")
 	case INS_CMD_SHELL:
-		i_prompt_generic(ui, "Shell: ", false, home_dir)
+		i_prompt_generic(ui, "shell: ", false, home_dir)
 	case INS_OS_HOST:
-		i_prompt_generic(ui, "Endpoint: ", false, "")
+		i_prompt_generic(ui, "endpoint: ", false, "")
 	case INS_OS_USERDOMAINID:
-		i_prompt_generic(ui, "User Domain ID: ", false, "")
+		i_prompt_generic(ui, "user domain ID: ", false, "")
 	case INS_OS_PROJECTID:
-		i_prompt_generic(ui, "Project ID: ", false, "")
+		i_prompt_generic(ui, "project ID: ", false, "")
 	case INS_OS_REGION:
-		i_prompt_generic(ui, "Region name: ", false, "")
+		i_prompt_generic(ui, "region name: ", false, "")
 	case INS_OS_ENDTYPE:
-		i_prompt_generic(ui, "Endpoint type: ", false, "")
+		i_prompt_generic(ui, "endpoint type: ", false, "")
 	case INS_OS_INTERFACE:
-		i_prompt_generic(ui, "Interface: ", false, "")
+		i_prompt_generic(ui, "interface: ", false, "")
 	case INS_OS_IDAPI:
-		i_prompt_generic(ui, "Identity API version: ", false, "")
+		i_prompt_generic(ui, "identity API version: ", false, "")
 	case INS_OS_IMGAPI:
-		i_prompt_generic(ui, "Image API version: ", false, "")
+		i_prompt_generic(ui, "image API version: ", false, "")
 	case INS_OS_NETAPI:
-		i_prompt_generic(ui, "Network API version: ", false, "")
+		i_prompt_generic(ui, "network API version: ", false, "")
 	case INS_OS_VOLAPI:
-		i_prompt_generic(ui, "Volume API version: ", false, "")
+		i_prompt_generic(ui, "volume API version: ", false, "")
 	}
 	if len(in.Drive) > 0 &&
 	   ui.insert_sel >= INS_RDP_DRIVE &&

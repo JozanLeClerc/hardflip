@@ -224,11 +224,11 @@ var (
 		"1920x1080",
 		"2560x1440",
 	}
-	RDP_QUALITY = [3]string{"Low", "Medium", "High"}
+	RDP_QUALITY = [3]string{"low", "medium", "high"}
 	PROTOCOL_STR = [PROTOCOL_MAX + 1]string{
 		"SSH",
 		"RDP",
-		"Single command",
+		"single command",
 		"OpenStack CLI",
 	}
 )
