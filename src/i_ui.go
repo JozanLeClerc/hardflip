@@ -1,19 +1,19 @@
 /*
- * ========================
- * =====    ===============
- * ======  ================
- * ======  ================
- * ======  ====   ====   ==
- * ======  ===     ==  =  =
- * ======  ===  =  ==     =
- * =  ===  ===  =  ==  ====
- * =  ===  ===  =  ==  =  =
- * ==     =====   ====   ==
- * ========================
+ * =====================
+ * ====  ===============
+ * =====================
+ * ===   ===   ====   ==
+ * ====  ==     ==  =  =
+ * ====  ==  =  ==     =
+ * ====  ==  =  ==  ====
+ * ====  ==  =  ==  =  =
+ * =  =  ===   ====   ==
+ * ==   ================
+ * =====================
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright (c) 2023-2024, Joe
+ * Copyright (c) 2023-2025, joe <rbo@gmx.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
  *
  * hardflip: src/i_ui.go
  * Tue, 26 Aug 2025 18:55:49 +0200
- * Joe
+ * joe <rbo@gmx.us>
  *
  * interfacing with the user
  */
@@ -56,7 +56,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gdamore/tcell/v2"
+	"github.com/nyangkosense/tinybox"
 	"golang.org/x/term"
 )
 
@@ -666,7 +666,7 @@ func i_draw_match_buff(ui HardUI) {
 
 func i_init_styles(ui *HardUI, styles HardStyle) {
 	for i := range STYLE_MAX + 1 {
-		tmp := tcell.StyleDefault.Background(tcell.ColorReset)
+		// tmp := tcell.StyleDefault.Background(tcell.ColorReset)
 		curr_color := "default"
 		switch i {
 		case DEF_STYLE:
@@ -690,7 +690,7 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 		default:
 			curr_color = "default"
 		}
-		switch curr_color {
+		/* switch curr_color {
 		case COLORS[COLOR_DEFAULT]:
 			ui.style[i] = tmp.Foreground(tcell.ColorReset)
 		case COLORS[COLOR_BLACK]:
@@ -731,7 +731,7 @@ func i_init_styles(ui *HardUI, styles HardStyle) {
 			ui.style[i] = tmp.Foreground(tcell.ColorGray).Bold(true)
 		default:
 			ui.style[i] = tmp.Foreground(tcell.ColorReset)
-		}
+		} */
 	}
 }
 
@@ -741,6 +741,7 @@ func i_ui(data *HardData) {
 	var err error
 
 	data.ui.s, err = tcell.NewScreen()
+	data.ui.s, err = ;
 	if err != nil {
 		c_die("view", err)
 	}

@@ -1,19 +1,19 @@
 /*
- * ========================
- * =====    ===============
- * ======  ================
- * ======  ================
- * ======  ====   ====   ==
- * ======  ===     ==  =  =
- * ======  ===  =  ==     =
- * =  ===  ===  =  ==  ====
- * =  ===  ===  =  ==  =  =
- * ==     =====   ====   ==
- * ========================
+ * =====================
+ * ====  ===============
+ * =====================
+ * ===   ===   ====   ==
+ * ====  ==     ==  =  =
+ * ====  ==  =  ==     =
+ * ====  ==  =  ==  ====
+ * ====  ==  =  ==  =  =
+ * =  =  ===   ====   ==
+ * ==   ================
+ * =====================
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright (c) 2023-2024, Joe
+ * Copyright (c) 2023-2025, joe <rbo@gmx.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
  *
  * hardflip: src/c_init.go
  * Fri Feb 02 10:09:18 2024
- * Joe
+ * joe <rbo@gmx.us>
  *
  * init functions
  */
@@ -85,9 +85,9 @@ type HardStyle struct {
 // this function recurses into the specified root directory in order to load
 // every yaml file into memory
 func c_recurse_data_dir(dir, root string, opts HardOpts,
-		ldirs *DirsList,
-		name string, parent *DirsNode, depth uint16,
-		load_err *[]error) {
+	ldirs *DirsList,
+	name string, parent *DirsNode, depth uint16,
+	load_err *[]error) {
 	files, err := os.ReadDir(root + dir)
 	if err != nil {
 		*load_err = append(*load_err, err)
@@ -212,8 +212,8 @@ func c_get_styles(dir string, load_err *[]error) HardStyle {
 }
 
 func i_load_data(data_dir string,
-				 opts HardOpts,
-				 load_err *[]error) (*DirsList, *ItemsList, []error) {
+		 opts HardOpts,
+		 load_err *[]error) (*DirsList, *ItemsList, []error) {
 	ldirs := c_load_data_dir(data_dir, opts, load_err)
 	litems := c_load_litems(ldirs)
 	if len(*load_err) == 0 {
